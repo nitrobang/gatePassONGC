@@ -1,3 +1,7 @@
+make database gate_pass;
+
+use gate_pass;
+
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) NOT NULL,
