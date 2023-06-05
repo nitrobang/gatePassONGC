@@ -1,41 +1,65 @@
 <?php
-session_start();
+require_once "db_connection.php";
 
-// Include the database connection file
-require_once "db_con.php";
-
-if (isset($_POST['submit'])){
-    $return= $_POST["return"];
-    $issued= $_POST["issued"];
-    $placei= $_POST["placei"];
-    $issuet= $_POST["issuet"];
-    $pod= $_POST["pod"];
-    $bdesc= $_POST["description"];
-    $num= $_POST["num"];
-    $dnote= $_POST["dispatchnotes"];
-    $remark= $_POST["remarks"];
-    $sql = "SELECT MAX(orderno) FROM order_no";
-    $result = $connection->query($sql);
-    $securityn=$_POST["fors"];
-    $collector= $_POST["coln"];
-    if($result){
-      $orderno=$result+1;
-    }
-    else{
-      $orderno=1;
-    }
-    $sql = "INSERT INTO order_no (orderno,order_dest,issue_desc,placeoi,issueto,securityn,collectorid,returnable) VALUES ('$orderno','$pod','$issued','$placei','$issuet','$securityn','$collector','$return')";
-    $sql1 = "INSERT INTO order_details (descrip,nop,deliverynote,remark,orderno) VALUES ('$bdesc','$num','$dnote','$remark','$orderno')";
-      if ($connection->query($sql) === TRUE && $connection->query($sql1) === TRUE) {
-        echo "New record created successfully";
-      }
-      else{
-        echo "Error creating new record";
-      }
+// Check if the user is not logged in
+if (!isset($_SESSION["username"])) {
+    header("Location: login.php");
+    exit();
 }
-      
-      
+
+// Logout handling
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["logout"])) {
+    // Destroy the session and redirect to the login page
+    session_destroy();
+    header("Location: login.php");
+    exit();
+}
+
+$conn = $connection;
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Escape user inputs to prevent SQL injection
+    $returnable = $_POST["return"] == "1" ? 1 : 0;
+    $issueDesc = mysqli_real_escape_string($conn, $_POST["issued"]);
+    $placeOfIssue = mysqli_real_escape_string($conn, $_POST["placei"]);
+    $issueTo = mysqli_real_escape_string($conn, $_POST["issuet"]);
+    $placeOfDestination = mysqli_real_escape_string($conn, $_POST["pod"]);
+    $forwardTo = mysqli_real_escape_string($conn, $_POST["fors"]);
+    $collectorName = mysqli_real_escape_string($conn, $_POST["coln"]);
+
+    // Insert data into the 'order_no' table
+    $insertOrderNoQuery = "INSERT INTO order_no (order_dest, issue_desc, placeoi, issueto, securityn, collectorid, returnable) 
+                           VALUES ('$placeOfDestination', '$issueDesc', '$placeOfIssue', '$issueTo', '', '$collectorName', $returnable)";
+
+    if (mysqli_query($conn, $insertOrderNoQuery)) {
+        $orderId = mysqli_insert_id($conn); // Get the auto-generated order ID
+
+        // Insert data into the 'orders' table
+        $rowCount = count($_POST["srno"]);
+        for ($i = 0; $i < $rowCount; $i++) {
+            $srNo = mysqli_real_escape_string($conn, $_POST["srno"][$i]);
+            $description = mysqli_real_escape_string($conn, $_POST["description"][$i]);
+            $numOfPackages = mysqli_real_escape_string($conn, $_POST["num"][$i]);
+            $dispatchNotes = mysqli_real_escape_string($conn, $_POST["dispatchnotes"][$i]);
+            $remarks = mysqli_real_escape_string($conn, $_POST["remarks"][$i]);
+
+            $insertOrdersQuery = "INSERT INTO orders (descrip, nop, deliverynote, remark, orderno) 
+                                  VALUES ('$description', $numOfPackages, '$dispatchNotes', '$remarks', $orderId)";
+            mysqli_query($conn, $insertOrdersQuery);
+        }
+
+        // Redirect to a success page or display a success message
+        header("Location: form_new.php");
+        exit();
+    } else {
+        // Handle the case where the insertion failed
+        echo "Error: " . mysqli_error($conn);
+    }
+
+    // Close the database connection
+    mysqli_close($conn);
+}
 ?>
+
 <html>
     <head>
         <meta charset="utf-8">
@@ -46,6 +70,13 @@ if (isset($_POST['submit'])){
         <link rel="stylesheet" href="">
     </head>
     <body>
+    <div class="container">
+        <h2>Welcome, <?php echo $_SESSION["username"]; ?>!</h2>
+        <p>This is your dashboard.</p>
+        <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
+            <button type="submit" name="logout">Logout</button>
+        </form>
+    </div>
     <table>
         <tr>
         <td><img src="images.png"></td>
@@ -76,21 +107,21 @@ if (isset($_POST['submit'])){
             <td>Remarks</td>
         </tr>
         <tr>
-            <td><input type="text" name="srno"></td>
-            <td><input type="text" name="description"></td>
-            <td><input type="text"name="num"></td>
-            <td><input type="text" name="dispatchnotes"></td>
-            <td><input type="text" name="remarks"></td>
+            <td><input type="text" name="srno[]"></td>
+            <td><input type="text" name="description[]"></td>
+            <td><input type="text"name="num[]"></td>
+            <td><input type="text" name="dispatchnotes[]"></td>
+            <td><input type="text" name="remarks[]"></td>
         </tr>
        </table> 
        <input type="button" value="add row"><br>
        <label for="fors">Forward To</label>
        <select name="fors">
-        <option></option>
+        <option>default</option>
        </select><br>
        <label for="coln">Collector Name</label>
        <select name="coln">
-        <option></option>
+        <option>defualt</option>
        </select><br>    
         <input type="submit" value="Place Order">
        </form>
