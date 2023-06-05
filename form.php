@@ -17,22 +17,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST"){
     $sql = "SELECT MAX(orderno) FROM order_no";
     $result = $connection->query($sql);
     $orderno = ($result) ? $result : 1;
-    $sql = "INSERT INTO order_no (orderno,order_dest,issue_desc,placeoi,issueto,securityn,collectorid,returnable) VALUES ('$orderno','$order_dest','$pod','$issued','$placei','$issuet','$securityn','$collector','$return')";
+    $sql = "INSERT INTO order_no (orderno,order_dest,issue_desc,placeoi,issueto,securityn,collectorid,returnable) VALUES ('$orderno','$pod','$issued','$placei','$issuet','$securityn','$collector','$return')";
 
-      if ($connection->query($sql) === TRUE) {
-        echo "New record created successfully";
-      } else {
-        echo "Error: " . $sql . "<br>" . $connection->error;
-      }
-      $sql = "INSERT INTO order (descrip,nop,deliverynote,remark,orderno) VALUES ('$bdesc','$num','$dnote','$remark','$orderno')";
+    $sql1 = "INSERT INTO order (descrip,nop,deliverynote,remark,orderno) VALUES ('$bdesc','$num','$dnote','$remark','$orderno')";
 
-      if ($connection->query($sql) === TRUE) {
-        echo "New record created successfully";
-      } else {
-        echo "Error: " . $sql . "<br>" . $connection->error;
-      }
-
+      if ($connection->query($sql) === TRUE && $connection->query($sql1) === TRUE) {
+        echo "Order Created Successfully";
+      
     }
+  } 
 
 ?>
 <html>
@@ -45,6 +38,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST"){
         <link rel="stylesheet" href="">
     </head>
     <body>
+    <div class="top">
     <table>
         <tr>
         <td><img src="images.png"></td>
@@ -52,6 +46,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST"){
         <h3>MUMBAI REGION- REGIONAL OFFICE- INFOCOM</h3></td>
         </tr>
     </table>
+    </div>
+    <div class="form">
        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST">
         <label for="return">Returnable</label>
         <input type="radio" name="return" value="1">
@@ -75,7 +71,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST"){
             <td>Remarks</td>
         </tr>
         <tr>
-            <td><input type="text" name="srno"></td>
+            <td></td>
             <td><input type="text" name="description"></td>
             <td><input type="text"name="num"></td>
             <td><input type="text" name="dispatchnotes"></td>
@@ -93,7 +89,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST"){
        </select><br>    
         <input type="submit" value="Place Order">
        </form>
-        
+      </div>    
         
     </body>
 </html>
