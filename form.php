@@ -4,7 +4,7 @@ session_start();
 // Include the database connection file
 require_once "db_con.php";
 
-if ($_SERVER["REQUEST_METHOD"] == "POST"){
+if (isset($_POST['submit'])){
     $return= $_POST["return"];
     $issued= $_POST["issued"];
     $placei= $_POST["placei"];
@@ -16,24 +16,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST"){
     $remark= $_POST["remarks"];
     $sql = "SELECT MAX(orderno) FROM order_no";
     $result = $connection->query($sql);
-    $orderno = ($result) ? $result : 1;
-    $sql = "INSERT INTO order_no (orderno,order_dest,issue_desc,placeoi,issueto,securityn,collectorid,returnable) VALUES ('$orderno','$order_dest','$pod','$issued','$placei','$issuet','$securityn','$collector','$return')";
-
-      if ($connection->query($sql) === TRUE) {
-        echo "New record created successfully";
-      } else {
-        echo "Error: " . $sql . "<br>" . $connection->error;
-      }
-      $sql = "INSERT INTO order (descrip,nop,deliverynote,remark,orderno) VALUES ('$bdesc','$num','$dnote','$remark','$orderno')";
-
-      if ($connection->query($sql) === TRUE) {
-        echo "New record created successfully";
-      } else {
-        echo "Error: " . $sql . "<br>" . $connection->error;
-      }
-
+    $securityn=$_POST["fors"];
+    $collector= $_POST["coln"];
+    if($result){
+      $orderno=$result+1;
     }
-
+    else{
+      $orderno=1;
+    }
+    $sql = "INSERT INTO order_no (orderno,order_dest,issue_desc,placeoi,issueto,securityn,collectorid,returnable) VALUES ('$orderno','$pod','$issued','$placei','$issuet','$securityn','$collector','$return')";
+    $sql1 = "INSERT INTO order_details (descrip,nop,deliverynote,remark,orderno) VALUES ('$bdesc','$num','$dnote','$remark','$orderno')";
+      if ($connection->query($sql) === TRUE && $connection->query($sql1) === TRUE) {
+        echo "New record created successfully";
+      }
+      else{
+        echo "Error creating new record";
+      }
+}
+      
+      
 ?>
 <html>
     <head>
@@ -84,11 +85,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST"){
        </table> 
        <input type="button" value="add row"><br>
        <label for="fors">Forward To</label>
-       <select>
+       <select name="fors">
         <option></option>
        </select><br>
-       <label for="ColN">Collector Name</label>
-       <select>
+       <label for="coln">Collector Name</label>
+       <select name="coln">
         <option></option>
        </select><br>    
         <input type="submit" value="Place Order">
