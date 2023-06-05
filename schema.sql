@@ -1,4 +1,4 @@
-make database gate_pass;
+CREATE database gate_pass;
 
 use gate_pass;
 
