@@ -79,7 +79,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
     <table>
         <tr>
-        <td><img src="images.png"></td>
+        <td><img src="assets/images.png"></td>
         <td><h1>Oil and Natural Gas Corporation</h1>
         <h3>MUMBAI REGION- REGIONAL OFFICE- INFOCOM</h3></td>
         </tr>

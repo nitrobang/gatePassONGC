@@ -11,16 +11,16 @@ if (isset($_SESSION["username"])) {
 }
 
 // Define variables and set to empty values
-$username = $password = "";
+$cpf_no = $username = $password = "";
 $errorMessage = "";
 
 // Form submission handling
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Validate username
-    if (empty($_POST["username"])) {
-        $errorMessage = "Username is required";
+    if (empty($_POST["cpf_no"])) {
+        $errorMessage = "CPF Number is required";
     } else {
-        $username = test_input($_POST["username"]);
+        $cpf_no = test_input($_POST["cpf_no"]);
     }
 
     // Validate password
@@ -33,7 +33,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Proceed with login if there are no validation errors
     if (empty($errorMessage)) {
         // Query the database to check if the user exists
-        $query = "SELECT * FROM users WHERE username = '$username'";
+        $query = "SELECT * FROM users WHERE cpfno = '$cpf_no'";
         $result = mysqli_query($connection, $query);
 
         if ($result && mysqli_num_rows($result) > 0) {
@@ -74,8 +74,8 @@ function test_input($data) {
         <h2>Login</h2>
         <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
             <div class="form-group">
-                <label for="username">Username:</label>
-                <input type="text" id="username" name="username" required>
+                <label for="username">CPF Number:</label>
+                <input type="text" id="cpf_no" name="cpf_no" required>
             </div>
             <div class="form-group">
                 <label for="password">Password:</label>

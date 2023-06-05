@@ -11,7 +11,7 @@ if (isset($_SESSION["username"])) {
 }
 
 // Define variables and set to empty values
-$username = $password = $email = "";
+$cpf_no = $username = $password = $email = "";
 $successMessage = $errorMessage = "";
 
 // Form submission handling
@@ -21,6 +21,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $errorMessage = "Username is required";
     } else {
         $username = test_input($_POST["username"]);
+    }
+
+    if (empty($_POST["cpf_no"])) {
+        $errorMessage = "CPF Number is required";
+    } else {
+        $cpf_no = test_input($_POST["cpf_no"]);
     }
 
     // Validate password
@@ -42,17 +48,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Proceed with signup if there are no validation errors
     if (empty($errorMessage)) {
         // Check if the username or email already exists in the database
-        $query = "SELECT * FROM users WHERE username = '$username' OR email = '$email'";
+        $query = "SELECT * FROM users WHERE username = '$username' OR email = '$email' OR cpfno = '$cpf_no'";
         $result = mysqli_query($connection, $query);
 
         if ($result && mysqli_num_rows($result) > 0) {
-            $errorMessage = "Username or email already exists";
+            $errorMessage = "User already exists";
         } else {
             // Hash the password
             $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
             // Insert the user into the database
-            $insertQuery = "INSERT INTO users (username, password, email) VALUES ('$username', '$hashedPassword', '$email')";
+            $insertQuery = "INSERT INTO users (cpfno, username, password, email) VALUES ('$cpf_no', '$username', '$hashedPassword', '$email')";
             $insertResult = mysqli_query($connection, $insertQuery);
 
             if ($insertResult) {
@@ -84,7 +90,7 @@ function test_input($data) {
         <h2>Sign Up</h2>
         <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
             <div class="form-group">
-                <label for="username">Username:</label>
+                <label for="username">Name:</label>
                 <input type="text" id="username" name="username" required>
             </div>
             <div class="form-group">
@@ -94,6 +100,10 @@ function test_input($data) {
             <div class="form-group">
                 <label for="email">Email:</label>
                 <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="username">CPF Number:</label>
+                <input type="text" id="cpf_no" name="cpf_no" required>
             </div>
             <div class="form-group">
                 <button type="submit" class="submit-btn">Sign Up</button>
