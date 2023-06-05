@@ -46,7 +46,6 @@ if (isset($_POST['submit'])){
         <link rel="stylesheet" href="">
     </head>
     <body>
-    <div class="top">
     <table>
         <tr>
         <td><img src="images.png"></td>
@@ -54,8 +53,6 @@ if (isset($_POST['submit'])){
         <h3>MUMBAI REGION- REGIONAL OFFICE- INFOCOM</h3></td>
         </tr>
     </table>
-    </div>
-    <div class="form">
        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST">
         <label for="return">Returnable</label>
         <input type="radio" name="return" value="1">
@@ -79,7 +76,7 @@ if (isset($_POST['submit'])){
             <td>Remarks</td>
         </tr>
         <tr>
-            <td></td>
+            <td><input type="text" name="srno"></td>
             <td><input type="text" name="description"></td>
             <td><input type="text"name="num"></td>
             <td><input type="text" name="dispatchnotes"></td>
@@ -97,7 +94,7 @@ if (isset($_POST['submit'])){
        </select><br>    
         <input type="submit" value="Place Order">
        </form>
-      </div>    
+        
         
     </body>
 </html>

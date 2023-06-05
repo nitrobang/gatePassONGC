@@ -43,7 +43,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if (password_verify($password, $user["password"])) {
                 // Password is correct, create a session and redirect to the dashboard
                 $_SESSION["username"] = $user["username"];
-                header("Location: form.php");
+                header("Location: skdash.php");
                 exit();
             } else {
                 $errorMessage = "Invalid password";
