@@ -70,6 +70,7 @@ function test_input($data) {
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
+    <div class="bg">
     <div class="container">
         <h2>Login</h2>
         <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
@@ -89,6 +90,7 @@ function test_input($data) {
             <?php endif; ?>
         </form>
         <p>Don't have an account? <a href="signup.php">Sign Up</a></p>
+    </div>
     </div>
 </body>
 </html>
