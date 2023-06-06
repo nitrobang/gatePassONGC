@@ -9,3 +9,10 @@ CREATE TABLE users (
     email VARCHAR(100) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE INDEX idx_cpfno ON employee(cpfno);
+
+ALTER TABLE users
+ADD CONSTRAINT fk_employee_cpfno FOREIGN KEY (cpfno)
+REFERENCES employee(cpfno);
+
