@@ -1,27 +1,20 @@
 body {
     font-family: Trirong,   serif;
-    position: absolute;
-    background-color: aqua;
-}
-div.bg{
-    width: 10000px;;
-    height:100000px;
     position: relative;
 }
-div.background{
-    max-width: fit-content;
-    max-height: fit-content;
-    position: inherit;
+div.container{
+    position: relative;
+    width: 100% ;
     z-index: -1;
 }
 div.lbox {
     max-width: 400px;
     margin: 0 auto;
-    border: 2px solid #383737;
+    border: 2px solid #000000;
     border-radius: 5px; 
     position: absolute;
     background-color: aliceblue;
-    z-index: 1;
+    z-index: 0;
 }
 
 h2 {
