@@ -6,7 +6,7 @@ require_once "db_connection.php";
 
 // Check if the user is already logged in
 if (isset($_SESSION["username"])) {
-    header("Location: dashboard.php");
+    header("Location: form.php");
     exit();
 }
 

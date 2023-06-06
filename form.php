@@ -1,4 +1,5 @@
 <?php
+session_start();
 require_once "db_connection.php";
 
 // Check if the user is not logged in
@@ -16,6 +17,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["logout"])) {
 }
 
 $conn = $connection;
+if(isset($_SESSION["cpf_no"])){
+    $cpf_no = $_SESSION["cpf_no"];
+}
+//get the designation of the user
+$query = "SELECT * FROM employee WHERE cpfno = '$cpf_no'";
+$result = mysqli_query($connection, $query);
+if (!$result || mysqli_num_rows($result) == 0) {
+    header("Location: form.php");
+    exit();
+}
+$user2 = mysqli_fetch_assoc($result);
+$designation = $user2["designation"];
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Escape user inputs to prevent SQL injection
     $returnable = $_POST["return"] == "1" ? 1 : 0;
@@ -48,7 +62,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         // Redirect to a success page or display a success message
-        header("Location: form_new.php");
+        header("Location: form.php");
         exit();
     } else {
         // Handle the case where the insertion failed
@@ -70,6 +84,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <link rel="stylesheet" href="">
     </head>
     <body>
+    <?php if ($designation == "collector") : ?>
+            <a href="collector-page.php">Collector Link</a>
+        <?php endif; ?>
+        <?php if ($designation == "security") : ?>
+            <a href="security-page.php">Security Link</a>
+    <?php endif; ?>
+
     <div class="container">
         <h2>Welcome, <?php echo $_SESSION["username"]; ?>!</h2>
         <p>This is your dashboard.</p>
