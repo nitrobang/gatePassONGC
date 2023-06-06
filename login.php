@@ -77,6 +77,8 @@ function test_input($data)
 
 <body>
     <div class="bg">
+    <div class="background">
+    <img src="ongc login with css\images\body-bg.jpg">
     <div class="lbox">
             <img src="assets/images.png" class="logo" alt="ONGC Logo" />
             <h1>Gate Pass Portal for ONGCians</h1>
@@ -97,6 +99,7 @@ function test_input($data)
                 <?php endif; ?>
             </form>
             <p>Don't have an account? <a href="signup.php">Sign Up</a></p>
+        </div>
         </div>
     </div>
 </body>
