@@ -68,6 +68,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="">
+        <script type="text/javascript" src="form.js"></script>
     </head>
     <body>
     <div class="container">
@@ -106,6 +107,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <td>Deliver Note Or Dispatch convey note no OR Indent no</td>
             <td>Remarks</td>
         </tr>
+        <div id="readform">
         <tr>
             <td><input type="text" name="srno[]"></td>
             <td><input type="text" name="description[]"></td>
@@ -113,8 +115,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <td><input type="text" name="dispatchnotes[]"></td>
             <td><input type="text" name="remarks[]"></td>
         </tr>
+        <div id="writeform"></div>
+    </div>
        </table> 
-       <input type="button" value="add row"><br>
+       <input type="button" value="add row" id="addrow"><br>
        <label for="fors">Forward To</label>
        <select name="fors">
         <option>default</option>
