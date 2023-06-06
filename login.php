@@ -44,7 +44,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 // Password is correct, create a session and redirect to the dashboard
                 $_SESSION["username"] = $user["username"];
                 $_SESSION["cpf_no"] = $cpf_no;
-                header("Location: form.php");
+                header("Location: skdash.php");
                 exit();
             } else {
                 $errorMessage = "Invalid password";
