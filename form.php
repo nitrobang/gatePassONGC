@@ -84,10 +84,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <link rel="stylesheet" href="">
     </head>
     <body>
-    <?php if ($designation == "collector") : ?>
+    <?php if ($designation == "COLLECTOR") : ?>
             <a href="collector-page.php">Collector Link</a>
         <?php endif; ?>
-        <?php if ($designation == "security") : ?>
+        <?php if ($designation == "SECURITY") : ?>
             <a href="security-page.php">Security Link</a>
     <?php endif; ?>
 
