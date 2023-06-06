@@ -6,7 +6,7 @@ require_once "db_connection.php";
 
 // Check if the user is already logged in
 if (isset($_SESSION["username"])) {
-    header("Location: dashboard.php");
+    header("Location: form.php");
     exit();
 }
 
@@ -43,11 +43,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if (password_verify($password, $user["password"])) {
                 // Password is correct, create a session and redirect to the dashboard
                 $_SESSION["username"] = $user["username"];
+                $_SESSION["cpf_no"] = $cpf_no;
                 header("Location: form.php");
                 exit();
             } else {
                 $errorMessage = "Invalid password";
             }
+
         } else {
             $errorMessage = "Invalid username";
         }
