@@ -1,17 +1,26 @@
 body {
-    font-family: Arial, sans-serif;
+    font-family: Trirong,   serif;
+    position: absolute;
+    background-color: aqua;
 }
-
-.container {
-    max-width: 300px;
+div.bg{
+    width: 10000px;;
+    height:100000px;
+    position: relative;
+    border: 2px solid grey;
+    background-color: rgb(80, 110, 227);
+}
+div.lbox {
+    max-width: 400px;
     margin: 0 auto;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+    border: 2px solid #383737;
+    border-radius: 5px; 
+    position: absolute;
+    background-color: aliceblue;
 }
 
 h2 {
-    text-align: center;
+    text-align: left;
 }
 
 .form-group {
