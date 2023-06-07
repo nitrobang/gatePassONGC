@@ -81,7 +81,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <title>New Order</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="">
+        <link rel="stylesheet" href="css/styles.css">
         <script type="text/javascript" src="form.js"></script>
     </head>
     <body>
@@ -139,7 +139,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <div id="writeform"></div>
     </div>
        </table> 
-       <input type="button" value="add row" id="addrow"><br>
+       <button type="button"  id="addrow" onclick="addrow()">Add row</button><br>
        <label for="fors">Forward To</label>
        <select name="fors">
         <option>default</option>

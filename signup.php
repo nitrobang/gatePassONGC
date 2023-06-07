@@ -87,26 +87,27 @@ function test_input($data) {
 </head>
 <body>
     <div class="container">
+        <div class="lbox">
         <h2>Sign Up</h2>
         <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
             <div class="form-group">
                 <label for="username">Name:</label>
-                <input type="text" id="username" name="username" required>
+                <input type="text" id="username" name="username" class="form-control" required>
             </div>
             <div class="form-group">
                 <label for="password">Password:</label>
-                <input type="password" id="password" name="password" required>
+                <input type="password" id="password" name="password" class="form-control" required>
             </div>
             <div class="form-group">
                 <label for="email">Email:</label>
-                <input type="email" id="email" name="email" required>
+                <input type="email" id="email" name="email" class="form-control" required>
             </div>
             <div class="form-group">
                 <label for="username">CPF Number:</label>
-                <input type="text" id="cpf_no" name="cpf_no" required>
+                <input type="text" id="cpf_no" name="cpf_no" class="form-control" required>
             </div>
             <div class="form-group">
-                <button type="submit" class="submit-btn">Sign Up</button>
+                <button type="submit" class="btn btn-primary">Sign Up</button>
             </div>
             <?php if (!empty($successMessage)) : ?>
                 <div class="success-message"><?php echo $successMessage; ?></div>
@@ -116,6 +117,7 @@ function test_input($data) {
             <?php endif; ?>
         </form>
         <p>Already have an account? <a href="login.php">Login</a></p>
+    </div>
     </div>
 </body>
 </html>
