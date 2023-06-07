@@ -140,9 +140,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
        </table> 
        <input type="button" value="add row" id="addrow"><br>
-       <label for="fors">Forward To</label>
+       <!-- <label for="fors">Forward To</label>
        <select name="fors">
-        <option>default</option>
+        <option>default</option> -->
        </select><br>
        <label for="coln">Collector Name</label>
        <select name="coln">
