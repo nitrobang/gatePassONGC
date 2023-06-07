@@ -38,6 +38,7 @@ div.container{
 }
 div.lbox {
     position: absolute;
+    padding: auto;
     width: 482px;
     height: 600px;
     left: 110px;
@@ -45,7 +46,10 @@ div.lbox {
     background: #FFFFFF;
     border-radius: 10px;
 }
-
+div.lmod{
+    margin: 0 auto;
+    position: absolute;
+}
 h2 {
     text-align: left;
 }
