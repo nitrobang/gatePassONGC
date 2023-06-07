@@ -12,3 +12,8 @@ CREATE TABLE order_no (
   guard_approval TINYINT(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (orderno)
 );
+alter table order_no modify column securityn varchar(150);
+alter table order_no modify column collectorid varchar(20);
+
+alter table order_no modify column security_approval tinyint(1) signed DEFAULT 0 NOT NULL;
+alter table order_no modify column coll_approval tinyint(1) signed DEFAULT 0 NOT NULL;
