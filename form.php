@@ -142,7 +142,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
        <button type="button"  id="addrow" onclick="addrow()">Add row</button><br>
        <label for="fors">Forward To</label>
        <select name="fors">
-        <option>default</option>
+        <option>default</option> -->
        </select><br>
        <label for="coln">Collector Name</label>
        <select name="coln">
