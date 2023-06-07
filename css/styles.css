@@ -1,57 +1,17 @@
-@import url('https://fonts.googleapis.com/css?family=Open+Sans:300,400,500,600,700,800,300i,400i,500i,600i,700i,800i&display=swap'); 
-@font-face { 
-  font-family:'FontAwesome';
-  src:url('./fonts/fontawesome-webfont.eot-v-4.7.0');
-  src:url('./fonts/fontawesome-webfont.eot-#iefix&v-4.7.0') format('embedded-opentype'), url('./fonts/fontawesome-webfont.woff2-v-4.7.0') format('woff2'), url('./fonts/fontawesome-webfont.woff-v-4.7.0') format('woff'), url('./fonts/fontawesome-webfont.ttf-v-4.7.0') format('truetype'), url('./fonts/fontawesome-webfont.svg-v-4.7.0#fontawesomeregular') format('svg');
-  font-weight:normal;
-  font-style:normal;
+body {
+    font-family: Arial, sans-serif;
 }
-body { 
-    background-color:  transparent;
-    color:  #000; 
-    font-family:  'Open Sans', sans-serif !important; 
-    font-size:  14px; 
-    -moz-osx-font-smoothing:  grayscale; 
-    -webkit-font-smoothing:  antialiased; 
-    font-weight:  var(--font-weight-normal, 400); 
-    line-height:  1.5; 
-    margin:  0 auto; 
-    -ms-overflow-style:  scrollbar; 
-    text-align:  inherit;
-    background: url("/gatePassONGC/assets/body-bg.jpg") no-repeat fixed center top / cover  transparent; 
-    height: 100%; 
-    width: 100%; 
-    overflow-x: hidden; 
-    background-image: url("/gatePassONGC/assets/body-bg.jpg"); 
-    background-position-x: center; 
-    background-position-y: top; 
-    background-size: cover; 
-    background-attachment: fixed; 
-    background-origin: initial; 
-    background-clip: initial; 
-}
-div.container{
-    position: relative;
-    width: 100% ;
-    z-index: -1;
 
-}
-div.lbox {
-    position: absolute;
-    padding: auto;
-    width: 482px;
-    height: 600px;
-    left: 110px;
-    top: 160px;
-    background: #FFFFFF;
-    border-radius: 10px;
-}
-div.lmod{
+.container {
+    max-width: 300px;
     margin: 0 auto;
-    position: absolute;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
 }
+
 h2 {
-    text-align: left;
+    text-align: center;
 }
 
 .form-group {
@@ -72,4 +32,24 @@ input[type="email"] {
 
 .submit-btn {
     margin-top: 10px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+th, td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
+tr:hover {
+    background-color: #f5f5f5;
 }

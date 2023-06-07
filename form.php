@@ -8,6 +8,12 @@ if (!isset($_SESSION["username"])) {
     exit();
 }
 
+//check if right person(store keeper) is accessing the forms page
+if($_SESSION["designation"] != "store_keeper"){
+    header("Location: skdash.php");
+    exit();
+}
+
 // Logout handling
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["logout"])) {
     // Destroy the session and redirect to the login page
@@ -85,10 +91,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <script type="text/javascript" src="form.js"></script>
     </head>
     <body>
+    <a href="skdash.php">Go Back</a>
     <?php if ($designation == "COLLECTOR") : ?>
             <a href="collector-page.php">Collector Link</a>
-        <?php endif; ?>
-        <?php if ($designation == "SECURITY") : ?>
+    <?php endif; ?>
+    <?php if ($designation == "SECURITY") : ?>
             <a href="security-page.php">Security Link</a>
     <?php endif; ?>
 

@@ -39,11 +39,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($result && mysqli_num_rows($result) > 0) {
             $user = mysqli_fetch_assoc($result);
 
+            //get the designation of the user
+            $query2 = "SELECT * FROM employee WHERE cpfno = '$cpf_no'";
+            $result2 = mysqli_query($connection, $query2);
+            if (!$result2 || mysqli_num_rows($result2) == 0) {
+                header("Location: login.php");
+                exit();
+            }
+            $user2 = mysqli_fetch_assoc($result2);
+            $designation = $user2["designation"];   
             // Verify the password
             if (password_verify($password, $user["password"])) {
                 // Password is correct, create a session and redirect to the dashboard
                 $_SESSION["username"] = $user["username"];
                 $_SESSION["cpf_no"] = $cpf_no;
+                $_SESSION['designation'] = $designation;
                 header("Location: skdash.php");
                 exit();
             } else {
@@ -51,6 +61,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
         } else {
             $errorMessage = "Invalid username";
+        }
+        $conn = $connection;
+    if(isset($_SESSION["cpf_no"])){
+        $cpf_no = $_SESSION["cpf_no"];
         }
     }
 }
