@@ -1,10 +1,7 @@
 // Get the elements needed
-var addRowButton = document.getElementById('addrow');
-var readForm = document.getElementById('readform');
-var writeForm = document.getElementById('writeform');
-
-// Add click event listener to the add row button
-addRowButton.addEventListener('click', function() {
+var addRowButton = document.getElementById("addrow");
+var readForm = document.getElementById("readform");
+function addrow() {
     // Clone the form row
     var clonedRow = readForm.firstElementChild.cloneNode(true);
 
@@ -14,6 +11,15 @@ addRowButton.addEventListener('click', function() {
         inputFields[i].value = '';
     }
 
-    // Append the cloned row to the write form container
-    writeForm.appendChild(clonedRow);
-});
+    // Append the cloned row to the table body
+    readForm.appendChild(clonedRow);
+}
+// Add click event listener to the add row button
+if(addRowButton){
+    console.log('addrow click event');
+
+}
+else{
+    console.log('addrow click event not implemented');
+}
+
