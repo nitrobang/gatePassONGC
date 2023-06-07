@@ -75,6 +75,7 @@ $designation = $user2["designation"];
             echo "<td>" . $row['order_dest'] . "</td>";
             echo "<td>" . $row['issue_desc'] . "</td>";
             echo "<td>" . $row['placeoi'] . "</td>";
+            echo "<td>" . $row['issueto'] . "</td>"; 
             echo "<td>" . ($row['returnable'] ? 'Yes' : 'No') . "</td>";
             if ($designation == "collector")
             echo "<td><a href='collector-page.php'>Collector Link</a></td>";
