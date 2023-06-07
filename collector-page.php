@@ -55,7 +55,7 @@ if ($result->num_rows > 0) {
             <label for="vehicle_number">Vehicle Number:</label>
             <input type="text" id="vehicle_number" name="vehicle_number" required><br><br>
             
-            <input type="submit" value="Submit">
+            <input type="submit" name="submit" value="Submit and Approve">
           </form>';
 
 } else {
@@ -63,20 +63,29 @@ if ($result->num_rows > 0) {
 }
 
 // Check if the form is submitted
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["submit"])) {
     // Get the input values from the form
     $mode_of_collection = $_POST["mode_of_collection"];
     $vehicle_number = $_POST["vehicle_number"];
 
-    // Insert the values into the orders table
-    $insert_sql = "UPDATE orders 
+    // Update the values in the orders table
+    $update_sql = "UPDATE orders 
                    SET mode_of_collection = '$mode_of_collection', vehicle_number = '$vehicle_number' 
                    WHERE orderno = (SELECT MAX(orderno) FROM order_no)";
 
-    if ($connection->query($insert_sql) === TRUE) {
-        echo "New record inserted successfully.";
+    if ($connection->query($update_sql) === TRUE) {
+        echo "Values updated successfully.";
     } else {
-        echo "Error: " . $insert_sql . "<br>" . $connection->error;
+        echo "Error: " . $update_sql . "<br>" . $connection->error;
+    }
+
+    // Update coll_approval to 1 in the order_no table
+    $approve_sql = "UPDATE order_no SET coll_approval = 1 WHERE orderno = (SELECT MAX(orderno) FROM order_no)";
+
+    if ($connection->query($approve_sql) === TRUE) {
+        echo "Form approved successfully.";
+    } else {
+        echo "Error: " . $approve_sql . "<br>" . $connection->error;
     }
 }
 
