@@ -173,7 +173,7 @@ function getEmployeesByDesignation($designation)
         <label for="fors">Forwarded to</label>
         <select name="fors">
             <?php
-            $employees = getEmployeesByDesignation("COLLECTOR");
+            $employees = getEmployeesByDesignation("collector");
             foreach ($employees as $employee) {
                 echo "<option value='" . $employee['cpfno'] . "'>" . $employee['empname'] . " - " . $employee['cpfno'] . "</option>";
             }
