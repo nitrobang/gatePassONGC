@@ -1,25 +1,21 @@
-// Get the elements needed
-var addRowButton = document.getElementById("addrow");
-var readForm = document.getElementById("readform");
-function addrow() {
-    // Clone the form row
-    var clonedRow = readForm.firstElementChild.cloneNode(true);
+document.getElementById("addRowBtn").addEventListener("click", function() {
+        var table = document.getElementById("myTable");
+        var row = table.insertRow();
+        var cells = [];
 
-    // Clear the input values in the cloned row
-    var inputFields = clonedRow.getElementsByTagName('input');
-    for (var i = 0; i < inputFields.length; i++) {
-        inputFields[i].value = '';
-    }
+        for (var i = 0; i < 5; i++) {
+            cells[i] = row.insertCell(i);
+            cells[i].innerHTML = `<input type="text" name="srno[]">`;
+        }
 
-    // Append the cloned row to the table body
-    readForm.appendChild(clonedRow);
-}
-// Add click event listener to the add row button
-if(addRowButton){
-    console.log('addrow click event');
+        var deleteButtonCell = row.insertCell(5);
+        deleteButtonCell.innerHTML = `<button class="removeRowBtn" type="button">Remove</button>`;
+});
 
-}
-else{
-    console.log('addrow click event not implemented');
-}
-
+// Event delegation to handle remove button clicks
+document.addEventListener("click", function(event) {
+        if (event.target.classList.contains("removeRowBtn")) {
+            var row = event.target.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+        }
+});

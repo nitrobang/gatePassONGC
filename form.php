@@ -108,7 +108,7 @@ function getEmployeesByDesignation($designation)
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="css/styles.css">
-    <script type="text/javascript" src="form.js"></script>
+    <script type="text/javascript" src="/form.js"></script>
 </head>
 
 <body>
@@ -150,7 +150,7 @@ function getEmployeesByDesignation($designation)
         <label for="pod">Place of Destination</label>
         <input type="text" name="pod">
         <h4></h4>
-        <table border="5px">
+        <table border="5px" id='myTable'>
             <tr>
                 <td>Sr No</td>
                 <td>Brief description</td>
@@ -158,18 +158,15 @@ function getEmployeesByDesignation($designation)
                 <td>Deliver Note Or Dispatch convey note no OR Indent no</td>
                 <td>Remarks</td>
             </tr>
-            <div id="readform">
-                <tr>
-                    <td><input type="text" name="srno[]"></td>
-                    <td><input type="text" name="description[]"></td>
-                    <td><input type="text" name="num[]"></td>
-                    <td><input type="text" name="dispatchnotes[]"></td>
-                    <td><input type="text" name="remarks[]"></td>
-                </tr>
-            </div>
+            <tr>
+                <td><input type="text" name="srno[]"></td>
+                <td><input type="text" name="description[]"></td>
+                <td><input type="text" name="num[]"></td>
+                <td><input type="text" name="dispatchnotes[]"></td>
+                <td><input type="text" name="remarks[]"></td>
+            </tr>
         </table>
-        <button id="addfield" type="button">Add Field</button>
-        <h4></h4>
+        <button id="addRowBtn" type="button">Add Field</button>
         <label for="fors">Forwarded to</label>
         <select name="fors">
             <?php
@@ -180,11 +177,33 @@ function getEmployeesByDesignation($designation)
             ?>
         </select>
         <br>
-        <!-- <label for="coln">Collector Name</label>
-        <input type="text" name="coln"> -->
         <br>
         <button type="submit">Submit</button>
     </form>
+    <!-- <script>
+    document.getElementById("addRowBtn").addEventListener("click", function() {
+        var table = document.getElementById("myTable");
+        var row = table.insertRow();
+        var cells = [];
+
+        for (var i = 0; i < 5; i++) {
+            cells[i] = row.insertCell(i);
+            cells[i].innerHTML = `<input type="text" name="srno[]">`;
+        }
+
+        var deleteButtonCell = row.insertCell(5);
+        deleteButtonCell.innerHTML = `<button class="removeRowBtn" type="button">Remove</button>`;
+    });
+
+    // Event delegation to handle remove button clicks
+    document.addEventListener("click", function(event) {
+        if (event.target.classList.contains("removeRowBtn")) {
+            var row = event.target.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+        }
+    });
+</script> -->
+
 </body>
 
 </html>
