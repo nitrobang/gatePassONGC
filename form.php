@@ -23,10 +23,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["logout"])) {
 }
 
 $conn = $connection;
-if(isset($_SESSION["cpf_no"])){
+if (isset($_SESSION["cpf_no"])) {
     $cpf_no = $_SESSION["cpf_no"];
 }
-//get the designation of the user
+// Get the designation of the user
 $query = "SELECT * FROM employee WHERE cpfno = '$cpf_no'";
 $result = mysqli_query($connection, $query);
 if (!$result || mysqli_num_rows($result) == 0) {
@@ -47,8 +47,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $collectorName = mysqli_real_escape_string($conn, $_POST["coln"]);
 
     // Insert data into the 'order_no' table
-    $insertOrderNoQuery = "INSERT INTO order_no (order_dest, issue_desc, placeoi, issueto, securityn, collectorid, returnable) 
-                           VALUES ('$placeOfDestination', '$issueDesc', '$placeOfIssue', '$issueTo', '', '$collectorName', $returnable)";
+    $insertOrderNoQuery = "INSERT INTO order_no (order_dest, issue_desc, placeoi, issueto, securityn, collectorid, returnable, forwarded_to) 
+                           VALUES ('$placeOfDestination', '$issueDesc', '$placeOfIssue', '$issueTo', '', '$collectorName', $returnable, '$forwardTo')";
 
     if (mysqli_query($conn, $insertOrderNoQuery)) {
         $orderId = mysqli_insert_id($conn); // Get the auto-generated order ID
@@ -78,19 +78,40 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Close the database connection
     mysqli_close($conn);
 }
+
+// Function to get employee names and CPF numbers based on designation
+function getEmployeesByDesignation($designation)
+{
+    global $connection;
+    $query = "SELECT empname, cpfno FROM employee WHERE designation = '$designation'";
+    $result = mysqli_query($connection, $query);
+    $employees = array();
+    if ($result && mysqli_num_rows($result) > 0) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            $employee = array(
+                'empname' => $row['empname'],
+                'cpfno' => $row['cpfno']
+            );
+            $employees[] = $employee;
+        }
+    }
+    return $employees;
+}
 ?>
 
 <html>
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>New Order</title>
-        <meta name="description" content="">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="css/styles.css">
-        <script type="text/javascript" src="form.js"></script>
-    </head>
-    <body>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>New Order</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="css/styles.css">
+    <script type="text/javascript" src="form.js"></script>
+</head>
+
+<body>
     <a href="skdash.php">Go Back</a>
     <?php if ($designation == "COLLECTOR") : ?>
             <a href="collector-page.php">Collector Link</a>
@@ -108,12 +129,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
     <table>
         <tr>
-        <td><img src="assets/images.png"></td>
-        <td><h1>Oil and Natural Gas Corporation</h1>
-        <h3>MUMBAI REGION- REGIONAL OFFICE- INFOCOM</h3></td>
+            <td><img src="assets/images.png"></td>
+            <td>
+                <h1>Oil and Natural Gas Corporation</h1>
+                <h3>MUMBAI REGION- REGIONAL OFFICE- INFOCOM</h3>
+            </td>
         </tr>
     </table>
-       <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST">
+    <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST">
         <label for="return">Returnable</label>
         <input type="radio" name="return" value="1">
         <label for="nreturn">Non Returnable</label>
@@ -127,37 +150,44 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <label for="pod">Place of Destination</label>
         <input type="text" name="pod">
         <h4></h4>
-       <table border="5px">
-        <tr>
-            <td>Sr No</td>
-            <td>Brief description</td>
-            <td>No of Packages</td>
-            <td>Deliver Note Or Dispatch convey note no OR Indent no</td>
-            <td>Remarks</td>
-        </tr>
-        <div id="readform">
-        <tr>
-            <td><input type="text" name="srno[]"></td>
-            <td><input type="text" name="description[]"></td>
-            <td><input type="text"name="num[]"></td>
-            <td><input type="text" name="dispatchnotes[]"></td>
-            <td><input type="text" name="remarks[]"></td>
-        </tr>
-        <div id="writeform"></div>
-    </div>
-       </table> 
-       <button type="button"  id="addrow" onclick="addrow()">Add row</button><br>
-       <label for="fors">Forward To</label>
-       <select name="fors">
-        <option>default</option> -->
-       </select><br>
-       <label for="coln">Collector Name</label>
-       <select name="coln">
-        <option>defualt</option>
-       </select><br>    
-        <input type="submit" value="Place Order">
-       </form>
-        
-        
-    </body>
+        <table border="5px">
+            <tr>
+                <td>Sr No</td>
+                <td>Brief description</td>
+                <td>No of Packages</td>
+                <td>Deliver Note Or Dispatch convey note no OR Indent no</td>
+                <td>Remarks</td>
+            </tr>
+            <div id="readform">
+                <tr>
+                    <td><input type="text" name="srno[]"></td>
+                    <td><input type="text" name="description[]"></td>
+                    <td><input type="text" name="num[]"></td>
+                    <td><input type="text" name="dispatchnotes[]"></td>
+                    <td><input type="text" name="remarks[]"></td>
+                </tr>
+            </div>
+        </table>
+        <button id="addfield" type="button">Add Field</button>
+        <h4></h4>
+        <label for="fors">Forwarded to</label>
+        <select name="fors">
+            <?php
+            $employees = getEmployeesByDesignation("COLLECTOR");
+            foreach ($employees as $employee) {
+                echo "<option value='" . $employee['cpfno'] . "'>" . $employee['empname'] . " - " . $employee['cpfno'] . "</option>";
+            }
+            ?>
+        </select>
+        <br>
+        <!-- <label for="coln">Collector Name</label>
+        <input type="text" name="coln"> -->
+        <br>
+        <button type="submit">Submit</button>
+    </form>
+</body>
+
 </html>
+
+
+

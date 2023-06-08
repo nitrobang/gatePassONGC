@@ -10,4 +10,3 @@ CREATE TABLE orders (
 ALTER TABLE orders
 ADD CONSTRAINT fk_order_no
 FOREIGN KEY (orderno) REFERENCES order_no(orderno);
-

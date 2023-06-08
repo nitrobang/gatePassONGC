@@ -17,3 +17,7 @@ alter table order_no modify column collectorid varchar(20);
 
 alter table order_no modify column security_approval tinyint(1) signed DEFAULT 0 NOT NULL;
 alter table order_no modify column coll_approval tinyint(1) signed DEFAULT 0 NOT NULL;
+
+alter table order_no add column forwarded_to varchar(100);
+alter table orders add column moc varchar(100) NOT NULL;
+alter table orders add column vehno int(10);

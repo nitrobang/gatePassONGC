@@ -1,66 +1,9 @@
-<<<<<<< HEAD
-@import url('https://fonts.googleapis.com/css?family=Open+Sans:300,400,500,600,700,800,300i,400i,500i,600i,700i,800i&display=swap');
-
-@font-face {
-    font-family: 'FontAwesome';
-    src: url('./fonts/fontawesome-webfont.eot-v-4.7.0');
-    src: url('./fonts/fontawesome-webfont.eot-#iefix&v-4.7.0') format('embedded-opentype'), url('./fonts/fontawesome-webfont.woff2-v-4.7.0') format('woff2'), url('./fonts/fontawesome-webfont.woff-v-4.7.0') format('woff'), url('./fonts/fontawesome-webfont.ttf-v-4.7.0') format('truetype'), url('./fonts/fontawesome-webfont.svg-v-4.7.0#fontawesomeregular') format('svg');
-    font-weight: normal;
-    font-style: normal;
-}
-
-body {
-    background-color: transparent;
-    color: #000;
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 14px;
-    -moz-osx-font-smoothing: grayscale;
-    -webkit-font-smoothing: antialiased;
-    font-weight: var(--font-weight-normal, 400);
-    line-height: 1.5;
-    margin: 0 auto;
-    -ms-overflow-style: scrollbar;
-    text-align: inherit;
-    background: url("/gatePassONGC/assets/body-bg.jpg") no-repeat fixed center top / cover transparent;
-    height: 100%;
-    width: 100%;
-    overflow-x: hidden;
-    background-image: url("/gatePassONGC/assets/body-bg.jpg");
-    background-position-x: center;
-    background-position-y: top;
-    background-size: cover;
-    background-attachment: fixed;
-    background-origin: initial;
-    background-clip: initial;
-}
-
-div.container {
-    position: relative;
-    width: 100%;
-    z-index: -1;
-
-}
-
-div.lbox {
-    position: absolute;
-    padding: auto;
-    width: 482px;
-    height: 600px;
-    left: 110px;
-    top: 160px;
-    background: #FFFFFF;
-    border-radius: 10px;
-}
-
-div.lmod {
-=======
 body {
     font-family: Arial, sans-serif;
 }
 
 .container {
     max-width: 300px;
->>>>>>> 698d8e924226e7d9bff7c2d2d3dfccc1fb7ea3ef
     margin: 0 auto;
     padding: 20px;
     border: 1px solid #ccc;
@@ -91,57 +34,6 @@ input[type="email"] {
     margin-top: 10px;
 }
 
-<<<<<<< HEAD
-.logo {
-    left: 5px;
-    top: 30px;
-    position: absolute;
-}
-
-.compname {
-    position: absolute;
-    width: 1200px;
-    height: 162px;
-    top: 30px;
-    left: 195px;
-    font-family: 'Inter';
-    font-style: normal;
-    font-weight: 400;
-    font-size: 35px;
-    line-height: 40px;
-    text-align: left;
-    display: flex;
-    flex-direction: column;
-    color: #FFFFFF;
-}
-
-.button1 {
-  gap: 10px;
-  top: 77px;
-  left: 1263px;
-  width: 177px;
-  height: 42px;
-  display: flex;
-  font-family: Arial, Helvetica, sans-serif;
-  padding: 8px 24px;
-  position: absolute;
-  align-items: flex-start;
-  flex-shrink: 0;
-}
-.button2{
-gap: 10px;
-  top: 139px;
-  left: 1268px;
-  width: 177px;
-  height: 42px;
-  display: flex;
-  padding: 8px 24px;
-  position: absolute;
-  font-family: Arial, Helvetica, sans-serif;
-  align-items: flex-start;
-  flex-shrink: 0;
-}
-=======
 table {
     width: 100%;
     border-collapse: collapse;
@@ -161,4 +53,3 @@ th {
 tr:hover {
     background-color: #f5f5f5;
 }
->>>>>>> 698d8e924226e7d9bff7c2d2d3dfccc1fb7ea3ef

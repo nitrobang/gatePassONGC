@@ -1,94 +1,121 @@
 <?php
 session_start();
-
-// Include the database connection file
 require_once "db_connection.php";
 
-// SQL query to fetch fields from a table
-$sql = "SELECT descrip, nop, deliverynote, remark FROM orders WHERE orderno = (SELECT MAX(orderno) FROM order_no)";
+// Check if the orderno is set in the session
+if (isset($_SESSION['orderno'])) {
+    $orderno = $_SESSION['orderno'];
 
-$result = $connection->query($sql);
-
-if ($result->num_rows > 0) {
-    echo "<style>
-        table {
-            border-collapse: collapse;
-            width: 100%;
-        }
-        
-        th, td {
-            text-align: Center;
-            padding: 8px;
-            border: 1px solid black; /* Add black border */
-        }
-        
-        th {
-            background-color: #f2f2f2;
-        }
-        
-        tr:nth-child(even) {
-            text-align: Center;
-            background-color: #f2f2f2;
-        }
-    </style>";
-
-    echo "<table>";
-    echo "<tr><th>Brief description</th><th>No of Packages</th><th>Delivery Note Or Dispatch Convey Note No OR Indent No</th><th>Remarks</th></tr>";
-
-    // Output data of each row
-    while ($row = $result->fetch_assoc()) {
-        echo "<tr>";
-        echo "<td>" . $row["descrip"] . "</td>";
-        echo "<td>" . $row["nop"] . "</td>";
-        echo "<td>" . $row["deliverynote"] . "</td>";
-        echo "<td>" . $row["remark"] . "</td>";
-        echo "</tr>";
+    // Check if the user is not logged in
+    if (!isset($_SESSION["username"])) {
+        header("Location: login.php");
+        exit();
     }
 
-    echo "</table>";
+    // Logout handling
+    if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["logout"])) {
+        // Destroy the session and redirect to the login page
+        session_destroy();
+        header("Location: login.php");
+        exit();
+    }
 
-    // Add form to input "Mode of Collection" and "Vehicle Number"
-    echo '<form method="POST" action="">
-            <label for="mode_of_collection">Mode of Collection:</label>
-            <input type="text" id="mode_of_collection" name="mode_of_collection" required><br><br>
-            
-            <label for="vehicle_number">Vehicle Number:</label>
-            <input type="text" id="vehicle_number" name="vehicle_number" required><br><br>
-            
-            <input type="submit" name="submit" value="Submit and Approve">
-          </form>';
+    // Retrieve values from the orders table
+    $query = "SELECT descrip, nop, deliverynote, remark FROM orders WHERE orderno = $orderno";
+    $result = mysqli_query($connection, $query);
 
+    // Retrieve moc and vehno values from the order_no table if they exist
+    $moc = '';
+    $vehno = '';
+    $fetchQuery = "SELECT moc, vehno FROM order_no WHERE orderno = $orderno";
+    $fetchResult = mysqli_query($connection, $fetchQuery);
+    if (mysqli_num_rows($fetchResult) > 0) {
+        $row = mysqli_fetch_assoc($fetchResult);
+        $moc = $row['moc'];
+        $vehno = $row['vehno'];
+    }
+
+    // Handle form submission to insert moc and vehno into the order_no table
+    if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["submit"])) {
+        $moc = $_POST["moc"];
+        $vehno = $_POST["vehno"];
+
+        // Update the order_no table with moc and vehno values
+        $updateQuery = "UPDATE order_no SET moc = '$moc', vehno = '$vehno', coll_approval = 1 WHERE orderno = $orderno";
+        $updateResult = mysqli_query($connection, $updateQuery);
+
+        if ($updateResult) {
+            // Redirect to the dashboard or a success page
+            header("Location: skdash.php");
+            exit();
+        } else {
+            // Handle the error, display a message, or redirect to an error page
+            echo "Error: " . mysqli_error($connection);
+        }
+    }
+
+    // Handle form submission to deny the order
+    if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["deny"])) {
+        // Update the order_no table with coll_approval = -1 to indicate denial
+        $updateQuery = "UPDATE order_no SET coll_approval = -1 WHERE orderno = $orderno";
+        $updateResult = mysqli_query($connection, $updateQuery);
+
+        if ($updateResult) {
+            // Redirect to the dashboard or a success page
+            header("Location: skdash.php");
+            exit();
+        } else {
+            // Handle the error, display a message, or redirect to an error page
+            echo "Error: " . mysqli_error($connection);
+        }
+    }
+?>
+
+<!-- HTML Section -->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Order Details</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
+    <button type="submit" name="logout">Logout</button>
+  </form>
+  <a href="skdash.php">Go Back</a>
+  <table>
+    <tr>
+      <th>Description</th>
+      <th>NOP</th>
+      <th>Delivery Note</th>
+      <th>Remark</th>
+    </tr>
+    <?php while ($row = mysqli_fetch_assoc($result)) { ?>
+      <tr>
+        <td><?php echo $row['descrip']; ?></td>
+        <td><?php echo $row['nop']; ?></td>
+        <td><?php echo $row['deliverynote']; ?></td>
+        <td><?php echo $row['remark']; ?></td>
+      </tr>
+    <?php } ?>
+  </table>
+
+  <!-- Display the input fields for moc and vehno -->
+  <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
+    <input type="hidden" name="orderno" value="<?php echo $orderno; ?>">
+    <label for="moc">MOC:</label>
+    <input type="text" name="moc" value="<?php echo $moc; ?>">
+    <label for="vehno">Vehno:</label>
+    <input type="text" name="vehno" value="<?php echo $vehno; ?>">
+    <button type="submit" name="submit">Submit and Approve</button>
+    <button type="submit" name="deny">Deny</button>
+  </form>
+
+</body>
+</html>
+
+<?php
 } else {
-    echo "No fields found in the table.";
+    echo 'No orderno set in the session.';
 }
-
-// Check if the form is submitted
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["submit"])) {
-    // Get the input values from the form
-    $mode_of_collection = $_POST["mode_of_collection"];
-    $vehicle_number = $_POST["vehicle_number"];
-
-    // Update the values in the orders table
-    $update_sql = "UPDATE orders 
-                   SET mode_of_collection = '$mode_of_collection', vehicle_number = '$vehicle_number' 
-                   WHERE orderno = (SELECT MAX(orderno) FROM order_no)";
-
-    if ($connection->query($update_sql) === TRUE) {
-        echo "Values updated successfully.";
-    } else {
-        echo "Error: " . $update_sql . "<br>" . $connection->error;
-    }
-
-    // Update coll_approval to 1 in the order_no table
-    $approve_sql = "UPDATE order_no SET coll_approval = 1 WHERE orderno = (SELECT MAX(orderno) FROM order_no)";
-
-    if ($connection->query($approve_sql) === TRUE) {
-        echo "Form approved successfully.";
-    } else {
-        echo "Error: " . $approve_sql . "<br>" . $connection->error;
-    }
-}
-
-// Close the connection
-$connection->close();
 ?>
