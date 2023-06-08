@@ -13,7 +13,10 @@ body {
 h2 {
     text-align: center;
 }
-
+.logo{
+    width: 150px;
+    height: 150px;
+}
 .form-group {
     margin-bottom: 15px;
 }

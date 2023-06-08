@@ -61,7 +61,7 @@ if (($designation == "security") && isset($_GET['orderno'])) {
     </form>
     <table>
         <tr>
-            <td><img src="assets\images.png"></td>
+            <td><img src="assets\images.png" class="logo"></td>
             <td>
                 <h1>Oil and Natural Gas Corporation</h1>
                 <h3>MUMBAI REGION- REGIONAL OFFICE- INFOCOM</h3>
