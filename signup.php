@@ -21,6 +21,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $errorMessage = "Username is required";
     } else {
         $username = test_input($_POST["username"]);
+    
+        // Check if the username already exists
+        $existingUserQuery = "SELECT * FROM `users` WHERE username = '$username'";
+        $existingUserResult = mysqli_query($connection, $existingUserQuery);
+        $existingUserCount = mysqli_num_rows($existingUserResult);
+    
+        if ($existingUserCount >= 1) {
+            $errorMessage = "Username already exists";
+        } else {
+            $username = test_input($_POST["username"]);
+        }
     }
 
     if (empty($_POST["cpf_no"])) {
