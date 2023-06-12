@@ -23,18 +23,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["logout"])) {
 }
 
 $conn = $connection;
-if (isset($_SESSION["cpf_no"])) {
-    $cpf_no = $_SESSION["cpf_no"];
-}
-// Get the designation of the user
-$query = "SELECT * FROM employee WHERE cpfno = '$cpf_no'";
-$result = mysqli_query($connection, $query);
-if (!$result || mysqli_num_rows($result) == 0) {
-    header("Location: form.php");
-    exit();
-}
-$user2 = mysqli_fetch_assoc($result);
-$designation = $user2["designation"];
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Escape user inputs to prevent SQL injection
@@ -44,29 +32,44 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $issueTo = mysqli_real_escape_string($conn, $_POST["issuet"]);
     $placeOfDestination = mysqli_real_escape_string($conn, $_POST["pod"]);
     $forwardTo = mysqli_real_escape_string($conn, $_POST["fors"]);
-    $collectorName = mysqli_real_escape_string($conn, $_POST["coln"]);
 
     // Insert data into the 'order_no' table
     $insertOrderNoQuery = "INSERT INTO order_no (order_dest, issue_desc, placeoi, issueto, securityn, collectorid, returnable, forwarded_to) 
-                           VALUES ('$placeOfDestination', '$issueDesc', '$placeOfIssue', '$issueTo', '', '$collectorName', $returnable, '$forwardTo')";
+                           VALUES ('$placeOfDestination', '$issueDesc', '$placeOfIssue', '$issueTo', '', '', $returnable, '$forwardTo')";
 
     if (mysqli_query($conn, $insertOrderNoQuery)) {
-        $orderId = mysqli_insert_id($conn); // Get the auto-generated order ID
+        $orderNo = mysqli_insert_id($conn); // Get the auto-generated order ID
 
-        // Insert data into the 'orders' table
-        $rowCount = count($_POST["srno"]);
-        for ($i = 0; $i < $rowCount; $i++) {
-            $srNo = mysqli_real_escape_string($conn, $_POST["srno"][$i]);
-            $description = mysqli_real_escape_string($conn, $_POST["description"][$i]);
-            $numOfPackages = mysqli_real_escape_string($conn, $_POST["num"][$i]);
-            $dispatchNotes = mysqli_real_escape_string($conn, $_POST["dispatchnotes"][$i]);
-            $remarks = mysqli_real_escape_string($conn, $_POST["remarks"][$i]);
+        //*****************/ Insert data into the 'orders' table ************************
 
-            $insertOrdersQuery = "INSERT INTO orders (descrip, nop, deliverynote, remark, orderno) 
-                                  VALUES ('$description', $numOfPackages, '$dispatchNotes', '$remarks', $orderId)";
-            mysqli_query($conn, $insertOrdersQuery);
-        }
-
+         // Retrieve the form data
+         $serialNumbers = $_POST['serial_number'];
+         $description = $_POST['description'];
+         $num = $_POST['num'];
+         $dispatchnotes = $_POST['dispatchnotes'];
+         $remarks = $_POST['remarks'];
+ 
+ 
+         // Create a PDO connection to the database
+         $conn2 = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
+         $conn2->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+ 
+         // Prepare the SQL statement for insertion
+         $stmt = $conn2->prepare("INSERT INTO orders (descrip, nop, deliverynote, remark, orderno) VALUES (:descrip, :nop, :deliverynote, :remark, :orderno)");
+ 
+         // Iterate over the rows and insert them into the database
+         for ($i = 0; $i < count($serialNumbers); $i++) {
+             $stmt->bindParam(':descrip', $description[$i]);
+             $stmt->bindParam(':nop', $num[$i]);
+             $stmt->bindParam(':deliverynote', $dispatchnotes[$i]);
+             $stmt->bindParam(':remark', $remarks[$i]);
+             $stmt->bindParam(':orderno', $orderNo);
+             
+             $stmt->execute();
+         }
+        
+        /****************************** Done **********************************/
+        
         // Redirect to a success page or display a success message
         header("Location: form.php");
         exit();
@@ -77,6 +80,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Close the database connection
     mysqli_close($conn);
+    $conn2 = null;
 }
 
 // Function to get employee names and CPF numbers based on designation
@@ -112,16 +116,10 @@ function getEmployeesByDesignation($designation)
 
 <body>
     <a href="skdash.php">Go Back</a>
-    <?php if ($designation == "COLLECTOR") : ?>
-            <a href="collector-page.php">Collector Link</a>
-    <?php endif; ?>
-    <?php if ($designation == "SECURITY") : ?>
-            <a href="security-page.php">Security Link</a>
-    <?php endif; ?>
 
     <div class="container">
         <h2>Welcome, <?php echo $_SESSION["username"]; ?>!</h2>
-        <p>This is your dashboard.</p>
+        <p>Fill the form below.</p>
         <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
             <button type="submit" name="logout">Logout</button>
         </form>
@@ -149,23 +147,27 @@ function getEmployeesByDesignation($designation)
         <label for="pod">Place of Destination</label>
         <input type="text" name="pod">
         <h4></h4>
-        <table border="5px" id='myTable'>
+        <table id="dynamic-table">
             <tr>
-                <td>Sr No</td>
-                <td>Brief description</td>
-                <td>No of Packages</td>
-                <td>Deliver Note Or Dispatch convey note no OR Indent no</td>
-                <td>Remarks</td>
+                <th>Sr No</th>
+                <th>Brief description</th>
+                <th>No of Packages</th>
+                <th>Deliver Note Or Dispatch convey note no OR Indent no</th>
+                <th>Remarks</th>
+                <th>Action</th>
             </tr>
             <tr>
-                <td><input type="text" name="srno[]"></td>
+                <td><input type="hidden" name="serial_number[]">1. </td>
                 <td><input type="text" name="description[]"></td>
                 <td><input type="text" name="num[]"></td>
                 <td><input type="text" name="dispatchnotes[]"></td>
                 <td><input type="text" name="remarks[]"></td>
+                <td> </td>
             </tr>
         </table>
-        <button id="addRowBtn" type="button">Add Field</button>
+        <br>
+        <button type="button" onclick="addRow()">Add Row</button>
+        <br><br>
         <label for="fors">Forwarded to</label>
         <select name="fors">
             <?php
@@ -177,7 +179,7 @@ function getEmployeesByDesignation($designation)
         </select>
         <br>
         <br>
-        <button type="submit">Submit</button>
+        <input type="submit" name="submit" value="Submit">
     </form>
 <script type="text/javascript" src="form.js"></script>
 </body>

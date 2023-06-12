@@ -1,21 +1,25 @@
-document.getElementById("addRowBtn").addEventListener("click", function() {
-        var table = document.getElementById("myTable");
-        var row = table.insertRow();
-        var cells = [];
+function addRow() {
+    var table = document.getElementById("dynamic-table");
+    var rowCount = table.rows.length;
 
-        for (var i = 0; i < 5; i++) {
-            cells[i] = row.insertCell(i);
-            cells[i].innerHTML = `<input type="text" name="srno[]">`;
-        }
+    var row = table.insertRow(-1);
+    var cell1 = row.insertCell(0);
+    var cell2 = row.insertCell(1);
+    var cell3 = row.insertCell(2);
+    var cell4 = row.insertCell(3);
+    var cell5 = row.insertCell(4);
+    var cell6 = row.insertCell(5);
+    cell1.innerHTML = "<input type='hidden' name='serial_number[]'>"+rowCount+". </input>";
+    cell2.innerHTML = "<input type='text' name='description[]'>";
+    cell3.innerHTML = "<input type='text' name='num[]'>";
+    cell4.innerHTML = "<input type='text' name='dispatchnotes[]'>";
+    cell5.innerHTML = "<input type='text' name='remarks[]'>";
+    if (table.rows.length > 2) {
+        cell6.innerHTML = "<button type='button' onclick='removeRow(this)'>Remove Row</button>";
+    }
+}
 
-        var deleteButtonCell = row.insertCell(5);
-        deleteButtonCell.innerHTML = `<button class="removeRowBtn" type="button">Remove</button>`;
-});
-
-// Event delegation to handle remove button clicks
-document.addEventListener("click", function(event) {
-        if (event.target.classList.contains("removeRowBtn")) {
-            var row = event.target.parentNode.parentNode;
-            row.parentNode.removeChild(row);
-        }
-});
+function removeRow(button) {
+    var row = button.parentNode.parentNode;
+    row.parentNode.removeChild(row);
+}
