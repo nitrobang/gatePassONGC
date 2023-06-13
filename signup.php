@@ -74,9 +74,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             if ($insertResult) {
                 $successMessage = "Signup successful! You can now <a href='login.php'>Login</a>.";
+                $u_id = mysqli_insert_id($connection);
+                // Insert the user_to_group into the database
+                $insertQuery = "INSERT INTO user_to_groups(id, group_id) values('$u_id' , 4)";
+                $insertResult = mysqli_query($connection, $insertQuery);
             } else {
                 $errorMessage = "Error creating user";
             }
+            
         }
     }
 }

@@ -4,7 +4,7 @@ CREATE TABLE orders (
   deliverynote VARCHAR(1000),
   remark VARCHAR(1000),
   orderno INT NOT NULL,
-  PRIMARY KEY (orderno)
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 ALTER TABLE orders
