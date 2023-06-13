@@ -23,3 +23,51 @@ function removeRow(button) {
     var row = button.parentNode.parentNode;
     row.parentNode.removeChild(row);
 }
+function findet(value) {
+    // Create an AJAX object
+    var xhttp = new XMLHttpRequest();
+  
+    // Define the callback function
+    xhttp.onreadystatechange = function() {
+      if (this.readyState === 4 && this.status === 200) {
+        // Parse the response as JSON
+        var response = JSON.parse(this.responseText);
+  
+        // Get the autocomplete list
+        var autocompleteList = document.querySelector('.autocomplete-list');
+  
+        // Clear the previous suggestions
+        autocompleteList.innerHTML = '';
+  
+        if (value === '') {
+          // If the input field is empty, hide the autocomplete list
+          autocompleteList.style.display = 'none';
+        } else {
+          // Display the matching username, email, and cpfno as clickable suggestions
+          response.forEach(function(user) {
+            var username = user.username;
+            var email = user.email;
+            var cpfno = user.cpfno;
+  
+            var suggestion = document.createElement('li');
+            suggestion.textContent = 'Forwarded to: ' + username + ' - ' + email;
+            suggestion.addEventListener('click', function() {
+              // Fill the input field with the cpfno of the selected suggestion
+              document.querySelector('input[name="fors"]').value = cpfno;
+            });
+  
+            autocompleteList.appendChild(suggestion);
+          });
+  
+          // Show the autocomplete list
+          autocompleteList.style.display = 'block';
+        }
+      }
+    };
+  
+    // Make a GET request to the PHP script
+    xhttp.open('GET', 'checkdetail.php?cpfno=' + value, true);
+    xhttp.send();
+}
+  
+  

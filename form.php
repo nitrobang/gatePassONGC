@@ -9,7 +9,7 @@ if (!isset($_SESSION["username"])) {
 }
 
 //check if right person(store keeper) is accessing the forms page
-if($_SESSION["designation"] != "store_keeper"){
+if ($_SESSION["designation"] != "store_keeper") {
     header("Location: skdash.php");
     exit();
 }
@@ -42,38 +42,38 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         //*****************/ Insert data into the 'orders' table ************************
 
-         // Retrieve the form data
-         $serialNumbers = $_POST['serial_number'];
-         $description = $_POST['description'];
-         $num = $_POST['num'];
-         $dispatchnotes = $_POST['dispatchnotes'];
-         $remarks = $_POST['remarks'];
- 
- 
-         // Create a PDO connection to the database
-         $conn2 = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
-         $conn2->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
- 
-         // Prepare the SQL statement for insertion
-         $stmt = $conn2->prepare("INSERT INTO orders (descrip, nop, deliverynote, remark, orderno) VALUES (:descrip, :nop, :deliverynote, :remark, :orderno)");
- 
-         // Iterate over the rows and insert them into the database
-         for ($i = 0; $i < count($serialNumbers); $i++) {
-             $stmt->bindParam(':descrip', $description[$i]);
-             $stmt->bindParam(':nop', $num[$i]);
-             $stmt->bindParam(':deliverynote', $dispatchnotes[$i]);
-             $stmt->bindParam(':remark', $remarks[$i]);
-             $stmt->bindParam(':orderno', $orderNo);
-             
-             $stmt->execute();
-         }
-        
+        // Retrieve the form data
+        $serialNumbers = $_POST['serial_number'];
+        $description = $_POST['description'];
+        $num = $_POST['num'];
+        $dispatchnotes = $_POST['dispatchnotes'];
+        $remarks = $_POST['remarks'];
+
+
+        // Create a PDO connection to the database
+        $conn2 = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
+        $conn2->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+        // Prepare the SQL statement for insertion
+        $stmt = $conn2->prepare("INSERT INTO orders (descrip, nop, deliverynote, remark, orderno) VALUES (:descrip, :nop, :deliverynote, :remark, :orderno)");
+
+        // Iterate over the rows and insert them into the database
+        for ($i = 0; $i < count($serialNumbers); $i++) {
+            $stmt->bindParam(':descrip', $description[$i]);
+            $stmt->bindParam(':nop', $num[$i]);
+            $stmt->bindParam(':deliverynote', $dispatchnotes[$i]);
+            $stmt->bindParam(':remark', $remarks[$i]);
+            $stmt->bindParam(':orderno', $orderNo);
+
+            $stmt->execute();
+        }
+
         /****************************** Done **********************************/
-        
+
         // Redirect to a success page or display a success message
         header("Location: form.php");
         exit();
-    } else {
+    } else{
         // Handle the case where the insertion failed
         echo "Error: " . mysqli_error($conn);
     }
@@ -168,23 +168,16 @@ function getEmployeesByDesignation($designation)
         <br>
         <button type="button" onclick="addRow()">Add Row</button>
         <br><br>
-        <label for="fors">Forwarded to</label>
-        <select name="fors">
-            <?php
-            $employees = getEmployeesByDesignation("collector");
-            foreach ($employees as $employee) {
-                echo "<option value='" . $employee['cpfno'] . "'>" . $employee['empname'] . " - " . $employee['cpfno'] . "</option>";
-            }
-            ?>
-        </select>
+        <div class="result">
+            <p>Forwarded To:</p>
+        </div>
+        <input type="text" name="fors" oninput="findet(this.value)">
+        <ul class="autocomplete-list"></ul>
         <br>
         <br>
         <input type="submit" name="submit" value="Submit">
     </form>
-<script type="text/javascript" src="form.js"></script>
+    <script type="text/javascript" src="form.js"></script>
 </body>
 
 </html>
-
-
-
