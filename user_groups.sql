@@ -1,5 +1,5 @@
 create table user_groups( 
-    id int primary key, 
+    group_id int primary key, 
     group_name varchar(255), 
     group_desc varchar(255)
 );

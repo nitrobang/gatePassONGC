@@ -73,7 +73,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Redirect to a success page or display a success message
         header("Location: form.php");
         exit();
-    } else {
+    } else{
         // Handle the case where the insertion failed
         echo "Error: " . mysqli_error($conn);
     }
@@ -171,8 +171,8 @@ function getEmployeesByDesignation($designation)
         <div class="result">
             <p>Forwarded To:</p>
         </div>
-        <input type="text" name="fors" onkeyup="findet(this.value)">
-        
+        <input type="text" name="fors" oninput="findet(this.value)">
+        <ul class="autocomplete-list"></ul>
         <br>
         <br>
         <input type="submit" name="submit" value="Submit">
