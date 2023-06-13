@@ -23,3 +23,41 @@ function removeRow(button) {
     var row = button.parentNode.parentNode;
     row.parentNode.removeChild(row);
 }
+function findet(value) {
+    // Create an AJAX object
+    var xhttp = new XMLHttpRequest();
+    
+    // Define the callback function
+    xhttp.onreadystatechange = function() {
+      if (this.readyState === 4 && this.status === 200) {
+        // Parse the response as JSON
+        var response = JSON.parse(this.responseText);
+        
+        // Get the result div
+        var resultDiv = document.querySelector('.result');
+        
+        // Clear the previous results
+        resultDiv.innerHTML = '';
+        
+        // Display the matching username and email ID
+        response.forEach(function(user) {
+          var username = user.username;
+          var email = user.email;
+          
+          var result = document.createElement('p');
+          result.textContent = 'Forwarded to : '+username + ' - ' + email;
+          resultDiv.appendChild(result);
+        });
+      }
+      if(!value){
+        var resultDiv = document.querySelector('.result');
+        var result = document.createElement('p');
+          result.textContent = 'Forwarded to : ';
+          resultDiv.appendChild(result);
+      }
+    };
+    
+    // Make a GET request to the PHP script
+    xhttp.open('GET', 'checkdetail.php?cpfno=' + value, true);
+    xhttp.send();
+  }
