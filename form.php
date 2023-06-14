@@ -168,14 +168,17 @@ function getEmployeesByDesignation($designation)
         <br>
         <button type="button" onclick="addRow()">Add Row</button>
         <br><br>
+        <div class="sugg">
         <div class="result">
             <p>Forwarded To:</p>
         </div>
         <input type="text" name="fors" oninput="findet(this.value)">
         <ul class="autocomplete-list"></ul>
+        <div class="clear"></div>
+        </div>
         <br>
         <br>
-        <input type="submit" name="submit" value="Submit">
+        <input type="submit" name="submit" id="submitButton" value="Submit" disabled>
     </form>
     <script type="text/javascript" src="form.js"></script>
 </body>
