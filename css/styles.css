@@ -1,15 +1,42 @@
 body {
-    font-family: Arial, sans-serif;
+    background-color: transparent;
+    color: #000;
+    font-family: "Open Sans", sans-serif !important;
+    font-size: 14px;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    font-weight: var(--font-weight-normal, 400);
+    line-height: 1.5;
+    margin: 0 auto;
+    -ms-overflow-style: scrollbar;
+    text-align: inherit;
+    position: relative;
+    height: 100%;
+    width: 100%;
+    overflow-x: hidden;
+
+    background-position-x: center;
+    background-position-y: top;
+    background-size: cover;
+    background-attachment: fixed;
+    background-origin: initial;
+    background-clip: initial;
 }
 
 .container {
-    max-width: 300px;
+    max-width: 100vh;
     margin: 0 auto;
     padding: 20px;
-    border: 1px solid #ccc;
     border-radius: 5px;
 }
-
+.btn-secondary{
+    position: absolute;
+    background-color: #717A84;
+}
+#lo{
+    top: 0px;
+    right: 0px;
+}
 h2 {
     text-align: center;
 }
@@ -52,7 +79,7 @@ clear{
 }
 
 .autocomplete-list  li{
-    background: #F2F3F4;
+    background: #EDCB96;
     padding: 4px;
     margin-bottom: 1px;
 }
@@ -60,7 +87,7 @@ clear{
 
 .autocomplete-list  li:hover{
     cursor: pointer;
-    background: #CACFD2;
+    background: #717A84;
 }
 
 .sugg input[type=text]{
@@ -73,22 +100,22 @@ clear{
     margin-top: 10px;
 }
 
-table {
+ table {
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 20px;
 }
 
-th, td {
+#dynamic-table th, td {
     padding: 8px;
     text-align: left;
     border-bottom: 1px solid #ddd;
 }
 
-th {
-    background-color: #f2f2f2;
+#dynamic-table th {
+    background-color: #98C1D9;
 }
 
-tr:hover {
+#dynamic-table tr:hover {
     background-color: #f5f5f5;
 }

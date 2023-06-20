@@ -47,6 +47,7 @@ if (($designation == "security") && isset($_GET['orderno'])) {
 
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -54,20 +55,25 @@ if (($designation == "security") && isset($_GET['orderno'])) {
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="css/styles.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
 </head>
+
 <body>
     <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
-        <button type="submit" name="logout">Logout</button>
+        <button type="submit" id="lo" class="btn btn-secondary" name="logout">Logout</button>
     </form>
-    <table>
-        <tr>
-            <td><img src="assets\images.png" class="logo"></td>
-            <td>
-                <h1>Oil and Natural Gas Corporation</h1>
-                <h3>MUMBAI REGION- REGIONAL OFFICE- INFOCOM</h3>
-            </td>
-        </tr>
-    </table>
+    <div class="container">
+        <table>
+            <tr>
+                <td><img src="assets/images.png" class="logo"></td>
+                <td>
+                    <h1>Oil and Natural Gas Corporation</h1>
+                    <h3>MUMBAI REGION- REGIONAL OFFICE- INFOCOM</h3>
+                </td>
+            </tr>
+        </table>
+        
+    </div>
     <h3>Dashboard</h3>
     <?php if ($designation == "store_keeper") : ?>
         <a href="form.php">New Order</a>
@@ -75,9 +81,9 @@ if (($designation == "security") && isset($_GET['orderno'])) {
 
     <?php
     // Retrieve data from the "order_no" table
-    if ($designation == "collector" ) {
+    if ($designation == "collector") {
         $query = "SELECT orderno, order_dest, issue_desc, placeoi, issueto, returnable, coll_approval, security_approval FROM order_no WHERE coll_approval = 0 AND security_approval != -1 AND forwarded_to = '{$cpf_no}'";
-    } else if ($designation == "security" ) {
+    } else if ($designation == "security") {
         $query = "SELECT orderno, order_dest, issue_desc, placeoi, issueto, returnable, coll_approval, security_approval FROM order_no WHERE security_approval = 0 AND coll_approval != -1";
     } else {
         $query = "SELECT orderno, order_dest, issue_desc, placeoi, issueto, returnable, coll_approval, security_approval FROM order_no";
@@ -87,7 +93,7 @@ if (($designation == "security") && isset($_GET['orderno'])) {
     // Check if the query was successful
     if ($result && mysqli_num_rows($result) > 0) {
         // Display the data in a table
-        echo "<table>";
+        echo "<table id='dynamic-table'>";
         echo "<tr><th>Order No</th><th>Order Destination</th><th>Issue Description</th><th>Place of Issue</th><th>Issue To</th><th>Returnable</th>";
         if ($designation == "collector" || $designation == "security")
             echo "<th>Action<th></tr>";
@@ -123,4 +129,5 @@ if (($designation == "security") && isset($_GET['orderno'])) {
     mysqli_close($connection);
     ?>
 </body>
+
 </html>
