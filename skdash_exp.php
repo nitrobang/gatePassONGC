@@ -21,7 +21,7 @@ if (isset($_SESSION["cpf_no"])) {
     $cpf_no = $_SESSION["cpf_no"];
 }
 
-//get the designation of the user
+// Get the designation of the user
 $query = "SELECT * FROM employee WHERE cpfno = '$cpf_no'";
 $result = mysqli_query($connection, $query);
 if (!$result || mysqli_num_rows($result) == 0) {
@@ -38,22 +38,16 @@ if (($designation == "collector") && isset($_GET['orderno'])) {
     exit();
 }
 
-if (($designation == "security") && isset($_GET['orderno'])) {
-    $_SESSION['orderno'] = $_GET['orderno'];
-    header("Location: security-page.php");
-    exit();
-}
-
 // Set the session variable 'isEditable' and redirect to form.php for "New Order" button
 if ($designation == "store_keeper" && isset($_POST['new_order'])) {
-    $_SESSION['isEditable'] = 0;
+    $_SESSION['isEditable'] = false;
     header("Location: form.php");
     exit();
 }
 
 // Set the session variable 'isEditable' and redirect to form.php for "Edit" button
 if ($designation == "store_keeper" && isset($_POST['edit_order'])) {
-    $_SESSION['isEditable'] =1;
+    $_SESSION['isEditable'] = true;
     header("Location: form.php");
     exit();
 }
@@ -61,7 +55,6 @@ if ($designation == "store_keeper" && isset($_POST['edit_order'])) {
 
 <!DOCTYPE html>
 <html>
-
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -69,32 +62,27 @@ if ($designation == "store_keeper" && isset($_POST['edit_order'])) {
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="css/styles.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
 </head>
-
 <body>
     <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
-        <button type="submit" id="lo" class="btn btn-secondary" name="logout">Logout</button>
+        <button type="submit" name="logout">Logout</button>
     </form>
-    <div class="container">
-        <table>
-            <tr>
-                <td><img src="assets/images.png" class="logo"></td>
-                <td>
-                    <h1>Oil and Natural Gas Corporation</h1>
-                    <h3>MUMBAI REGION- REGIONAL OFFICE- INFOCOM</h3>
-                </td>
-            </tr>
-        </table>
-        
-    </div>
+    <table>
+        <tr>
+            <td><img src="assets\images.png" class="logo"></td>
+            <td>
+                <h1>Oil and Natural Gas Corporation</h1>
+                <h3>MUMBAI REGION- REGIONAL OFFICE- INFOCOM</h3>
+            </td>
+        </tr>
+    </table>
     <h3>Dashboard</h3>
     <?php if ($designation == "store_keeper") : ?>
         <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
             <button type="submit" name="new_order">New Order</button>
         </form>
     <?php endif; ?>
-        <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>"> 
+
     <?php
     // Retrieve data from the "order_no" table
     if ($designation == "collector") {
@@ -109,7 +97,7 @@ if ($designation == "store_keeper" && isset($_POST['edit_order'])) {
     // Check if the query was successful
     if ($result && mysqli_num_rows($result) > 0) {
         // Display the data in a table
-        echo "<table id='dynamic-table'>";
+        echo "<table>";
         echo "<tr><th>Order No</th><th>Order Destination</th><th>Issue Description</th><th>Place of Issue</th><th>Issue To</th><th>Returnable</th>";
         if ($designation == "collector" || $designation == "security")
             echo "<th>Action<th></tr>";
@@ -128,7 +116,7 @@ if ($designation == "store_keeper" && isset($_POST['edit_order'])) {
                 echo "<td><a href='skdash.php?orderno=" . $row['orderno'] . "'>Security Link</a></td>";
             if ($designation == "store_keeper") {
                 if ($row['coll_approval'] == -1 || $row['security_approval'] == -1)
-                    echo '<td><button name="edit_order">Edit</button></td>';
+                    echo '<td><button type="submit" name="edit_order">Edit</button></td>';
                 else if ($row['coll_approval'] == 1 && $row['security_approval'] == 1)
                     echo '<td>Approved</td>';
                 else if ($row['coll_approval'] == 0 || $row['security_approval'] == 0)
@@ -144,7 +132,5 @@ if ($designation == "store_keeper" && isset($_POST['edit_order'])) {
     // Close the database connection
     mysqli_close($connection);
     ?>
-    </form>
 </body>
-
 </html>
