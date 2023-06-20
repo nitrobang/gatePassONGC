@@ -46,15 +46,16 @@ if (($designation == "security") && isset($_GET['orderno'])) {
 
 // Set the session variable 'isEditable' and redirect to form.php for "New Order" button
 if ($designation == "store_keeper" && isset($_POST['new_order'])) {
-    $_SESSION['isEditable'] = 0;
-    header("Location: form.php");
+    $_SESSION['isedit'] = 0;
+    header("Location: tempform.php");
     exit();
 }
 
 // Set the session variable 'isEditable' and redirect to form.php for "Edit" button
 if ($designation == "store_keeper" && isset($_POST['edit_order'])) {
-    $_SESSION['isEditable'] =1;
-    header("Location: form.php");
+    $_SESSION['isedit'] =1;
+    $_SESSION['orderno'] = $_POST['orderno'];
+    header("Location: tempform.php");
     exit();
 }
 ?>
@@ -127,9 +128,10 @@ if ($designation == "store_keeper" && isset($_POST['edit_order'])) {
             if ($designation == "security")
                 echo "<td><a href='skdash.php?orderno=" . $row['orderno'] . "'>Security Link</a></td>";
             if ($designation == "store_keeper") {
-                if ($row['coll_approval'] == -1 || $row['security_approval'] == -1)
-                    echo '<td><button name="edit_order">Edit</button></td>';
-                else if ($row['coll_approval'] == 1 && $row['security_approval'] == 1)
+                if ($row['coll_approval'] == -1 || $row['security_approval'] == -1) {
+                    echo '<td><input type="hidden" name="orderno" value="' . $row['orderno'] . '">';
+                    echo '<button type="submit" name="edit_order">Edit</button></td>';
+                } else if ($row['coll_approval'] == 1 && $row['security_approval'] == 1)
                     echo '<td>Approved</td>';
                 else if ($row['coll_approval'] == 0 || $row['security_approval'] == 0)
                     echo '<td>Pending</td>';

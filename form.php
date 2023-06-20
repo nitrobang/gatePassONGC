@@ -2,7 +2,7 @@
 session_start();
 require_once "db_connection.php";
 
-echo "hello" . $_SESSION['isEditable'];
+// echo "hello" . $_SESSION['isEditable'];
 
 // Check if the user is not logged in
 if (!isset($_SESSION["username"])) {
