@@ -9,7 +9,7 @@ if (!isset($_SESSION["username"])) {
 }
 
 //check if right person(store keeper) is accessing the forms page
-if($_SESSION["designation"] != "store_keeper"){
+if ($_SESSION["designation"] != "store_keeper") {
     header("Location: skdash.php");
     exit();
 }
@@ -42,34 +42,34 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         //*****************/ Insert data into the 'orders' table ************************
 
-         // Retrieve the form data
-         $serialNumbers = $_POST['serial_number'];
-         $description = $_POST['description'];
-         $num = $_POST['num'];
-         $dispatchnotes = $_POST['dispatchnotes'];
-         $remarks = $_POST['remarks'];
- 
- 
-         // Create a PDO connection to the database
-         $conn2 = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
-         $conn2->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
- 
-         // Prepare the SQL statement for insertion
-         $stmt = $conn2->prepare("INSERT INTO orders (descrip, nop, deliverynote, remark, orderno) VALUES (:descrip, :nop, :deliverynote, :remark, :orderno)");
- 
-         // Iterate over the rows and insert them into the database
-         for ($i = 0; $i < count($serialNumbers); $i++) {
-             $stmt->bindParam(':descrip', $description[$i]);
-             $stmt->bindParam(':nop', $num[$i]);
-             $stmt->bindParam(':deliverynote', $dispatchnotes[$i]);
-             $stmt->bindParam(':remark', $remarks[$i]);
-             $stmt->bindParam(':orderno', $orderNo);
-             
-             $stmt->execute();
-         }
-        
+        // Retrieve the form data
+        $serialNumbers = $_POST['serial_number'];
+        $description = $_POST['description'];
+        $num = $_POST['num'];
+        $dispatchnotes = $_POST['dispatchnotes'];
+        $remarks = $_POST['remarks'];
+
+
+        // Create a PDO connection to the database
+        $conn2 = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
+        $conn2->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+        // Prepare the SQL statement for insertion
+        $stmt = $conn2->prepare("INSERT INTO orders (descrip, nop, deliverynote, remark, orderno) VALUES (:descrip, :nop, :deliverynote, :remark, :orderno)");
+
+        // Iterate over the rows and insert them into the database
+        for ($i = 0; $i < count($serialNumbers); $i++) {
+            $stmt->bindParam(':descrip', $description[$i]);
+            $stmt->bindParam(':nop', $num[$i]);
+            $stmt->bindParam(':deliverynote', $dispatchnotes[$i]);
+            $stmt->bindParam(':remark', $remarks[$i]);
+            $stmt->bindParam(':orderno', $orderNo);
+
+            $stmt->execute();
+        }
+
         /****************************** Done **********************************/
-        
+
         // Redirect to a success page or display a success message
         header("Location: form.php");
         exit();
@@ -112,41 +112,62 @@ function getEmployeesByDesignation($designation)
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="css/styles.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
 </head>
 
 <body>
-    <a href="skdash.php">Go Back</a>
+    <button class="btn btn-secondary" id="gb" onclick="window.location.href = 'skdash.php'">Go Back</button>
+
+    <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
+        <button type="submit" id="lo" class="btn btn-secondary" name="logout">Logout</button>
+    </form>
+
 
     <div class="container">
-        <h2>Welcome, <?php echo $_SESSION["username"]; ?>!</h2>
-        <p>Fill the form below.</p>
-        <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
-            <button type="submit" name="logout">Logout</button>
-        </form>
+        <table>
+            <tr>
+                <td><img src="assets/images.png" class="logo"></td>
+                <td>
+                    <h1>Oil and Natural Gas Corporation</h1>
+                    <h3>MUMBAI REGION- REGIONAL OFFICE- INFOCOM</h3>
+                </td>
+            </tr>
+        </table>
+        
     </div>
-    <table>
-        <tr>
-            <td><img src="assets/images.png" class="logo"></td>
-            <td>
-                <h1>Oil and Natural Gas Corporation</h1>
-                <h3>MUMBAI REGION- REGIONAL OFFICE- INFOCOM</h3>
-            </td>
-        </tr>
-    </table>
+
+    <h2 class="wlc">Welcome, <?php echo $_SESSION["username"]; ?>!</h2>
     <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST">
-        <label for="return">Returnable</label>
-        <input type="radio" name="return" value="1">
-        <label for="nreturn">Non Returnable</label>
-        <input type="radio" name="return" value="0"><br>
-        <label for="issued">Issue description</label>
-        <input type="text" name="issued"><br>
-        <label for="placei">Place of Issue</label>
-        <input type="text" name="placei"><br>
-        <label for="issuet">Issue To</label>
-        <input type="text" name="issuet"><br>
-        <label for="pod">Place of Destination</label>
-        <input type="text" name="pod">
-        <h4></h4>
+        <div class="pos">
+            <label for="return">Returnable</label>
+            <input type="radio" class="form-group" name="return"  value="1" required>
+            <label for="nreturn">Non Returnable</label>
+            <input type="radio" class="form-group" name="return" value="0" ><br>
+            <table class="postt">
+                <tr>
+                    <td><label for="issued">Issuing department/Office</label>
+                        <input type="text" class="form-group" name="issued" required><br>
+                    </td>
+                    <td><label for="issuet">Issue To</label>
+                        <input type="text" class="form-group" name="issuet" required><br>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label for="placei">Place of Issue</label>
+                        <input type="text" class="form-group" name="placei" required><br>
+                    </td>
+                    <td><label for="pod">Place of Destination</label>
+                        <input type="text" class="form-group" name="pod" required>
+                    </td>
+                </tr>
+            </table>
+
+
+
+
+
+            <h4></h4>
+        </div>
         <table id="dynamic-table">
             <tr>
                 <th>Sr No</th>
@@ -158,33 +179,29 @@ function getEmployeesByDesignation($designation)
             </tr>
             <tr>
                 <td><input type="hidden" name="serial_number[]">1. </td>
-                <td><input type="text" name="description[]"></td>
-                <td><input type="text" name="num[]"></td>
-                <td><input type="text" name="dispatchnotes[]"></td>
-                <td><input type="text" name="remarks[]"></td>
+                <td><input type="text" name="description[]" required></td>
+                <td><input type="text" name="num[]"required></td>
+                <td><input type="text" name="dispatchnotes[]"required></td>
+                <td><input type="text" name="remarks[]"required></td>
                 <td> </td>
             </tr>
         </table>
         <br>
         <button type="button" onclick="addRow()">Add Row</button>
         <br><br>
-        <label for="fors">Forwarded to</label>
-        <select name="fors">
-            <?php
-            $employees = getEmployeesByDesignation("collector");
-            foreach ($employees as $employee) {
-                echo "<option value='" . $employee['cpfno'] . "'>" . $employee['empname'] . " - " . $employee['cpfno'] . "</option>";
-            }
-            ?>
-        </select>
+        <div class="sugg">
+            <div class="result">
+                <p>Forwarded To:</p>
+            </div>
+            <input type="text" name="fors" oninput="findet(this.value)">
+            <ul class="autocomplete-list"></ul>
+            <div class="clear"></div>
+        </div>
         <br>
         <br>
-        <input type="submit" name="submit" value="Submit">
+        <input type="submit" name="submit" id="submitButton" value="Submit" disabled>
     </form>
-<script type="text/javascript" src="form.js"></script>
+    <script type="text/javascript" src="form.js"></script>
 </body>
 
 </html>
-
-
-
