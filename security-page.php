@@ -24,7 +24,6 @@ FROM orders o
 JOIN order_no n ON o.orderno = n.orderno
 WHERE o.orderno = " . $_SESSION['orderno'];
 
-
 $result = $connection->query($sql);
 
 if ($result->num_rows > 0) {
@@ -35,9 +34,9 @@ if ($result->num_rows > 0) {
         }
         
         th, td {
-            text-align: Center;
+            text-align: center;
             padding: 8px;
-            border: 1px solid black; /* Add black border */
+            border: 1px solid black;
         }
         
         th {
@@ -45,7 +44,7 @@ if ($result->num_rows > 0) {
         }
         
         tr:nth-child(even) {
-            text-align: Center;
+            text-align: center;
             background-color: #f2f2f2;
         }
     </style>";
@@ -69,11 +68,11 @@ if ($result->num_rows > 0) {
 
     // Add form to input "Mode of Collection" and "Vehicle Number"
     echo '<form method="POST" action="">
-            <label form="securityn">Name:</label>
+            <label for="securityn">Name:</label>
             <input type="text" id="securityn" name="securityn" required><br><br>
 
-            <input type="submit" name= "revert" value="Revert">
-            <input type="submit" name= "approve" value="Approve">
+            <input type="submit" name="revert" value="Revert">
+            <input type="submit" name="approve" value="Approve">
           </form>';
 
 } else {
@@ -86,23 +85,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $securityn = $_POST["securityn"];
 
     // Insert the values into the orders table
-    if($_POST['approve']){
+    if (isset($_POST['approve'])) {
         $insert_sql = "UPDATE order_no 
                 SET securityn = '$securityn', security_approval = 1
-                WHERE orderno =".$_SESSION['orderno'];
+                WHERE orderno =" . $_SESSION['orderno'];
+        $connection->query($insert_sql);
         header('Location: skdash.php');
-    }
-    else if($_POST['approve']){
+        exit();
+    } else if (isset($_POST['revert'])) {
         $insert_sql = "UPDATE order_no 
                 SET securityn = '$securityn', security_approval = -1
-                WHERE orderno =".$_SESSION['orderno'];
+                WHERE orderno =" . $_SESSION['orderno'];
+        $connection->query($insert_sql);
         header('Location: skdash.php');
-    }
-
-    if ($connection->query($insert_sql) === TRUE) 
-    {
-    } else {
-        echo "Error: " . $insert_sql . "<br>" . $connection->error;
+        exit();
     }
 }
 

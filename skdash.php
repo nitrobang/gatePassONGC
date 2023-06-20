@@ -76,11 +76,11 @@ if (($designation == "security") && isset($_GET['orderno'])) {
     <?php
     // Retrieve data from the "order_no" table
     if ($designation == "collector" ) {
-        $query = "SELECT orderno, order_dest, issue_desc, placeoi, issueto, returnable, coll_approval, security_approval FROM order_no WHERE coll_approval = 0 AND security_approval != -1 AND forwarded_to = '{$cpf_no}'";
+        $query = "SELECT orderno, order_dest, issue_desc, placeoi, issueto, returnable, coll_approval, security_approval,comp_approval,guard_approval FROM order_no WHERE coll_approval = 0 AND security_approval != -1 AND forwarded_to = '{$cpf_no}'";
     } else if ($designation == "security" ) {
-        $query = "SELECT orderno, order_dest, issue_desc, placeoi, issueto, returnable, coll_approval, security_approval FROM order_no WHERE security_approval = 0 AND coll_approval != -1";
+        $query = "SELECT orderno, order_dest, issue_desc, placeoi, issueto, returnable, coll_approval, security_approval,comp_approval,guard_approval FROM order_no WHERE security_approval = 0 AND coll_approval != -1";
     } else {
-        $query = "SELECT orderno, order_dest, issue_desc, placeoi, issueto, returnable, coll_approval, security_approval FROM order_no";
+        $query = "SELECT orderno, order_dest, issue_desc, placeoi, issueto, returnable, coll_approval, security_approval,comp_approval,guard_approval FROM order_no";
     }
     $result = mysqli_query($connection, $query);
 
@@ -99,19 +99,55 @@ if (($designation == "security") && isset($_GET['orderno'])) {
             echo "<td>" . $row['issue_desc'] . "</td>";
             echo "<td>" . $row['placeoi'] . "</td>";
             echo "<td>" . $row['issueto'] . "</td>";
-            echo "<td>" . ($row['returnable'] ? 'Yes' : 'No') . "</td>";
+            $returnableValue = ($row['returnable'] ? 'Yes' : 'No');
+
+            echo "<td>" . ($returnableValue) . "</td>";
             if ($designation == "collector")
                 echo "<td><a href='skdash.php?orderno=" . $row['orderno'] . "'>Collector Link</a></td>";
             if ($designation == "security")
                 echo "<td><a href='skdash.php?orderno=" . $row['orderno'] . "'>Security Link</a></td>";
             if ($designation == "store_keeper") {
-                if ($row['coll_approval'] == -1 || $row['security_approval'] == -1)
-                    echo '<td>Denied</td>';
-                else if ($row['coll_approval'] == 1 && $row['security_approval'] == 1)
-                    echo '<td>Approved</td>';
-                else if ($row['coll_approval'] == 0 || $row['security_approval'] == 0)
-                    echo '<td>Pending</td>';
+                if($returnableValue =="Yes"){
+                    if ($row['coll_approval'] == -1 || $row['security_approval'] == -1)
+                        echo '<td><a href="edit.php?orderno=' . $row['orderno'] . '">Edit</a></td>';
+                    
+                    else if ($row['coll_approval'] == 1 && $row['security_approval'] == 0)
+                        echo '<td>Approved by Collector</td>';
+                    
+                    else if ($row['security_approval'] == 1 && $row['guard_approval'] == 0)
+                        echo '<td>Approved by Security</td>';
+                    
+                    else if ($row['coll_approval'] == 1 && $row['security_approval'] == 1 && $row['guard_approval'] == 1)
+                        echo '<td>Approved and Out</td>'; 
+                    
+                    else if ($row['coll_approval'] == 0 && $row['security_approval'] == 0 && $row['guard_approval'] == 0 && $row['comp_approval'] == 0)
+                        echo '<td>Order Pending</td>';  
+                    
+                    else if ($row['coll_approval'] == 1 && $row['security_approval'] == 1 && $row['guard_approval'] == 1 && $row['comp_approval'] == 1)
+                        echo '<td>Order Completed</td>';       
+                }
+                elseif($returnableValue=="No"){
+                    if ($row['coll_approval'] == -1 || $row['security_approval'] == -1)
+                        echo '<td><a href="edit.php?orderno=' . $row['orderno'] . '">Edit</a></td>';
+                    
+                    else if ($row['coll_approval'] == 1 && $row['security_approval'] == 0)
+                        echo '<td>Approved by Collector</td>';
+                    
+                    else if ($row['security_approval'] == 1 && $row['guard_approval'] == 0)
+                        echo '<td>Approved by Security</td>';
+                    
+                    else if ($row['coll_approval'] == 0 && $row['security_approval'] == 0 && $row['guard_approval'] == 0 && $row['comp_approval'] == 0)
+                        echo '<td>Order Pending</td>';
+                    
+                    // else if ($row['coll_approval'] == 1 && $row['security_approval'] == 1 && $row['guard_approval'] == 1)
+                    //     echo '<td>Approved and Out</td>';    
+                    
+                    else if ($row['coll_approval'] == 1 && $row['security_approval'] == 1 && $row['guard_approval'] == 1 && $row['comp_approval'] == 1)
+                        echo '<td>Order Completed</td>'; 
+
+                }
             }
+            
             echo '</tr>';
         }
 
