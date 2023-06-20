@@ -2,7 +2,7 @@
 session_start();
 require_once "db_connection.php";
 
-echo "hello".$_SESSION['orderno'];
+// echo "hello".$_SESSION['orderno'];
 // Check if the user is not logged in
 if (!isset($_SESSION["username"])) {
     header("Location: login.php");
