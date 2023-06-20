@@ -115,7 +115,7 @@ if (($designation == "security") && isset($_GET['orderno'])) {
             if ($designation == "store_keeper") {
                 if($returnableValue =="Yes"){
                     if ($row['coll_approval'] == -1 || $row['security_approval'] == -1)
-                        echo '<td><a href="edit.php?orderno=' . $row['orderno'] . '">Edit</a></td>';
+                        echo '<td>Reverted</td>';
                     
                     else if ($row['coll_approval'] == 1 && $row['security_approval'] == 0)
                         echo '<td>Approved by Collector</td>';
@@ -134,7 +134,7 @@ if (($designation == "security") && isset($_GET['orderno'])) {
                 }
                 elseif($returnableValue=="No"){
                     if ($row['coll_approval'] == -1 || $row['security_approval'] == -1)
-                        echo '<td><a href="edit.php?orderno=' . $row['orderno'] . '">Edit</a></td>';
+                        echo '<td>Reverted</td>';
                     
                     else if ($row['coll_approval'] == 1 && $row['security_approval'] == 0)
                         echo '<td>Approved by Collector</td>';
