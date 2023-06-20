@@ -11,7 +11,7 @@ if (isset($_SESSION["username"])) {
 }
 
 // Define variables and set to empty values
-$cpf_no = $username = $password = $email = "";
+$username = $password = $email = "";
 $successMessage = $errorMessage = "";
 
 // Form submission handling
@@ -52,10 +52,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $email = test_input($_POST["email"]);
     }
 
+    
+    if (isset($_POST['role'])) {
+        $designation = $_POST['role'];
+    } else {
+        $errorMessage = "No Designation Selected";
+    }
+      
+
     // Proceed with signup if there are no validation errors
     if (empty($errorMessage)) {
         // Check if the username or email already exists in the database
-        $query = "SELECT * FROM users WHERE username = '$username' OR email = '$email' OR cpfno = '$cpf_no'";
+        $query = "SELECT * FROM users WHERE username = '$username' OR email = '$email'";
         $result = mysqli_query($connection, $query);
 
         if ($result && mysqli_num_rows($result) > 0) {
@@ -65,11 +73,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
             // Insert the user into the database
-            $insertQuery = "INSERT INTO users (cpfno, username, password, email) VALUES ('$cpf_no', '$username', '$hashedPassword', '$email')";
+            $insertQuery = "INSERT INTO users (username, password, email) VALUES ('$username', '$hashedPassword', '$email')";
             $insertResult = mysqli_query($connection, $insertQuery);
 
             if ($insertResult) {
                 $successMessage = "Signup successful! You can now <a href='login.php'>Login</a>.";
+                $u_id = mysqli_insert_id($connection);
+                // Insert the user_to_group into the database
+                if ($role==4){
+                    $insertQuery = "INSERT INTO user_to_groups(id, group_id) values('$u_id' , 4)";
+                }else{
+                    $insertQuery = "INSERT INTO user_to_groups(id, group_id) values('$u_id' , 5)";
+                }
+                
+                $insertResult = mysqli_query($connection, $insertQuery);
             } else {
                 $errorMessage = "Error creating user";
             }
