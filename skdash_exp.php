@@ -32,7 +32,7 @@ $user2 = mysqli_fetch_assoc($result);
 $designation = $user2["designation"];
 
 // Check if the user clicked on the collector link
-if (($designation == "collector") && isset($_GET['orderno'])) {
+if (($designation == "E") && isset($_GET['orderno'])) {
     $_SESSION['orderno'] = $_GET['orderno'];
     header("Location: collector-page.php");
     exit();
