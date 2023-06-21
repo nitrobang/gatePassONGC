@@ -32,27 +32,35 @@ $user = mysqli_fetch_assoc($result);
 $designation = $user["designation"];
 
 // Check if the user clicked on the collector link
-if (($designation == "collector") && isset($_GET['orderno'])) {
+if (($designation == "E") && isset($_GET['orderno'])) {
     $_SESSION['orderno'] = $_GET['orderno'];
     header("Location: collector-page.php");
     exit();
 }
 
-if (($designation == "security") && isset($_GET['orderno'])) {
+//Check if the user clicked on the security link
+if (($designation == "S") && isset($_GET['orderno'])) {
     $_SESSION['orderno'] = $_GET['orderno'];
     header("Location: security-page.php");
     exit();
 }
 
+//Check if the user clicked on the guard link
+if (($designation == "G") && isset($_GET['orderno'])) {
+    $_SESSION['orderno'] = $_GET['orderno'];
+    header("Location: guard-page.php");
+    exit();
+}
+
 // Set the session variable 'isEditable' and redirect to form.php for "New Order" button
-if ($designation == "store_keeper" && isset($_POST['new_order'])) {
+if ($designation == "E" && isset($_POST['new_order'])) {
     $_SESSION['isedit'] = 0;
     header("Location: tempform.php");
     exit();
 }
 
 // Set the session variable 'isEditable' and redirect to form.php for "Edit" button
-if ($designation == "store_keeper" && isset($_POST['edit_order'])) {
+if ($designation == "E" && isset($_POST['edit_order'])) {
     $_SESSION['isedit'] =1;
     $_SESSION['orderno'] = $_POST['orderno'];
     header("Location: tempform.php");
@@ -90,7 +98,7 @@ if ($designation == "store_keeper" && isset($_POST['edit_order'])) {
         
     </div>
     <h3>Dashboard</h3>
-    <?php if ($designation == "store_keeper") : ?>
+    <?php if ($designation == "E") : ?>
         <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
             <button type="submit" name="new_order">New Order</button>
         </form>
@@ -98,9 +106,9 @@ if ($designation == "store_keeper" && isset($_POST['edit_order'])) {
         <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>"> 
     <?php
     // Retrieve data from the "order_no" table
-    if ($designation == "collector") {
+    if ($designation == "E") {
         $query = "SELECT orderno, order_dest, issue_desc, placeoi, issueto, returnable, coll_approval, security_approval,comp_approval,guard_approval FROM order_no WHERE coll_approval = 0 AND security_approval != -1 AND forwarded_to = '{$cpf_no}'";
-    } else if ($designation == "security") {
+    } else if ($designation == "S") {
         $query = "SELECT orderno, order_dest, issue_desc, placeoi, issueto, returnable, coll_approval, security_approval,comp_approval,guard_approval FROM order_no WHERE security_approval = 0 AND coll_approval != -1";
     } else {
         $query = "SELECT orderno, order_dest, issue_desc, placeoi, issueto, returnable, coll_approval, security_approval,comp_approval,guard_approval FROM order_no";
@@ -112,7 +120,7 @@ if ($designation == "store_keeper" && isset($_POST['edit_order'])) {
         // Display the data in a table
         echo "<table id='dynamic-table'>";
         echo "<tr><th>Order No</th><th>Order Destination</th><th>Issue Description</th><th>Place of Issue</th><th>Issue To</th><th>Returnable</th>";
-        if ($designation == "collector" || $designation == "security")
+        if ($designation == "E" || $designation == "S")
             echo "<th>Action<th></tr>";
         else echo "<th>Status</th></tr>";
         while ($row = mysqli_fetch_assoc($result)) {
@@ -125,11 +133,11 @@ if ($designation == "store_keeper" && isset($_POST['edit_order'])) {
             $returnableValue = ($row['returnable'] ? 'Yes' : 'No');
 
             echo "<td>" . ($returnableValue) . "</td>";
-            if ($designation == "collector")
+            if ($designation == "E")
                 echo "<td><a href='skdash.php?orderno=" . $row['orderno'] . "'>Collector Link</a></td>";
-            if ($designation == "security")
+            if ($designation == "S")
                 echo "<td><a href='skdash.php?orderno=" . $row['orderno'] . "'>Security Link</a></td>";
-            if ($designation == "store_keeper") {
+            if ($designation == "E") {
                 if($returnableValue =="Yes"){
                     if ($row['coll_approval'] == -1 || $row['security_approval'] == -1){
                         echo '<td><input type="hidden" name="orderno" value="' . $row['orderno'] . '">';

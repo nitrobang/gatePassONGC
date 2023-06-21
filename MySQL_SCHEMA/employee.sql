@@ -8,8 +8,8 @@ CREATE TABLE employee (
 );
 
 INSERT INTO employee (cpfno, empname, designation, venue) VALUES
-(123456, 'John Doe', 'O', 'N'),
+(123456, 'John Doe', 'E', 'N'),
 (789012, 'Jane Smith', 'G', 'V'),
-(345678, 'Michael Johnson', 'O', 'H'),
+(345678, 'Michael Johnson', 'E', 'H'),
 (901234, 'Emily Davis', 'G', 'N'),
-(567890, 'David Wilson', 'O', 'V');
+(567890, 'David Wilson', 'E', 'V');
