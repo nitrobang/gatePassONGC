@@ -8,6 +8,7 @@ if (!isset($_SESSION["username"])) {
     header("Location: login.php");
     exit();
 }
+
 $orderno = $_SESSION['orderno'];
 //check if right person(store keeper) is accessing the forms page   
 if ($_SESSION["designation"] != "store_keeper") {
