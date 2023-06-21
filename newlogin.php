@@ -72,7 +72,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 }
             } elseif ($loginType === "guard") {
                 // Verify the password for guard login
-                if ($password === $user["password"]) {
+                $hashedPassword = $user["password"]; // Retrieve the hashed password from the database
+                if (password_verify($password, $hashedPassword)) {
                     // Password is correct, create a session and redirect to the guard dashboard
                     $_SESSION["username"] = $user["username"];
                     $_SESSION["phone_no"] = $phone_no;
@@ -96,6 +97,7 @@ function test_input($data)
     $data = htmlspecialchars($data);
     return $data;
 }
+
 ?>
 
 <!DOCTYPE html>
