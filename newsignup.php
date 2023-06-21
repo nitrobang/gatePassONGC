@@ -166,7 +166,7 @@ function test_input($data)
                     <div class="error-message"><?php echo $errorMessage; ?></div>
                 <?php endif; ?>
             </form>
-            <p>Already have an account? <a href="login.php">Login</a></p>
+            <p>Already have an account? <a href="newlogin.php">Login</a></p>
         </div>
     </div>
 </body>
