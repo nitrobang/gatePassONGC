@@ -13,8 +13,9 @@ CREATE TABLE order_no (
   security_approval TINYINT(1) signed NOT NULL DEFAULT 0,
   guard_approval TINYINT(1) signed NOT NULL DEFAULT 0,
   comp_approval TINYINT(1) NOT NULL DEFAULT 0,
-  forwarded_to VARCHAR(100),
+  forwarded_to INT NOT NULL,
   moc VARCHAR(100),
-  vehno int(10)
+  vehno VARCHAR(10),
+  created_by INT NOT NULL
 );
 ALTER TABLE order_no AUTO_INCREMENT = 1;
