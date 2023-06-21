@@ -6,8 +6,8 @@ if (session_status() === PHP_SESSION_NONE) {
 // Create a MySQL database connection
 $servername = "localhost";
 $username = "root";
-$password = "Qweasdzxc@007";
-$dbname = "gate_pass_new";
+$password = "";
+$dbname = "gatepass_new";
 $connection = mysqli_connect($servername, $username, $password, $dbname);
 
 // Check if the connection was successful
