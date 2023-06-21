@@ -40,10 +40,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $issueTo = mysqli_real_escape_string($conn, $_POST["issuet"]);
     $placeOfDestination = mysqli_real_escape_string($conn, $_POST["pod"]);
     $forwardTo = mysqli_real_escape_string($conn, $_POST["fors"]);
+    $collector_name = getEmployeesByCpf($forwardTo);
 
     // Insert data into the 'order_no' table
-    $insertOrderNoQuery = "INSERT INTO order_no (order_dest, issue_desc, placeoi, issueto, securityn, collectorid, returnable, forwarded_to) 
-                           VALUES ('$placeOfDestination', '$issueDesc', '$placeOfIssue', '$issueTo', '', '', $returnable, '$forwardTo')";
+    $insertOrderNoQuery = "INSERT INTO order_no (order_dest, issue_desc, placeoi, issueto, securityn, collector_name, returnable, forwarded_to) 
+                           VALUES ('$placeOfDestination', '$issueDesc', '$placeOfIssue', '$issueTo', '', '$collector_name', $returnable, '$forwardTo')";
 
     if (mysqli_query($conn, $insertOrderNoQuery)) {
         $orderNo = mysqli_insert_id($conn); // Get the auto-generated order ID
@@ -108,6 +109,18 @@ function getEmployeesByDesignation($designation)
         }
     }
     return $employees;
+}
+function getEmployeesByCpf($cpf)
+{
+    global $connection;
+    $query = "SELECT empname FROM employee WHERE designation = '$cpf'";
+    $result = mysqli_query($connection, $query);
+    $employee = null;
+    if ($result && mysqli_num_rows($result) > 0) {
+        $row = mysqli_fetch_assoc($result);
+        $employee[] = $row['empname'];   
+    }
+    return $employee;
 }
 ?>
 

@@ -7,7 +7,7 @@ $conn=$connection;
 $cpfno = $_GET['cpfno'];
 
 // Prepare and execute a SQL query to fetch the matching users
-$stmt = $conn->prepare("Select * from employee where cpfno like ? and designation not like 'security'");
+$stmt = $conn->prepare("Select * from employee where cpfno like ? and designation like 'E'");
 $stmt->bind_param("s", $searchValue);
 $searchValue = $cpfno . '%';
 $stmt->execute();
