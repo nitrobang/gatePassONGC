@@ -152,7 +152,8 @@ if ($designation == "store_keeper" && isset($_POST['edit_order'])) {
                 }
                 elseif($returnableValue=="No"){
                     if ($row['coll_approval'] == -1 || $row['security_approval'] == -1)
-                        echo '<td>Reverted</td>';
+                        {echo '<td><input type="hidden" name="orderno" value="' . $row['orderno'] . '">';
+                            echo '<button type="submit" name="edit_order">Edit</button></td>';}
                     
                     else if ($row['coll_approval'] == 1 && $row['security_approval'] == 0)
                         echo '<td>Approved by Collector</td>';
