@@ -6,7 +6,6 @@ CREATE TABLE orders (
   orderno INT NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-
 ALTER TABLE orders
 ADD CONSTRAINT fk_order_no
 FOREIGN KEY (orderno) REFERENCES order_no(orderno);
