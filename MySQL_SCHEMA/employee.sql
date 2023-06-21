@@ -1,4 +1,3 @@
---O is for ONGC employee(Store Keeper and Collector) and G is for Security Guard
 CREATE TABLE employee (
   cpfno INT NOT NULL,
   empname VARCHAR(100) NOT NULL,

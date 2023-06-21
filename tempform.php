@@ -9,6 +9,7 @@ if (!isset($_SESSION["username"])) {
     exit();
 }
 if ($_SESSION['isedit']==1){
+
 $orderno = $_SESSION['orderno'];
 }
 //check if right person(store keeper) is accessing the forms page   
