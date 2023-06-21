@@ -43,24 +43,24 @@ function findet(value) {
         // If the input field is empty, hide the autocomplete list
         autocompleteList.style.display = 'none';
       } else {
-        // Display the matching username, email, and cpfno as clickable suggestions
+        // Display the matching empname, designation, and cpfno as clickable suggestions
         response.forEach(function (user) {
-          var username = user.username;
-          var email = user.email;
+          var empname = user.empname;
+          var designation = user.designation;
           var cpfno = user.cpfno;
           if (document.querySelector('input[name="fors"]').value == cpfno) {
-            sugges.innerHTML = 'Forwarding to: ' + username + ' - ' + email;
+            sugges.innerHTML = 'Forwarding to: ' + empname + ' - ' + designation;
             autocompleteList.style.visibility='hidden';
             enableSubmitButton();
           }
           else {
             var suggestion = document.createElement('li');
-            suggestion.textContent = 'Forwarded to: ' + username + ' - ' + email;
+            suggestion.textContent = 'Forwarded to: ' + empname + ' - ' + designation;
             suggestion.addEventListener('click', function () {
               // Fill the input field with the cpfno of the selected suggestion
               document.querySelector('input[name="fors"]').value = cpfno;
               autocompleteList.innerHTML = '';
-              sugges.innerHTML = 'Forwarding to: ' + username + ' - ' + email;
+              sugges.innerHTML = 'Forwarding to: ' + empname + ' - ' + designation;
               enableSubmitButton();
             });
 

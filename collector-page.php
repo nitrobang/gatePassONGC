@@ -83,7 +83,7 @@ if (isset($_SESSION['orderno'])) {
     <button type="submit" name="logout">Logout</button>
   </form>
   <a href="skdash.php">Go Back</a>
-  <table>
+  <table id='dynamic-table'>
     <tr>
       <th>Description</th>
       <th>NOP</th>

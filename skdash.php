@@ -43,6 +43,21 @@ if (($designation == "security") && isset($_GET['orderno'])) {
     header("Location: security-page.php");
     exit();
 }
+
+// Set the session variable 'isEditable' and redirect to form.php for "New Order" button
+if ($designation == "store_keeper" && isset($_POST['new_order'])) {
+    $_SESSION['isedit'] = 0;
+    header("Location: tempform.php");
+    exit();
+}
+
+// Set the session variable 'isEditable' and redirect to form.php for "Edit" button
+if ($designation == "store_keeper" && isset($_POST['edit_order'])) {
+    $_SESSION['isedit'] =1;
+    $_SESSION['orderno'] = $_POST['orderno'];
+    header("Location: tempform.php");
+    exit();
+}
 ?>
 
 <!DOCTYPE html>
@@ -76,9 +91,11 @@ if (($designation == "security") && isset($_GET['orderno'])) {
     </div>
     <h3>Dashboard</h3>
     <?php if ($designation == "store_keeper") : ?>
-        <a href="form.php">New Order</a>
+        <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
+            <button type="submit" name="new_order">New Order</button>
+        </form>
     <?php endif; ?>
-
+        <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>"> 
     <?php
     // Retrieve data from the "order_no" table
     if ($designation == "collector") {
@@ -114,10 +131,11 @@ if (($designation == "security") && isset($_GET['orderno'])) {
                 echo "<td><a href='skdash.php?orderno=" . $row['orderno'] . "'>Security Link</a></td>";
             if ($designation == "store_keeper") {
                 if($returnableValue =="Yes"){
-                    if ($row['coll_approval'] == -1 || $row['security_approval'] == -1)
-                        echo '<td>Reverted</td>';
+                    if ($row['coll_approval'] == -1 || $row['security_approval'] == -1){
+                        echo '<td><input type="hidden" name="orderno" value="' . $row['orderno'] . '">';
+                        echo '<button type="submit" name="edit_order">Edit</button></td>';
                     
-                    else if ($row['coll_approval'] == 1 && $row['security_approval'] == 0)
+                    }else if ($row['coll_approval'] == 1 && $row['security_approval'] == 0)
                         echo '<td>Approved by Collector</td>';
                     
                     else if ($row['security_approval'] == 1 && $row['guard_approval'] == 0)
@@ -164,6 +182,7 @@ if (($designation == "security") && isset($_GET['orderno'])) {
     // Close the database connection
     mysqli_close($connection);
     ?>
+    </form>
 </body>
 
 </html>

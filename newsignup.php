@@ -23,7 +23,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $username = test_input($_POST["username"]);
     
         // Check if the username already exists
-        $existingUserQuery = "SELECT * FROM `users` WHERE username = '$username'";
+        $existingUserQuery = "SELECT * FROM `external_users` WHERE username = '$username'";
         $existingUserResult = mysqli_query($connection, $existingUserQuery);
         $existingUserCount = mysqli_num_rows($existingUserResult);
     
@@ -54,7 +54,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     
     if (isset($_POST['role'])) {
-        $designation = $_POST['role'];
+        $role = $_POST['role'];
     } else {
         $errorMessage = "No Designation Selected";
     }
@@ -63,7 +63,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Proceed with signup if there are no validation errors
     if (empty($errorMessage)) {
         // Check if the username or email already exists in the database
-        $query = "SELECT * FROM users WHERE username = '$username' OR email = '$email'";
+        $query = "SELECT * FROM external_users WHERE username = '$username' OR email = '$email'";
         $result = mysqli_query($connection, $query);
 
         if ($result && mysqli_num_rows($result) > 0) {
@@ -73,7 +73,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
             // Insert the user into the database
-            $insertQuery = "INSERT INTO users (username, password, email) VALUES ('$username', '$hashedPassword', '$email')";
+            $insertQuery = "INSERT INTO external_users (username, password, email) VALUES ('$username', '$hashedPassword', '$email')";
             $insertResult = mysqli_query($connection, $insertQuery);
 
             if ($insertResult) {
@@ -81,9 +81,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $u_id = mysqli_insert_id($connection);
                 // Insert the user_to_group into the database
                 if ($role==4){
-                    $insertQuery = "INSERT INTO user_to_groups(id, group_id) values('$u_id' , 4)";
+                    $insertQuery = "INSERT INTO user_to_groups(user_id, group_id) values('$u_id' , 4)";
                 }else{
-                    $insertQuery = "INSERT INTO user_to_groups(id, group_id) values('$u_id' , 5)";
+                    $insertQuery = "INSERT INTO user_to_groups(user_id, group_id) values('$u_id' , 5)";
                 }
                 
                 $insertResult = mysqli_query($connection, $insertQuery);

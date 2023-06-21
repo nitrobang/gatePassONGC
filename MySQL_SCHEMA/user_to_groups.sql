@@ -1,10 +1,11 @@
 CREATE TABLE user_to_groups (
-  id INT,
-  group_id INT,
-  PRIMARY KEY (id, group_id),
-  FOREIGN KEY (id) REFERENCES users(id),
-  FOREIGN KEY (group_id) REFERENCES user_groups(group_id)
+    user_id INT NOT NULL,
+    group_id INT NOT NULL,
+    PRIMARY KEY (user_id, group_id),
+    FOREIGN KEY (user_id) REFERENCES external_users (id) ON DELETE CASCADE,
+    FOREIGN KEY (group_id) REFERENCES user_groups (group_id) ON DELETE CASCADE
 );
+
 
 insert into user_to_groups values(6, 1);
 insert into user_to_groups values(6, 3);

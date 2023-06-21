@@ -110,7 +110,7 @@ function test_input($data)
                         <div class="error-message"><?php echo $errorMessage; ?></div>
                 <?php endif; ?>
             </form>
-            <p>Don't have an account? <a href="signup.php">Sign Up</a></p>
+            <p>Singup for external users <a href="newsignup.php">Sign Up</a></p>
     
         </div>
     </div>

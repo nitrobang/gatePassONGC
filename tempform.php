@@ -2,14 +2,13 @@
 session_start();
 require_once "db_connection.php";
 
+echo "hello".$_SESSION['orderno'];
 // Check if the user is not logged in
 if (!isset($_SESSION["username"])) {
     header("Location: login.php");
     exit();
 }
-$_SESSION["isedit"] = 1;
-$_SESSION["orderno"] = 0;
-$orderno = 0;
+$orderno = $_SESSION['orderno'];
 //check if right person(store keeper) is accessing the forms page   
 if ($_SESSION["designation"] != "store_keeper") {
     header("Location: skdash.php");
