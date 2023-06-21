@@ -5,36 +5,23 @@ session_start();
 require_once "db_connection.php";
 
 // Check if the user is already logged in
-if (isset($_SESSION["username"])) {
+if (isset($_SESSION["guard_name"])) {
     header("Location: form.php");
     exit();
 }
 
 // Define variables and set to empty values
-$username = $password = $email = "";
+$guard_name = $password = $phone = $location = "";
 $successMessage = $errorMessage = "";
 
 // Form submission handling
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Validate username
-    if (empty($_POST["username"])) {
+    // Validate guard name
+    if (empty($_POST["guard_name"])) {
         $errorMessage = "Username is required";
     } else {
-        $username = test_input($_POST["username"]);
-    
-        // Check if the username already exists
-        $existingUserQuery = "SELECT * FROM `external_users` WHERE username = '$username'";
-        $existingUserResult = mysqli_query($connection, $existingUserQuery);
-        $existingUserCount = mysqli_num_rows($existingUserResult);
-    
-        if ($existingUserCount >= 1) {
-            $errorMessage = "Username already exists";
-        } else {
-            $username = test_input($_POST["username"]);
-        }
+        $guard_name = test_input($_POST["guard_name"]);
     }
-
-
 
     // Validate password
     if (empty($_POST["password"])) {
@@ -43,59 +30,49 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $password = test_input($_POST["password"]);
     }
 
-    // Validate email
-    if (empty($_POST["email"])) {
-        $errorMessage = "Email is required";
-    } elseif (!filter_var($_POST["email"], FILTER_VALIDATE_EMAIL)) {
-        $errorMessage = "Invalid email format";
+    // Validate phone
+    if (empty($_POST["phone"])) {
+        $errorMessage = "Phone number is required";
     } else {
-        $email = test_input($_POST["email"]);
+        $phone = test_input($_POST["phone"]);
+
+        // Check if the phone number already exists
+        $existingPhoneQuery = "SELECT * FROM `security_guard` WHERE phone_no = '$phone'";
+        $existingPhoneResult = mysqli_query($connection, $existingPhoneQuery);
+        $existingPhoneCount = mysqli_num_rows($existingPhoneResult);
+
+        if ($existingPhoneCount >= 1) {
+            $errorMessage = "Phone number already exists";
+        }
     }
 
-    
-    if (isset($_POST['role'])) {
-        $role = $_POST['role'];
+    // Validate location
+    if (empty($_POST["location"])) {
+        $errorMessage = "Location is required";
     } else {
-        $errorMessage = "No Designation Selected";
+        $location = test_input($_POST["location"]);
     }
-      
 
     // Proceed with signup if there are no validation errors
     if (empty($errorMessage)) {
-        // Check if the username or email already exists in the database
-        $query = "SELECT * FROM external_users WHERE username = '$username' OR email = '$email'";
-        $result = mysqli_query($connection, $query);
+        // Hash the password
+        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-        if ($result && mysqli_num_rows($result) > 0) {
-            $errorMessage = "User already exists";
+        // Insert the user into the database
+        $insertQuery = "INSERT INTO security_guard (guard_name, password, phone_no, venue) VALUES ('$guard_name', '$hashedPassword', '$phone', '$location')";
+        $insertResult = mysqli_query($connection, $insertQuery);
+
+        if ($insertResult) {
+            $successMessage = "Signup successful! You can now <a href='login.php'>Login</a>.";
         } else {
-            // Hash the password
-            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-
-            // Insert the user into the database
-            $insertQuery = "INSERT INTO external_users (username, password, email) VALUES ('$username', '$hashedPassword', '$email')";
-            $insertResult = mysqli_query($connection, $insertQuery);
-
-            if ($insertResult) {
-                $successMessage = "Signup successful! You can now <a href='login.php'>Login</a>.";
-                $u_id = mysqli_insert_id($connection);
-                // Insert the user_to_group into the database
-                if ($role==4){
-                    $insertQuery = "INSERT INTO user_to_groups(user_id, group_id) values('$u_id' , 4)";
-                }else{
-                    $insertQuery = "INSERT INTO user_to_groups(user_id, group_id) values('$u_id' , 5)";
-                }
-                
-                $insertResult = mysqli_query($connection, $insertQuery);
-            } else {
-                $errorMessage = "Error creating user";
-            }
+            $errorMessage = "Error creating user";
         }
     }
 }
 
 // Function to sanitize form inputs
-function test_input($data) {
+function test_input($data)
+{
     $data = trim($data);
     $data = stripslashes($data);
     $data = htmlspecialchars($data);
@@ -105,8 +82,9 @@ function test_input($data) {
 
 <!DOCTYPE html>
 <html>
+
 <head>
-    <title>Sign Up</title>
+    <title>Guard Sign Up</title>
     <link rel="stylesheet" href="css/styles.css">
     <style>
         .form-group {
@@ -121,7 +99,7 @@ function test_input($data) {
 
         input[type="text"],
         input[type="password"],
-        input[type="email"] {
+        input[type="phone"] {
             width: 100%;
             padding: 10px;
             border: 1px solid #ccc;
@@ -154,27 +132,29 @@ function test_input($data) {
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="lbox">
-            <h2>Sign Up</h2>
+            <h2>Guard Sign Up</h2>
             <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
                 <div class="form-group">
-                    <label for="username">Name:</label>
-                    <input type="text" id="username" name="username" class="form-control" required>
+                    <label for="guard_name">Name:</label>
+                    <input type="text" id="guard_name" name="guard_name" class="form-control" required>
                 </div>
                 <div class="form-group">
                     <label for="password">Password:</label>
                     <input type="password" id="password" name="password" class="form-control" required>
                 </div>
                 <div class="form-group">
-                    <label for="email">Email:</label>
-                    <input type="email" id="email" name="email" class="form-control" required>
+                    <label for="phone">Phone:</label>
+                    <input type="phone" id="phone" name="phone" class="form-control" required>
                 </div>
                 <div class="form-group">
-                    <label for="role">Role:</label>
-                    <label><input type="radio" name="role" value="4" required> Collector</label>
-                    <label><input type="radio" name="role" value="5" required> Security Guard</label>
+                    <label for="location">Your Location:</label>
+                    <label><input type="radio" name="location" value="N" required> NBP Green Heights</label>
+                    <label><input type="radio" name="location" value="V" required> Vasundara Bhavan</label>
+                    <label><input type="radio" name="location" value="H" required> 11 High</label>
                 </div>
                 <div class="form-group">
                     <button type="submit" class="btn btn-primary">Sign Up</button>
@@ -190,5 +170,5 @@ function test_input($data) {
         </div>
     </div>
 </body>
-</html>
 
+</html>
