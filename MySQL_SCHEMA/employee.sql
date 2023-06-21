@@ -2,7 +2,7 @@
 CREATE TABLE employee (
   cpfno INT NOT NULL,
   empname VARCHAR(100) NOT NULL,
-  designation ENUM('O','G') NOT NULL, 
+  designation ENUM('E','G','S') NOT NULL, 
   venue ENUM('N', 'V', 'H') NOT NULL, 
   PRIMARY KEY (cpfno)
 );

@@ -25,11 +25,11 @@ if (isset($_SESSION["cpf_no"])) {
 $query = "SELECT * FROM employee WHERE cpfno = '$cpf_no'";
 $result = mysqli_query($connection, $query);
 if (!$result || mysqli_num_rows($result) == 0) {
-    header("Location: form.php");
+    header("Location: skdash.php");
     exit();
 }
-$user2 = mysqli_fetch_assoc($result);
-$designation = $user2["designation"];
+$user = mysqli_fetch_assoc($result);
+$designation = $user["designation"];
 
 // Check if the user clicked on the collector link
 if (($designation == "collector") && isset($_GET['orderno'])) {
