@@ -54,7 +54,7 @@ if (isset($_SESSION['orderno'])) {
         }
     }
 
-    // Handle form submission to deny the order
+    // Handle form submission to Revert the order
     if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["deny"])) {
         // Update the order_no table with coll_approval = -1 to indicate denial
         $updateQuery = "UPDATE order_no SET coll_approval = -1 WHERE orderno = $orderno";
@@ -108,7 +108,7 @@ if (isset($_SESSION['orderno'])) {
     <label for="vehno">Vehno:</label>
     <input type="text" name="vehno" value="<?php echo $vehno; ?>">
     <button type="submit" name="submit">Submit and Approve</button>
-    <button type="submit" name="deny">Deny</button>
+    <button type="submit" name="deny">Revert</button>
   </form>
 
 </body>

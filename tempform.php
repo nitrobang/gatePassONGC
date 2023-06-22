@@ -8,9 +8,7 @@ if (!isset($_SESSION["username"])) {
     header("Location: newlogin.php");
     exit();
 }
-if ($_SESSION['isedit']==1){
-$orderno = $_SESSION['orderno'];
-}
+
 //check if right person(store keeper) is accessing the forms page   
 if ($_SESSION["designation"] != "E") {
     header("Location: skdash.php");
@@ -27,69 +25,69 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["logout"])) {
 
 $conn = $connection;
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    if ($_SESSION["isedit"] == 1) {
-        $orderno = $_SESSION["orderno"];
-        $delquery = "DELETE FROM orders WHERE orderno = '$orderno'";
-        $conn->query($delquery);
-    }
-    // Escape user inputs to prevent SQL injection
-    $returnable = $_POST["return"] == "1" ? 1 : 0;
-    $issueDesc = mysqli_real_escape_string($conn, $_POST["issued"]);
-    $placeOfIssue = mysqli_real_escape_string($conn, $_POST["placei"]);
-    $issueTo = mysqli_real_escape_string($conn, $_POST["issuet"]);
-    $placeOfDestination = mysqli_real_escape_string($conn, $_POST["pod"]);
-    $forwardTo = mysqli_real_escape_string($conn, $_POST["fors"]);
-    $collector_name = getEmployeesByCpf($forwardTo);
-    $created_by = $_SESSION['cpf_no'];
 
-    // Insert data into the 'order_no' table
-    $insertOrderNoQuery = "INSERT INTO order_no (order_dest, issue_desc, placeoi, issueto, securityn, collector_name, returnable, forwarded_to, created_by) 
-                           VALUES ('$placeOfDestination', '$issueDesc', '$placeOfIssue', '$issueTo', '', '$collector_name', $returnable, '$forwardTo', '$created_by')";
-
-    if (mysqli_query($conn, $insertOrderNoQuery)) {
-        $orderNo = mysqli_insert_id($conn); // Get the auto-generated order ID
-
-        //*****************/ Insert data into the 'orders' table ************************
-
-        // Retrieve the form data
-        $serialNumbers = $_POST['serial_number'];
-        $description = $_POST['description'];
-        $num = $_POST['num'];
-        $dispatchnotes = $_POST['dispatchnotes'];
-        $remarks = $_POST['remarks'];
+    if (isset($_POST["submit"])) {
+        // Escape user inputs to prevent SQL injection
+        $returnable = $_POST["return"] == "1" ? 1 : 0;
+        $issueDesc = mysqli_real_escape_string($conn, $_POST["issued"]);
+        $placeOfIssue = mysqli_real_escape_string($conn, $_POST["placei"]);
+        $issueTo = mysqli_real_escape_string($conn, $_POST["issuet"]);
+        $placeOfDestination = mysqli_real_escape_string($conn, $_POST["pod"]);
+        $forwardTo = mysqli_real_escape_string($conn, $_POST["fors"]);
+        $collector_name = getEmployeesByCpf($forwardTo);
+        $orderno = mysqli_real_escape_string($conn, $_POST["orderno"]);
+        $created_by = $_SESSION['cpf_no'];
+        $coll_approval=0;
 
 
-        // Create a PDO connection to the database
-        $conn2 = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
-        $conn2->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        // Insert data into the 'order_no' table
+        $UpdateOrderNoQuery = "UPDATE order_no SET order_dest = '$placeOfDestination',issue_desc = '$issueDesc',placeoi = '$placeOfIssue',issueto = '$issueTo',securityn = '',collector_name = '$collector_name',returnable = $returnable,	coll_approval='$coll_approval',forwarded_to = '$forwardTo',created_by = '$created_by' WHERE orderno = '$orderno'";
 
-        // Prepare the SQL statement for insertion
-        $stmt = $conn2->prepare("INSERT INTO orders (descrip, nop, deliverynote, remark, orderno) VALUES (:descrip, :nop, :deliverynote, :remark, :orderno)");
 
-        // Iterate over the rows and insert them into the database
-        for ($i = 0; $i < count($serialNumbers); $i++) {
-            $stmt->bindParam(':descrip', $description[$i]);
-            $stmt->bindParam(':nop', $num[$i]);
-            $stmt->bindParam(':deliverynote', $dispatchnotes[$i]);
-            $stmt->bindParam(':remark', $remarks[$i]);
-            $stmt->bindParam(':orderno', $orderNo);
+        if (mysqli_query($conn, $UpdateOrderNoQuery)) {
 
-            $stmt->execute();
+            //*****************/ Insert data into the 'orders' table ************************
+
+            // Retrieve the form data
+            $serialNumbers = $_POST['serial_number'];
+            $description = $_POST['description'];
+            $num = $_POST['num'];
+            $dispatchnotes = $_POST['dispatchnotes'];
+            $remarks = $_POST['remarks'];
+
+            $delquery = "DELETE FROM orders WHERE orderno = '$orderno'";
+            $conn->query($delquery);
+            // Create a PDO connection to the database
+            $conn2 = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
+            $conn2->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+            // Prepare the SQL statement for insertion
+            $stmt = $conn2->prepare("INSERT INTO orders (descrip, nop, deliverynote, remark, orderno) VALUES (:descrip, :nop, :deliverynote, :remark, :orderno)");
+
+            // Iterate over the rows and insert them into the database
+            for ($i = 0; $i < count($serialNumbers); $i++) {
+                $stmt->bindParam(':descrip', $description[$i]);
+                $stmt->bindParam(':nop', $num[$i]);
+                $stmt->bindParam(':deliverynote', $dispatchnotes[$i]);
+                $stmt->bindParam(':remark', $remarks[$i]);
+                $stmt->bindParam(':orderno', $orderno);
+                $stmt->execute();
+            }
+
+            /****************************** Done **********************************/
+
+            // Redirect to a success page or display a success message
+            header("Location: skdash.php");
+            exit();
+        } else {
+            // Handle the case where the insertion failed
+            echo "Error: " . mysqli_error($conn);
         }
 
-        /****************************** Done **********************************/
-
-        // Redirect to a success page or display a success message
-        header("Location: form.php");
-        exit();
-    } else {
-        // Handle the case where the insertion failed
-        echo "Error: " . mysqli_error($conn);
+        // Close the database connection
+        mysqli_close($conn);
+        $conn2 = null;
     }
-
-    // Close the database connection
-    mysqli_close($conn);
-    $conn2 = null;
 }
 
 // Function to get employee names and CPF numbers based on designation
@@ -118,7 +116,7 @@ function getEmployeesByCpf($cpf)
     $employee = null;
     if ($result && mysqli_num_rows($result) > 0) {
         $row = mysqli_fetch_assoc($result);
-        $employee[] = $row['empname'];   
+        $employee[] = $row['empname'];
     }
     return $employee;
 }
@@ -158,138 +156,52 @@ function getEmployeesByCpf($cpf)
 
     </div>
 
-    <h2 class="wlc">Welcome, <?php echo $_SESSION["username"]; ?>!</h2>
+    <h2 class="wlc">Welcome, <?php echo $_SESSION["username"]; ?>!</h2><br>
     <?php
-    if ($_SESSION["isedit"] == 1) {
-        // Retrieve data from the orders table based on the orderno
-        $orderno = $_SESSION["orderno"];
-        $query = "SELECT * FROM orders WHERE orderno = '$orderno'";
+    $orderno = $_GET['orderno']; // Get the 'orderno' parameter from the URL
+    echo $orderno;
+    $selectOrderNoQuery = "SELECT * FROM order_no WHERE orderno = '$orderno'";
+    $result1 = mysqli_query($conn, $selectOrderNoQuery);
+    $selectOrdersQuery = "SELECT * FROM orders WHERE orderno = '$orderno'";
+    $result = mysqli_query($conn, $selectOrdersQuery);
+    $orderItems = array();
+    while ($row = mysqli_fetch_assoc($result)) {
+        $orderItems[] = $row;
+    }
 
-        // Execute the query
-        // Make sure you have established a database connection before executing the query
-        $result = $conn->query($query);
-        $query = "SELECT * FROM order_no WHERE orderno = '$orderno'";
-        $res = $conn->query($query);
-        $col = $res->fetch_assoc();
-        if ($result->num_rows > 0) {
-            // Display the retrieved data as editable form fields
-            while ($row = $result->fetch_assoc()) {
+    if ($result1 && mysqli_num_rows($result1) > 0) {
+        $orderData = mysqli_fetch_assoc($result1);
+
     ?>
-                <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST">
-                    <div class="pos">
-                        <!-- Display the Returnable/Non-Returnable options -->
-                        <label for="return">Returnable</label>
-                        <input type="radio" class="form-group" name="return" value="1" required <?php echo ($col['returnable'] == 1) ? 'checked' : ''; ?>>
-                        <label for="nreturn">Non-Returnable</label>
-                        <input type="radio" class="form-group" name="return" value="0" <?php echo ($col['returnable'] == 0) ? 'checked' : ''; ?>><br>
-
-                        <table class="postt">
-                            <tr>
-                                <td>
-                                    <label for="issued">Issuing department/Office</label>
-                                    <input type="text" class="form-group" name="issued" value="<?php echo $col['issue_desc']; ?>" required><br>
-                                </td>
-                                <td>
-                                    <label for="issuet">Issue To</label>
-                                    <input type="text" class="form-group" name="issuet" value="<?php echo $col['issueto']; ?>" required><br>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <label for="placei">Place of Issue</label>
-                                    <input type="text" class="form-group" name="placei" value="<?php echo $col['placeoi']; ?>" required><br>
-                                </td>
-                                <td>
-                                    <label for="pod">Place of Destination</label>
-                                    <input type="text" class="form-group" name="pod" value="<?php echo $col['order_dest']; ?>" required>
-                                </td>
-                            </tr>
-                        </table>
-
-                        <!-- Display the table of dynamic rows -->
-                        <h4></h4>
-                    </div>
-                    <table id="dynamic-table">
-                        <tr>
-                            <th>Sr No</th>
-                            <th>Brief description</th>
-                            <th>No of Packages</th>
-                            <th>Deliver Note Or Dispatch convey note no OR Indent no</th>
-                            <th>Remarks</th>
-                            <th>Action</th>
-                        </tr>
-                        <?php
-                        // Display the rows from the orders table as editable form fields
-                        $serialNumber = 1;
-                        while ($row = $result->fetch_assoc()) {
-                        
-                            echo '<tr>';
-                            echo '<td><input type="hidden" name="serial_number[]" >' . $serialNumber . '.</td>';
-                            echo '<td><input type="text" name="description[]" value="' . $row['descrip'] . '" required></td>';
-                            echo '<td><input type="text" name="num[]" value="' . $row['nop'] . '" required></td>';
-                            echo '<td><input type="text" name="dispatchnotes[]" value="' . $row['deliverynote'] . '" required></td>';
-                            echo '<td><input type="text" name="remarks[]" value="' . $row['remark'] . '" required></td>';
-                            echo '<td></td>';
-                            echo '</tr>';
-                            echo '<script>';
-                            echo 'addRow();'; // Call the JavaScript function
-                            echo '</script>';                              
-                            $serialNumber++;
-                        }
-                        ?>
-                    </table>
-                    <br>
-                    <button type="button" onclick="addRow()">Add Row</button>
-                    <br><br>
-                    <div class="sugg">
-                        <div class="result">
-                            <p>Forwarded To:</p>
-                        </div>
-                        <input type="text" name="fors" oninput="findet(this.value)">
-                        <ul class="autocomplete-list"></ul>
-                        <div class="clear"></div>
-                    </div>
-                    <br>
-                    <br>
-                    <input type="submit" name="submit" id="submitButton" value="Submit" disabled>
-                </form>
-        <?php
-            }
-        } else {
-            echo "No data found for the specified orderno.";
-        }
-    } else {
-        // Display the default form if isedit is not equal to 1
-        ?>
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST">
-            <!-- Default form content -->
             <div class="pos">
                 <label for="return">Returnable</label>
-                <input type="radio" class="form-group" name="return" value="1" required>
+                <input type="radio" class="form-group" name="return" value="1" <?php echo $orderData['returnable'] == 1 ? 'checked' : ''; ?> required>
                 <label for="nreturn">Non Returnable</label>
-                <input type="radio" class="form-group" name="return" value="0"><br>
+                <input type="radio" class="form-group" name="return" value="0" <?php echo $orderData['returnable'] == 0 ? 'checked' : ''; ?>><br>
                 <table class="postt">
                     <tr>
                         <td><label for="issued">Issuing department/Office</label>
-                            <input type="text" class="form-group" name="issued" required><br>
+                            <input type="text" class="form-group" name="issued" value="<?php echo $orderData['issue_desc']; ?>" required><br>
                         </td>
                         <td><label for="issuet">Issue To</label>
-                            <input type="text" class="form-group" name="issuet" required><br>
+                            <input type="text" class="form-group" name="issuet" value="<?php echo $orderData['issueto']; ?>" required><br>
                         </td>
                     </tr>
                     <tr>
-                        <td><label for="placei">Place of Issue</label>
-                            <input type="text" class="form-group" name="placei" required><br>
+                        <td>
+                            <label for="placei">Place of Issue</label>
+                            <select class="form-group" name="placei" required>
+                                <option value="N" <?php if ($orderData['placeoi'] === 'N') echo 'selected'; ?>>NBP GREEN HEIGHTS</option>
+                                <option value="V" <?php if ($orderData['placeoi'] === 'V') echo 'selected'; ?>>VASUNDHARA BHAVAN</option>
+                                <option value="H" <?php if ($orderData['placeoi'] === 'H') echo 'selected'; ?>>11 HIGH</option>
+                            </select>
                         </td>
                         <td><label for="pod">Place of Destination</label>
-                            <input type="text" class="form-group" name="pod" required>
+                            <input type="text" class="form-group" name="pod" value="<?php echo $orderData['order_dest']; ?>" required>
                         </td>
                     </tr>
                 </table>
-
-
-
-
 
                 <h4></h4>
             </div>
@@ -302,14 +214,18 @@ function getEmployeesByCpf($cpf)
                     <th>Remarks</th>
                     <th>Action</th>
                 </tr>
-                <tr>
-                    <td><input type="hidden" name="serial_number[]">1. </td>
-                    <td><input type="text" name="description[]" required></td>
-                    <td><input type="text" name="num[]" required></td>
-                    <td><input type="text" name="dispatchnotes[]" required></td>
-                    <td><input type="text" name="remarks[]" required></td>
-                    <td> </td>
-                </tr>
+                <?php foreach ($orderItems as $index => $item) { ?>
+                    <tr>
+                        <td><input type='hidden' name='serial_number[]'> <?php echo $index + 1; ?></input></td>
+                        <td><input type="text" name="description[]" value="<?php echo $item['descrip']; ?>" required></td>
+                        <td><input type="text" name="num[]" value="<?php echo $item['nop']; ?>" required></td>
+                        <td><input type="text" name="dispatchnotes[]" value="<?php echo $item['deliverynote']; ?>" required></td>
+                        <td><input type="text" name="remarks[]" value="<?php echo $item['remark']; ?>" required></td>
+                        <td> </td>
+                    </tr>
+
+                <?php }
+                ?>
             </table>
             <br>
             <button type="button" onclick="addRow()">Add Row</button>
@@ -318,18 +234,20 @@ function getEmployeesByCpf($cpf)
                 <div class="result">
                     <p>Forwarded To:</p>
                 </div>
-                <input type="text" name="fors" oninput="findet(this.value)">
+                <input type="text" name="fors" oninput="findet(this.value)" onLoad="findet(this.value)" value="<?php echo $orderData['forwarded_to']; ?>">
                 <ul class="autocomplete-list"></ul>
                 <div class="clear"></div>
             </div>
             <br>
             <br>
-            <input type="submit" name="submit" id="submitButton" value="Submit" disabled>
-        </form>
-    <?php
-    }
-    ?>
-
+            <input type="hidden" name="orderno" value="<?php echo $orderno; ?>">
+            <input type="submit" name="submit" id="submitButton" value="Submit">
+        </form><?php
+            } else {
+                // Handle the case where no rows were found
+                echo "No order data found.";
+            }
+                ?>
     <script type="text/javascript" src="form.js"></script>
 </body>
 

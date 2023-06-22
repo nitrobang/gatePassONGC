@@ -59,16 +59,14 @@ if (($designation == "G") && isset($_GET['orderno'])) {
 
 // Set the session variable 'isEditable' and redirect to form.php for "New Order" button
 if ($designation == "E" && isset($_POST['new_order'])) {
-    $_SESSION['isedit'] = 0;
-    header("Location: tempform.php");
+    header("Location: form.php");
     exit();
 }
 
 // Set the session variable 'isEditable' and redirect to form.php for "Edit" button
 if ($designation == "E" && isset($_POST['edit_order'])) {
-    $_SESSION['isedit'] =1;
-    $_SESSION['orderno'] = $_POST['orderno'];
-    header("Location: tempform.php");
+    $orderno = $_POST['edit_order'];
+    header("Location: tempform.php?orderno=$orderno");
     exit();
 }
 
@@ -148,7 +146,21 @@ function getEmployeesByCpf($cpf)
             echo "<td>" . $creatorname . "</td>";
             echo "<td>" . $row['order_dest'] . "</td>";
             echo "<td>" . $row['issue_desc'] . "</td>";
-            echo "<td>" . $row['placeoi'] . "</td>";
+            ?><?php
+            $placeoi = $row['placeoi']; // Assuming $row['placeoi'] contains the value
+            $displayText = '';
+        
+            if ($placeoi === 'N') {
+                $displayText = 'NBP Green Heights';
+            } elseif ($placeoi === 'V') {
+                $displayText = 'Vasundhara Bhavan';
+            } elseif ($placeoi === 'H') {
+                $displayText = '11 HIGH';
+            }
+        
+            echo "<td>" . $displayText . "</td>";
+            ?>
+            <?php
             echo "<td>" . $row['issueto'] . "</td>";
             $returnableValue = ($row['returnable'] ? 'Yes' : 'No');
 
@@ -161,8 +173,10 @@ function getEmployeesByCpf($cpf)
                 echo '<td></td>';
                 if($returnableValue =="Yes"){
                     if ($row['coll_approval'] == -1 || $row['security_approval'] == -1){
-                        echo '<td><input type="hidden" name="orderno" value="' . $row['orderno'] . '">';
-                        echo '<button type="submit" name="edit_order">Edit</button></td>';
+                        echo '<td>';
+                        echo '<input type="hidden" name="Orderno" value="' . $row['orderno'] . '">';
+                        echo '<button type="submit" name="edit_order" value="'.$row['orderno'].'">Edit</button>';
+                        echo '</td>';
                     
                     }else if ($row['coll_approval'] == 1 && $row['security_approval'] == 0)
                         echo '<td>Approved by Collector</td>';

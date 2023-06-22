@@ -9,7 +9,7 @@ if (!isset($_SESSION["username"])) {
 }
 
 //check if right person(store keeper) is accessing the forms page
-if ($_SESSION["designation"] != "store_keeper") {
+if ($_SESSION["designation"] != "E") {
     header("Location: skdash.php");
     exit();
 }
@@ -24,7 +24,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["logout"])) {
 
 $conn = $connection;
 
+$conn = $connection;
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    var_dump($_POST);
     // Escape user inputs to prevent SQL injection
     $returnable = $_POST["return"] == "1" ? 1 : 0;
     $issueDesc = mysqli_real_escape_string($conn, $_POST["issued"]);
@@ -32,10 +34,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $issueTo = mysqli_real_escape_string($conn, $_POST["issuet"]);
     $placeOfDestination = mysqli_real_escape_string($conn, $_POST["pod"]);
     $forwardTo = mysqli_real_escape_string($conn, $_POST["fors"]);
+    $collector_name = getEmployeesByCpf($forwardTo);
+    $created_by = $_SESSION['cpf_no'];
 
     // Insert data into the 'order_no' table
-    $insertOrderNoQuery = "INSERT INTO order_no (order_dest, issue_desc, placeoi, issueto, securityn, collectorid, returnable, forwarded_to) 
-                           VALUES ('$placeOfDestination', '$issueDesc', '$placeOfIssue', '$issueTo', '', '', $returnable, '$forwardTo')";
+    $insertOrderNoQuery = "INSERT INTO order_no (order_dest, issue_desc, placeoi, issueto, securityn, collector_name, returnable, forwarded_to, created_by) 
+                           VALUES ('$placeOfDestination', '$issueDesc', '$placeOfIssue', '$issueTo', '', '$collector_name', $returnable, '$forwardTo', '$created_by')";
 
     if (mysqli_query($conn, $insertOrderNoQuery)) {
         $orderNo = mysqli_insert_id($conn); // Get the auto-generated order ID
@@ -101,6 +105,18 @@ function getEmployeesByDesignation($designation)
     }
     return $employees;
 }
+function getEmployeesByCpf($cpf)
+{
+    global $connection;
+    $query = "SELECT empname FROM employee WHERE designation = '$cpf'";
+    $result = mysqli_query($connection, $query);
+    $employee = null;
+    if ($result && mysqli_num_rows($result) > 0) {
+        $row = mysqli_fetch_assoc($result);
+        $employee[] = $row['empname'];
+    }
+    return $employee;
+}
 ?>
 
 <html>
@@ -133,16 +149,16 @@ function getEmployeesByDesignation($designation)
                 </td>
             </tr>
         </table>
-        
+
     </div>
 
     <h2 class="wlc">Welcome, <?php echo $_SESSION["username"]; ?>!</h2>
     <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST">
         <div class="pos">
             <label for="return">Returnable</label>
-            <input type="radio" class="form-group" name="return"  value="1" required>
+            <input type="radio" class="form-group" name="return" value="1" required>
             <label for="nreturn">Non Returnable</label>
-            <input type="radio" class="form-group" name="return" value="0" ><br>
+            <input type="radio" class="form-group" name="return" value="0"><br>
             <table class="postt">
                 <tr>
                     <td><label for="issued">Issuing department/Office</label>
@@ -154,7 +170,11 @@ function getEmployeesByDesignation($designation)
                 </tr>
                 <tr>
                     <td><label for="placei">Place of Issue</label>
-                        <input type="text" class="form-group" name="placei" required><br>
+                            <select class="form-group" name="placei" required>
+                                <option value="N" >NBP GREEN HEIGHTS</option>
+                                <option value="V" >VASUNDHARA BHAVAN</option>
+                                <option value="H" >11 HIGH</option>
+                            </select>
                     </td>
                     <td><label for="pod">Place of Destination</label>
                         <input type="text" class="form-group" name="pod" required>
@@ -180,9 +200,9 @@ function getEmployeesByDesignation($designation)
             <tr>
                 <td><input type="hidden" name="serial_number[]">1. </td>
                 <td><input type="text" name="description[]" required></td>
-                <td><input type="text" name="num[]"required></td>
-                <td><input type="text" name="dispatchnotes[]"required></td>
-                <td><input type="text" name="remarks[]"required></td>
+                <td><input type="text" name="num[]" required></td>
+                <td><input type="text" name="dispatchnotes[]" required></td>
+                <td><input type="text" name="remarks[]" required></td>
                 <td> </td>
             </tr>
         </table>
@@ -193,7 +213,7 @@ function getEmployeesByDesignation($designation)
             <div class="result">
                 <p>Forwarded To:</p>
             </div>
-            <input type="text" name="fors" oninput="findet(this.value)">
+            <input type="text" name="fors" onkeydown="findet(this.value)">
             <ul class="autocomplete-list"></ul>
             <div class="clear"></div>
         </div>

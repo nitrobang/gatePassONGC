@@ -5,7 +5,7 @@ session_start();
 require_once "db_connection.php";
 
 // Check if the user is already logged in
-if (isset($_SESSION["username"])) {
+if (isset($_SESSION["username"]) && isset($_SESSION["phone_no"])) {
     header("Location: skdash.php");
     exit();
 }
@@ -13,6 +13,7 @@ if (isset($_SESSION["username"])) {
 // Define variables and set to empty values
 $cpf_no = $phone_no = $password = "";
 $errorMessage = "";
+$loginType = "";
 
 // Form submission handling
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -60,14 +61,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $user = mysqli_fetch_assoc($result);
 
             //get the designation of the user
-            $query2 = "SELECT * FROM employee WHERE cpfno = '$cpf_no'";
-            $result2 = mysqli_query($connection, $query2);
-            if (!$result2 || mysqli_num_rows($result2) == 0) {
-                header("Location: newlogin.php");
-                exit();
+            if($loginType === "ongc"){
+                $query2 = "SELECT * FROM employee WHERE cpfno = '$cpf_no'";
+                $result2 = mysqli_query($connection, $query2);
+                if (!$result2 || mysqli_num_rows($result2) == 0) {
+                    header("Location: newlogin.php");
+                    exit();
+                }
+                $user2 = mysqli_fetch_assoc($result2);
+                $designation = $user2["designation"]; 
             }
-            $user2 = mysqli_fetch_assoc($result2);
-            $designation = $user2["designation"]; 
 
             if ($loginType === "ongc") {
                 // Verify the password for ONGC login
@@ -84,16 +87,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             } elseif ($loginType === "guard") {
                 // Verify the password for guard login
                 $hashedPassword = $user["password"]; // Retrieve the hashed password from the database
-                echo $password;
                 if (password_verify($password, $hashedPassword)) {
                     // Password is correct, create a session and redirect to the guard dashboard
                     $_SESSION["phone_no"] = $phone_no;
                     $_SESSION["designation"] = 'G';
-                    header("Location: test.php");
+                    header("Location: skdash.php");
                 } else {
                     $errorMessage = "Invalid password";
                 }
-            }
+            } else header("Location: test.php");
         } else {
             $errorMessage = "Invalid username";
         }
