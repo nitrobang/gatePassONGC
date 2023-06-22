@@ -122,12 +122,13 @@ if ($designation == "E" && isset($_POST['edit_order'])) {
     if ($result && mysqli_num_rows($result) > 0) {
         // Display the data in a table
         echo "<table id='dynamic-table'>";
-        echo "<tr><th>Order No</th><th>Order Destination</th><th>Issue Description</th><th>Place of Issue</th><th>Issue To</th><th>Returnable</th>";
+        echo "<tr><th>Order No</th><th>Created By</th><th>Order Destination</th><th>Issue Description</th><th>Place of Issue</th><th>Issue To</th><th>Returnable</th>";
         echo "<th>Action<th>";
         if($designation == "E") echo "<th>Status</th></tr>";
         while ($row = mysqli_fetch_assoc($result)) {
             echo "<tr>";
             echo "<td>" . $row['orderno'] . "</td>";
+            echo "<td>" . $row['created_by'] . "</td>";
             echo "<td>" . $row['order_dest'] . "</td>";
             echo "<td>" . $row['issue_desc'] . "</td>";
             echo "<td>" . $row['placeoi'] . "</td>";
@@ -140,7 +141,7 @@ if ($designation == "E" && isset($_POST['edit_order'])) {
             if ($designation == "S")
                 echo "<td><a href='skdash.php?orderno=" . $row['orderno'] . "'>Security Link</a></td>";
             if ($designation == "E" && $row['created_by'] == $cpf_no) {
-                echo '<td>default</td>';
+                echo '<td></td>';
                 if($returnableValue =="Yes"){
                     if ($row['coll_approval'] == -1 || $row['security_approval'] == -1){
                         echo '<td><input type="hidden" name="orderno" value="' . $row['orderno'] . '">';
