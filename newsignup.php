@@ -86,51 +86,6 @@ function test_input($data)
 <head>
     <title>Guard Sign Up</title>
     <link rel="stylesheet" href="css/styles.css">
-    <style>
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-
-        input[type="text"],
-        input[type="password"],
-        input[type="phone"] {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-
-        .btn-primary {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        .btn-primary:hover {
-            background-color: #45a049;
-        }
-
-        .success-message {
-            color: #4CAF50;
-            margin-top: 10px;
-        }
-
-        .error-message {
-            color: #f44336;
-            margin-top: 10px;
-        }
-    </style>
 </head>
 
 <body>
