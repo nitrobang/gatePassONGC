@@ -3,16 +3,17 @@ session_start();
 require_once "db_connection.php";
 
 // Check if the user is not logged in
-if (!isset($_SESSION["username"])) {
-    header("Location: login.php");
+if (!isset($_SESSION["username"]) && !isset($_SESSION["phone_no"])) {
+    header("Location: newlogin.php");
     exit();
 }
+
 
 // Logout handling
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["logout"])) {
     // Destroy the session and redirect to the login page
     session_destroy();
-    header("Location: login.php");
+    header("Location: newlogin.php");
     exit();
 }
 
@@ -21,15 +22,18 @@ if (isset($_SESSION["cpf_no"])) {
     $cpf_no = $_SESSION["cpf_no"];
 }
 
-//get the designation of the user
-$query = "SELECT * FROM employee WHERE cpfno = '$cpf_no'";
-$result = mysqli_query($connection, $query);
-if (!$result || mysqli_num_rows($result) == 0) {
-    header("Location: skdash.php");
-    exit();
-}
-$user = mysqli_fetch_assoc($result);
-$designation = $user["designation"];
+if(!isset($_SESSION['designation'])){
+    //get the designation of the user
+    $query = "SELECT * FROM employee WHERE cpfno = '$cpf_no'";
+    $result = mysqli_query($connection, $query);
+    if (!$result || mysqli_num_rows($result) == 0) {
+        header("Location: skdash.php");
+        exit();
+    }
+    $user = mysqli_fetch_assoc($result);
+    $designation = $user["designation"];
+} else $designation = $_SESSION["designation"];
+
 
 // Check if the user clicked on the collector link
 if (($designation == "E") && isset($_GET['orderno'])) {
@@ -116,12 +120,13 @@ if ($designation == "E" && isset($_POST['edit_order'])) {
     if ($result && mysqli_num_rows($result) > 0) {
         // Display the data in a table
         echo "<table id='dynamic-table'>";
-        echo "<tr><th>Order No</th><th>Order Destination</th><th>Issue Description</th><th>Place of Issue</th><th>Issue To</th><th>Returnable</th>";
+        echo "<tr><th>Order No</th><th>Created By</th><th>Order Destination</th><th>Issue Description</th><th>Place of Issue</th><th>Issue To</th><th>Returnable</th>";
         echo "<th>Action<th>";
         if($designation == "E") echo "<th>Status</th></tr>";
         while ($row = mysqli_fetch_assoc($result)) {
             echo "<tr>";
             echo "<td>" . $row['orderno'] . "</td>";
+            echo "<td>" . $row['created_by'] . "</td>";
             echo "<td>" . $row['order_dest'] . "</td>";
             echo "<td>" . $row['issue_desc'] . "</td>";
             ?><?php
@@ -148,7 +153,7 @@ if ($designation == "E" && isset($_POST['edit_order'])) {
             if ($designation == "S")
                 echo "<td><a href='skdash.php?orderno=" . $row['orderno'] . "'>Security Link</a></td>";
             if ($designation == "E" && $row['created_by'] == $cpf_no) {
-                echo '<td>default</td>';
+                echo '<td></td>';
                 if($returnableValue =="Yes"){
                     if ($row['coll_approval'] == -1 || $row['security_approval'] == -1){
                         echo '<td>';
