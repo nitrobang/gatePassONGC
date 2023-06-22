@@ -170,7 +170,11 @@ function getEmployeesByCpf($cpf)
                 </tr>
                 <tr>
                     <td><label for="placei">Place of Issue</label>
-                        <input type="text" class="form-group" name="placei" required><br>
+                            <select class="form-group" name="placei" required>
+                                <option value="N" >NBP GREEN HEIGHTS</option>
+                                <option value="V" >VASUNDHARA BHAVAN</option>
+                                <option value="H" >11 HIGH</option>
+                            </select>
                     </td>
                     <td><label for="pod">Place of Destination</label>
                         <input type="text" class="form-group" name="pod" required>
@@ -209,7 +213,7 @@ function getEmployeesByCpf($cpf)
             <div class="result">
                 <p>Forwarded To:</p>
             </div>
-            <input type="text" name="fors" oninput="findet(this.value)">
+            <input type="text" name="fors" onkeydown="findet(this.value)">
             <ul class="autocomplete-list"></ul>
             <div class="clear"></div>
         </div>
