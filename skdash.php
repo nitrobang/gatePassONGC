@@ -59,14 +59,16 @@ if (($designation == "G") && isset($_GET['orderno'])) {
 
 // Set the session variable 'isEditable' and redirect to form.php for "New Order" button
 if ($designation == "E" && isset($_POST['new_order'])) {
-    header("Location: form.php");
+    $_SESSION['isedit'] = 0;
+    header("Location: tempform.php");
     exit();
 }
 
 // Set the session variable 'isEditable' and redirect to form.php for "Edit" button
 if ($designation == "E" && isset($_POST['edit_order'])) {
-    $orderno = $_POST['edit_order'];
-    header("Location: tempform.php?orderno=$orderno");
+    $_SESSION['isedit'] =1;
+    $_SESSION['orderno'] = $_POST['orderno'];
+    header("Location: tempform.php");
     exit();
 }
 
@@ -136,7 +138,7 @@ function getEmployeesByCpf($cpf)
     if ($result && mysqli_num_rows($result) > 0) {
         // Display the data in a table
         echo "<table id='dynamic-table'>";
-        echo "<tr><th>Order No</th><th>Created By</th><th>Order Destination</th><th>Issue Description</th><th>Place of Issue</th><th>Issue To</th><th>Returnable</th>";
+        echo "<tr><th>Order No</th><th>Order Destination</th><th>Issue Description</th><th>Place of Issue</th><th>Issue To</th><th>Returnable</th>";
         echo "<th>Action<th>";
         if($designation == "E") echo "<th>Status</th></tr>";
         while ($row = mysqli_fetch_assoc($result)) {
@@ -146,21 +148,7 @@ function getEmployeesByCpf($cpf)
             echo "<td>" . $creatorname . "</td>";
             echo "<td>" . $row['order_dest'] . "</td>";
             echo "<td>" . $row['issue_desc'] . "</td>";
-            ?><?php
-            $placeoi = $row['placeoi']; // Assuming $row['placeoi'] contains the value
-            $displayText = '';
-        
-            if ($placeoi === 'N') {
-                $displayText = 'NBP Green Heights';
-            } elseif ($placeoi === 'V') {
-                $displayText = 'Vasundhara Bhavan';
-            } elseif ($placeoi === 'H') {
-                $displayText = '11 HIGH';
-            }
-        
-            echo "<td>" . $displayText . "</td>";
-            ?>
-            <?php
+            echo "<td>" . $row['placeoi'] . "</td>";
             echo "<td>" . $row['issueto'] . "</td>";
             $returnableValue = ($row['returnable'] ? 'Yes' : 'No');
 
@@ -169,14 +157,14 @@ function getEmployeesByCpf($cpf)
                 echo "<td><a href='skdash.php?orderno=" . $row['orderno'] . "'>Collector Link</a></td>";
             if ($designation == "S")
                 echo "<td><a href='skdash.php?orderno=" . $row['orderno'] . "'>Security Link</a></td>";
+            if ($designation == "G")
+                echo "<td><a href='skdash.php?orderno=" . $row['orderno'] . "'>Guard Link</a></td>"; 
             if ($designation == "E" && $row['created_by'] == $cpf_no) {
-                echo '<td></td>';
+                echo '<td>default</td>';
                 if($returnableValue =="Yes"){
                     if ($row['coll_approval'] == -1 || $row['security_approval'] == -1){
-                        echo '<td>';
-                        echo '<input type="hidden" name="Orderno" value="' . $row['orderno'] . '">';
-                        echo '<button type="submit" name="edit_order" value="'.$row['orderno'].'">Edit</button>';
-                        echo '</td>';
+                        echo '<td><input type="hidden" name="orderno" value="' . $row['orderno'] . '">';
+                        echo '<button type="submit" name="edit_order">Edit</button></td>';
                     
                     }else if ($row['coll_approval'] == 1 && $row['security_approval'] == 0)
                         echo '<td>Approved by Collector</td>';
