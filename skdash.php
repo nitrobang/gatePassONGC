@@ -113,7 +113,7 @@ if ($designation == "E" && isset($_POST['edit_order'])) {
     } else if ($designation == "S") {
         $query = "SELECT orderno, order_dest, issue_desc, placeoi, issueto, returnable, coll_approval, security_approval,comp_approval,guard_approval,forwarded_to,created_by FROM order_no WHERE security_approval = 0 AND coll_approval = 1";
     } else {
-        $query = "SELECT orderno, order_dest, issue_desc, placeoi, issueto, returnable, coll_approval, security_approval,comp_approval,guard_approval,forwarded_to,created_by FROM order_no ";
+        $query = "SELECT orderno, order_dest, issue_desc, placeoi, issueto, returnable, coll_approval, security_approval,comp_approval,guard_approval,forwarded_to,created_by FROM order_no where placeoi = '{$_SESSION["venue"]}'";
     }
     $result = mysqli_query($connection, $query);
     // Check if the query was successful
