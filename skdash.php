@@ -3,10 +3,11 @@ session_start();
 require_once "db_connection.php";
 
 // Check if the user is not logged in
-if (!isset($_SESSION["username"])) {
+if (!isset($_SESSION["username"]) && !isset($_SESSION["phone_no"])) {
     header("Location: newlogin.php");
     exit();
 }
+
 
 // Logout handling
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["logout"])) {
@@ -21,15 +22,18 @@ if (isset($_SESSION["cpf_no"])) {
     $cpf_no = $_SESSION["cpf_no"];
 }
 
-//get the designation of the user
-$query = "SELECT * FROM employee WHERE cpfno = '$cpf_no'";
-$result = mysqli_query($connection, $query);
-if (!$result || mysqli_num_rows($result) == 0) {
-    header("Location: skdash.php");
-    exit();
-}
-$user = mysqli_fetch_assoc($result);
-$designation = $user["designation"];
+if(!isset($_SESSION['designation'])){
+    //get the designation of the user
+    $query = "SELECT * FROM employee WHERE cpfno = '$cpf_no'";
+    $result = mysqli_query($connection, $query);
+    if (!$result || mysqli_num_rows($result) == 0) {
+        header("Location: skdash.php");
+        exit();
+    }
+    $user = mysqli_fetch_assoc($result);
+    $designation = $user["designation"];
+} else $designation = $_SESSION["designation"];
+
 
 // Check if the user clicked on the collector link
 if (($designation == "E") && isset($_GET['orderno'])) {

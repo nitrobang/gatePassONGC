@@ -43,7 +43,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $query2 = "SELECT * FROM employee WHERE cpfno = '$cpf_no'";
             $result2 = mysqli_query($connection, $query2);
             if (!$result2 || mysqli_num_rows($result2) == 0) {
-                header("Location: login.php");
+                header("Location: newlogin.php");
                 exit();
             }
             $user2 = mysqli_fetch_assoc($result2);

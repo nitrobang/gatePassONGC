@@ -6,7 +6,7 @@ require_once "db_connection.php";
 
 // Check if the user is already logged in
 if (isset($_SESSION["username"])) {
-    header("Location: form.php");
+    header("Location: skdash.php");
     exit();
 }
 
@@ -59,12 +59,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($result && mysqli_num_rows($result) > 0) {
             $user = mysqli_fetch_assoc($result);
 
+            //get the designation of the user
+            $query2 = "SELECT * FROM employee WHERE cpfno = '$cpf_no'";
+            $result2 = mysqli_query($connection, $query2);
+            if (!$result2 || mysqli_num_rows($result2) == 0) {
+                header("Location: newlogin.php");
+                exit();
+            }
+            $user2 = mysqli_fetch_assoc($result2);
+            $designation = $user2["designation"]; 
+
             if ($loginType === "ongc") {
                 // Verify the password for ONGC login
                 if (password_verify($password, $user["password"])) {
                     // Password is correct, create a session and redirect to the dashboard
                     $_SESSION["username"] = $user["username"];
                     $_SESSION["cpf_no"] = $cpf_no;
+                    $_SESSION['designation'] = $designation;
                     header("Location: skdash.php");
                     exit();
                 } else {
@@ -73,12 +84,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             } elseif ($loginType === "guard") {
                 // Verify the password for guard login
                 $hashedPassword = $user["password"]; // Retrieve the hashed password from the database
+                echo $password;
                 if (password_verify($password, $hashedPassword)) {
                     // Password is correct, create a session and redirect to the guard dashboard
-                    $_SESSION["username"] = $user["username"];
                     $_SESSION["phone_no"] = $phone_no;
-                    header("Location: skdash.php");
-                    exit();
+                    $_SESSION["designation"] = 'G';
+                    header("Location: test.php");
                 } else {
                     $errorMessage = "Invalid password";
                 }
@@ -107,6 +118,7 @@ function test_input($data)
     <title>Login</title>
     <link rel="stylesheet" href="css/styles.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <script src="form.js"></script>
 </head>
 
 <body>
@@ -116,7 +128,7 @@ function test_input($data)
                 <img src="assets/images.png" class="logo" alt="ONGC Logo" />
                 <h1>Gate Pass Portal for ONGCians</h1>
                 <h2>Login</h2>
-                <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
+                <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" >
                     <div class="form-group">
                         <label>Select Login Type:</label>
                         <div>
