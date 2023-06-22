@@ -5,7 +5,7 @@
 require_once "db_connection.php";
 
 // Check if the user is not logged in
-if (!isset($_SESSION["username"])) {
+if (!isset($_SESSION["phone_no"])) {
     header("Location: newlogin.php");
     exit();
 }
