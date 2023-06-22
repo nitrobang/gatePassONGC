@@ -91,7 +91,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     // Password is correct, create a session and redirect to the guard dashboard
                     $_SESSION["phone_no"] = $phone_no;
                     $_SESSION["designation"] = 'G';
-                    $_SESSION['venue'] = $row['venue'];
+                    $_SESSION['venue'] = $user['venue'];
                     header("Location: skdash.php");
                 } else {
                     $errorMessage = "Invalid password";
