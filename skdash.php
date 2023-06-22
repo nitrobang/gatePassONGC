@@ -4,7 +4,7 @@ require_once "db_connection.php";
 
 // Check if the user is not logged in
 if (!isset($_SESSION["username"])) {
-    header("Location: login.php");
+    header("Location: newlogin.php");
     exit();
 }
 
@@ -12,7 +12,7 @@ if (!isset($_SESSION["username"])) {
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["logout"])) {
     // Destroy the session and redirect to the login page
     session_destroy();
-    header("Location: login.php");
+    header("Location: newlogin.php");
     exit();
 }
 
@@ -107,22 +107,20 @@ if ($designation == "E" && isset($_POST['edit_order'])) {
     <?php
     // Retrieve data from the "order_no" table
     if ($designation == "E") {
-        $query = "SELECT orderno, order_dest, issue_desc, placeoi, issueto, returnable, coll_approval, security_approval,comp_approval,guard_approval FROM order_no WHERE coll_approval = 0 AND security_approval != -1 AND forwarded_to = '{$cpf_no}'";
+        $query = "SELECT orderno, order_dest, issue_desc, placeoi, issueto, returnable, coll_approval, security_approval,comp_approval,guard_approval,forwarded_to,created_by FROM order_no WHERE coll_approval = 0 AND forwarded_to = {$cpf_no} OR created_by = {$cpf_no}";
     } else if ($designation == "S") {
-        $query = "SELECT orderno, order_dest, issue_desc, placeoi, issueto, returnable, coll_approval, security_approval,comp_approval,guard_approval FROM order_no WHERE security_approval = 0 AND coll_approval != -1";
+        $query = "SELECT orderno, order_dest, issue_desc, placeoi, issueto, returnable, coll_approval, security_approval,comp_approval,guard_approval,forwarded_to,created_by FROM order_no WHERE security_approval = 0 AND coll_approval = 1";
     } else {
-        $query = "SELECT orderno, order_dest, issue_desc, placeoi, issueto, returnable, coll_approval, security_approval,comp_approval,guard_approval FROM order_no";
+        $query = "SELECT orderno, order_dest, issue_desc, placeoi, issueto, returnable, coll_approval, security_approval,comp_approval,guard_approval,forwarded_to,created_by FROM order_no ";
     }
     $result = mysqli_query($connection, $query);
-
     // Check if the query was successful
     if ($result && mysqli_num_rows($result) > 0) {
         // Display the data in a table
         echo "<table id='dynamic-table'>";
         echo "<tr><th>Order No</th><th>Order Destination</th><th>Issue Description</th><th>Place of Issue</th><th>Issue To</th><th>Returnable</th>";
-        if ($designation == "E" || $designation == "S")
-            echo "<th>Action<th></tr>";
-        else echo "<th>Status</th></tr>";
+        echo "<th>Action<th>";
+        if($designation == "E") echo "<th>Status</th></tr>";
         while ($row = mysqli_fetch_assoc($result)) {
             echo "<tr>";
             echo "<td>" . $row['orderno'] . "</td>";
@@ -133,11 +131,12 @@ if ($designation == "E" && isset($_POST['edit_order'])) {
             $returnableValue = ($row['returnable'] ? 'Yes' : 'No');
 
             echo "<td>" . ($returnableValue) . "</td>";
-            if ($designation == "E")
+            if ($designation == "E" && $row['forwarded_to'] == $cpf_no)
                 echo "<td><a href='skdash.php?orderno=" . $row['orderno'] . "'>Collector Link</a></td>";
             if ($designation == "S")
                 echo "<td><a href='skdash.php?orderno=" . $row['orderno'] . "'>Security Link</a></td>";
-            if ($designation == "E") {
+            if ($designation == "E" && $row['created_by'] == $cpf_no) {
+                echo '<td>default</td>';
                 if($returnableValue =="Yes"){
                     if ($row['coll_approval'] == -1 || $row['security_approval'] == -1){
                         echo '<td><input type="hidden" name="orderno" value="' . $row['orderno'] . '">';

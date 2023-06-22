@@ -5,11 +5,10 @@ require_once "db_connection.php";
 // echo "hello".$_SESSION['orderno'];
 // Check if the user is not logged in
 if (!isset($_SESSION["username"])) {
-    header("Location: login.php");
+    header("Location: newlogin.php");
     exit();
 }
 if ($_SESSION['isedit']==1){
-
 $orderno = $_SESSION['orderno'];
 }
 //check if right person(store keeper) is accessing the forms page   
@@ -22,7 +21,7 @@ if ($_SESSION["designation"] != "E") {
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["logout"])) {
     // Destroy the session and redirect to the login page
     session_destroy();
-    header("Location: login.php");
+    header("Location: newlogin.php");
     exit();
 }
 
@@ -41,10 +40,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $placeOfDestination = mysqli_real_escape_string($conn, $_POST["pod"]);
     $forwardTo = mysqli_real_escape_string($conn, $_POST["fors"]);
     $collector_name = getEmployeesByCpf($forwardTo);
+    $created_by = $_SESSION['cpf_no'];
 
     // Insert data into the 'order_no' table
-    $insertOrderNoQuery = "INSERT INTO order_no (order_dest, issue_desc, placeoi, issueto, securityn, collector_name, returnable, forwarded_to) 
-                           VALUES ('$placeOfDestination', '$issueDesc', '$placeOfIssue', '$issueTo', '', '$collector_name', $returnable, '$forwardTo')";
+    $insertOrderNoQuery = "INSERT INTO order_no (order_dest, issue_desc, placeoi, issueto, securityn, collector_name, returnable, forwarded_to, created_by) 
+                           VALUES ('$placeOfDestination', '$issueDesc', '$placeOfIssue', '$issueTo', '', '$collector_name', $returnable, '$forwardTo', '$created_by')";
 
     if (mysqli_query($conn, $insertOrderNoQuery)) {
         $orderNo = mysqli_insert_id($conn); // Get the auto-generated order ID

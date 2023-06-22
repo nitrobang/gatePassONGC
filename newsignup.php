@@ -63,7 +63,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $insertResult = mysqli_query($connection, $insertQuery);
 
         if ($insertResult) {
-            $successMessage = "Signup successful! You can now <a href='login.php'>Login</a>.";
+            $successMessage = "Signup successful! You can now <a href='newlogin.php'>Login</a>.";
         } else {
             $errorMessage = "Error creating user";
         }
