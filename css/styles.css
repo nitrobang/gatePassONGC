@@ -119,3 +119,26 @@ clear{
 #dynamic-table tr:hover {
     background-color: #f5f5f5;
 }
+select{
+    width: 100%;
+    border: 1px solid #ccc;
+    padding-left: 5px;
+    padding: 5px;
+    font-size: 18px;
+    font-family: 'Open Sans', sans-serif;
+    color: #555;
+    background-color: rgb(255, 255, 255);
+    background-image: none;
+    border: 1px solid rgb(41, 18, 18);
+}
+select>option{
+    font-size: 18px;
+    font-family: 'Open Sans', sans-serif;
+    color: #555;
+    background-color: rgb(247, 247, 247);
+    background-image: none;
+    font-size: 18px;
+
+    padding: 15px;
+    border: 1px solid rgb(41, 18, 18);
+}
