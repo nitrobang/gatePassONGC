@@ -1,3 +1,6 @@
+<?php
+session_start();
+?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -6,7 +9,9 @@
 <body>
 
   <?php
-    echo "Hello, World!";
+    $_SESSION["designation"] = 'G';
+    $_SESSION["phone_no"] = '1010101010';
+    header('Location: skdash.php');
   ?>
 
 </body>
