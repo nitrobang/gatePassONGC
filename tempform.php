@@ -5,7 +5,7 @@ require_once "db_connection.php";
 // echo "hello".$_SESSION['orderno'];
 // Check if the user is not logged in
 if (!isset($_SESSION["username"])) {
-    header("Location: login.php");
+    header("Location: newlogin.php");
     exit();
 }
 if ($_SESSION['isedit']==1){
@@ -21,7 +21,7 @@ if ($_SESSION["designation"] != "E") {
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["logout"])) {
     // Destroy the session and redirect to the login page
     session_destroy();
-    header("Location: login.php");
+    header("Location: newlogin.php");
     exit();
 }
 

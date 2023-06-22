@@ -4,7 +4,7 @@ require_once "db_connection.php";
 
 // Check if the user is not logged in
 if (!isset($_SESSION["username"])) {
-    header("Location: login.php");
+    header("Location: newlogin.php");
     exit();
 }
 
@@ -12,7 +12,7 @@ if (!isset($_SESSION["username"])) {
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["logout"])) {
     // Destroy the session and redirect to the login page
     session_destroy();
-    header("Location: login.php");
+    header("Location: newlogin.php");
     exit();
 }
 
