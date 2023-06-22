@@ -157,7 +157,7 @@ function getEmployeesByCpf($cpf)
             } elseif ($placeoi === 'H') {
                 $displayText = '11 HIGH';
             }
-        
+            echo "<td>" . $displayText . "</td>";
             echo "<td>" . $displayText . "</td>";
             ?>
             <?php
