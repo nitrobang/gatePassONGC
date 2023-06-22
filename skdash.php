@@ -20,6 +20,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["logout"])) {
 $conn = $connection;
 if (isset($_SESSION["cpf_no"])) {
     $cpf_no = $_SESSION["cpf_no"];
+    
 }
 
 if(!isset($_SESSION['designation'])){
@@ -68,6 +69,20 @@ if ($designation == "E" && isset($_POST['edit_order'])) {
     header("Location: tempform.php?orderno=$orderno");
     exit();
 }
+
+function getEmployeesByCpf($cpf)
+{
+    global $connection;
+    $query = "SELECT empname FROM employee WHERE cpfno = '$cpf'";
+    $result = mysqli_query($connection, $query);
+    $employee = null;
+    if ($result && mysqli_num_rows($result) > 0) {
+        $row = mysqli_fetch_assoc($result);
+        $employee = $row['empname'];   
+    }
+    return $employee;
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -107,6 +122,7 @@ if ($designation == "E" && isset($_POST['edit_order'])) {
     <?php endif; ?>
         <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>"> 
     <?php
+    
     // Retrieve data from the "order_no" table
     if ($designation == "E") {
         $query = "SELECT orderno, order_dest, issue_desc, placeoi, issueto, returnable, coll_approval, security_approval,comp_approval,guard_approval,forwarded_to,created_by FROM order_no WHERE coll_approval = 0 AND forwarded_to = {$cpf_no} OR created_by = {$cpf_no}";
@@ -126,7 +142,8 @@ if ($designation == "E" && isset($_POST['edit_order'])) {
         while ($row = mysqli_fetch_assoc($result)) {
             echo "<tr>";
             echo "<td>" . $row['orderno'] . "</td>";
-            echo "<td>" . $row['created_by'] . "</td>";
+            $creatorname = getEmployeesByCpf($row['created_by']);
+            echo "<td>" . $creatorname . "</td>";
             echo "<td>" . $row['order_dest'] . "</td>";
             echo "<td>" . $row['issue_desc'] . "</td>";
             ?><?php
@@ -140,7 +157,7 @@ if ($designation == "E" && isset($_POST['edit_order'])) {
             } elseif ($placeoi === 'H') {
                 $displayText = '11 HIGH';
             }
-        
+            echo "<td>" . $displayText . "</td>";
             echo "<td>" . $displayText . "</td>";
             ?>
             <?php
