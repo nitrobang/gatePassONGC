@@ -1,5 +1,5 @@
 <?php
-session_start();
+// session_start();
 
 // Include the database connection file
 require_once "db_connection.php";
@@ -19,7 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["logout"])) {
 }
 
 // SQL query to fetch fields from a table
-$sql = "SELECT o.descrip, o.nop, o.deliverynote, o.remark, n.moc, n.vehno
+$sql = "SELECT n.order_dest,n.issue_desc,n.placeoi,n.issueto,o.descrip, o.nop, o.deliverynote, o.remark, n.moc, n.vehno,n.securityn
 FROM orders o
 JOIN order_no n ON o.orderno = n.orderno
 WHERE o.orderno = " . $_SESSION['orderno'];
@@ -50,17 +50,22 @@ if ($result->num_rows > 0) {
     </style>";
     echo "<a href='skdash.php'>Go Back</a>";
     echo "<table>";
-    echo "<tr><th>Brief description</th><th>No of Packages</th><th>Delivery Note Or Dispatch Convey Note No OR Indent No</th><th>Remarks</th><th>Mode Of Collection</th><th>Vehicle Number</th></tr>";
+    echo "<tr><th>Order Destination</th><th>Issue Description</th><th>Place Of Issue</th><th>Issue TO</th><th>Brief description</th><th>No of Packages</th><th>Delivery Note Or Dispatch Convey Note No OR Indent No</th><th>Remarks</th><th>Mode Of Collection</th><th>Vehicle Number</th><th>Security Name</th></tr>";
 
     // Output data of each row
     while ($row = $result->fetch_assoc()) {
         echo "<tr>";
+        echo "<td>" . $row["order_dest"] . "</td>";
+        echo "<td>" . $row["issue_desc"] . "</td>";
+        echo "<td>" . $row["placeoi"] . "</td>";
+        echo "<td>" . $row["issueto"] . "</td>";
         echo "<td>" . $row["descrip"] . "</td>";
         echo "<td>" . $row["nop"] . "</td>";
         echo "<td>" . $row["deliverynote"] . "</td>";
         echo "<td>" . $row["remark"] . "</td>";
         echo "<td>" . $row["moc"] . "</td>";
         echo "<td>" . $row["vehno"] . "</td>";
+        echo "<td>" . $row["securityn"] . "</td>";
         echo "</tr>";
     }
 
@@ -68,12 +73,9 @@ if ($result->num_rows > 0) {
 
     // Add form to input "Mode of Collection" and "Vehicle Number"
     echo '<form method="POST" action="">
-            <label for="securityn">Name:</label>
-            <input type="text" id="securityn" name="securityn" required><br><br>
-
-            <input type="submit" name="revert" value="Revert">
+            
             <input type="submit" name="approve" value="Approve">
-          </form>';
+        </form>';
 
 } else {
     echo "No fields found in the table.";
@@ -82,24 +84,25 @@ if ($result->num_rows > 0) {
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Get the input values from the form
-    $securityn = $_POST["securityn"];
+    // $securityn = $_POST["securityn"];
 
     // Insert the values into the orders table
     if (isset($_POST['approve'])) {
         $insert_sql = "UPDATE order_no 
-                SET securityn = '$securityn', security_approval = 1
+                SET  security_approval = 1
                 WHERE orderno =" . $_SESSION['orderno'];
         $connection->query($insert_sql);
         header('Location: skdash.php');
         exit();
-    } else if (isset($_POST['revert'])) {
-        $insert_sql = "UPDATE order_no 
-                SET securityn = '$securityn', security_approval = -1
-                WHERE orderno =" . $_SESSION['orderno'];
-        $connection->query($insert_sql);
-        header('Location: skdash.php');
-        exit();
-    }
+    } 
+    // else if (isset($_POST['revert'])) {
+    //     $insert_sql = "UPDATE order_no 
+    //             SET securityn = '$securityn', security_approval = -1
+    //             WHERE orderno =" . $_SESSION['orderno'];
+    //     $connection->query($insert_sql);
+    //     header('Location: skdash.php');
+    //     exit();
+    // }
 }
 
 $connection->close();
