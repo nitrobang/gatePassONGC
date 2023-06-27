@@ -46,7 +46,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         if (mysqli_query($conn, $UpdateOrderNoQuery)) {
 
-            //******/ Insert data into the 'orders' table *********
+            //*****************/ Insert data into the 'orders' table ************************
 
             // Retrieve the form data
             $serialNumbers = $_POST['serial_number'];
@@ -74,7 +74,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $stmt->execute();
             }
 
-            /********** Done ************/
+            /****************************** Done **********************************/
 
             // Redirect to a success page or display a success message
             header("Location: skdash.php");
