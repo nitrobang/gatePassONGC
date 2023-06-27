@@ -22,8 +22,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["logout"])) {
     header("Location: newlogin.php");
     exit();
 }
-
 $conn = $connection;
+if(isset($_GET['orderno'])){
+    $orderno = $_GET['orderno'];
+
+    $checkquery = "SELECT coll_approval,security_approval,guard_approval  FROM order_no WHERE orderno = '$orderno'";
+    $result = mysqli_query($conn, $checkquery);
+    
+    if ($result) {
+        $row = mysqli_fetch_assoc($result);
+        $collApproval = $row['coll_approval'];
+        $sApproval = $row['security_approval'];
+        $gApproval = $row['guard_approval'];
+        // Check if the 'coll_approval' value is not equal to -1
+        if ($collApproval != -1 && $sApproval != -1 && $gApproval != -1) {
+            echo "<script>alert('Form can't be edited.')</script>";
+            echo "<script>window.location.href = 'skdash.php';</script>";
+            exit();
+        }
+    }
+}
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if (isset($_POST["submit"])) {
@@ -37,10 +56,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $collector_name = getEmployeesByCpf($forwardTo);
         $orderno = mysqli_real_escape_string($conn, $_POST["orderno"]);
         $created_by = $_SESSION['cpf_no'];
+
+        
+
         $coll_approval=0;
         $security_approval=0;
         $guard_approval=0;
         
+
 
 
 
@@ -80,8 +103,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             /********** Done ************/
 
-            // Redirect to a success page or display a success message
-            header("Location: skdash.php");
+            echo "<script>alert('Form can't be edited.')</script>";
+            echo "<script>window.location.href = 'skdash.php';</script>";
             exit();
         } else {
             // Handle the case where the insertion failed
@@ -162,7 +185,7 @@ function getEmployeesByCpf($cpf)
 
     <h2 class="wlc">Welcome, <?php echo $_SESSION["username"]; ?>!</h2><br>
     <?php
-    $orderno = $_GET['orderno']; // Get the 'orderno' parameter from the URL
+    // $orderno = $_GET['orderno']; // Get the 'orderno' parameter from the URL
     echo $orderno;
     $selectOrderNoQuery = "SELECT * FROM order_no WHERE orderno = '$orderno'";
     $result1 = mysqli_query($conn, $selectOrderNoQuery);
