@@ -75,7 +75,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         /****************************** Done **********************************/
 
         // Redirect to a success page or display a success message
-        header("Location: skdash.php");
+        echo "<script>alert('Order placed Successfully')</script>";
+        echo "<script>window.location.href = 'skdash.php';</script>";
         exit();
     } else {
         // Handle the case where the insertion failed
@@ -170,14 +171,15 @@ function getEmployeesByCpf($cpf)
                 </tr>
                 <tr>
                     <td><label for="placei">Place of Issue</label>
-                            <select class="form-group" name="placei" required>
-                                <option value="N" >NBP GREEN HEIGHTS</option>
-                                <option value="V" >VASUNDHARA BHAVAN</option>
-                                <option value="H" >11 HIGH</option>
-                            </select>
+                        <select class="form-group" name="placei" required>
+                            <option value="N">NBP GREEN HEIGHTS</option>
+                            <option value="V">VASUNDHARA BHAVAN</option>
+                            <option value="H">11 HIGH</option>
+                        </select>
                     </td>
                     <td><label for="pod">Place of Destination</label>
                         <input type="text" class="form-group" name="pod" required>
+                        
                     </td>
                 </tr>
             </table>
