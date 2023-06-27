@@ -57,7 +57,7 @@ if (isset($_SESSION['orderno'])) {
     // Handle form submission to Revert the order
     if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["deny"])) {
         // Update the order_no table with coll_approval = -1 to indicate denial
-        $updateQuery = "UPDATE order_no SET coll_approval = -1 WHERE orderno = $orderno";
+        $updateQuery = "UPDATE order_no SET coll_approval = -1,security_approval = 0,guard_approval = 0 WHERE orderno = $orderno";
         $updateResult = mysqli_query($connection, $updateQuery);
 
         if ($updateResult) {
