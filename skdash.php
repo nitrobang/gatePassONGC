@@ -172,19 +172,47 @@ function getEmployeesByCpf($cpf)
             else if ($designation == "S")
                 echo "<td><a href='skdash.php?orderno=" . $row['orderno'] . "'>Security Link</a></td>";
             else if ($designation == "G")
-                echo "<td><a href='skdash.php?orderno=" . $row['orderno'] . "'>Guard Link</a></td>"; 
-            else if($row['coll_approval'] != -1)  {
-                    echo '<td>-</td>';
+                echo "<td><a href='skdash.php?orderno=" . $row['orderno'] . "'>Guard Link</a></td>";
+            else  if ($row['created_by'] == $cpf_no && $row['coll_approval'] == -1 || $row['security_approval'] == -1 || $row['guard_approval'] == -1) {
+                echo '<td>';
+                echo '<input type="hidden" name="Orderno" value="' . $row['orderno'] . '">';
+                echo '<button type="submit" name="edit_order" class="btn btn-outline-secondary" value="' . $row['orderno'] . '">Edit</button>';
+                echo '</td>';
+                if ($row['coll_approval']==-1)
+
+                    echo '<td>Order Reverted BY Collector </td>';
+                
+                elseif ($row['security_approval']==-1)
+
+                echo '<td>Order Reverted By Security </td>';
+
+                elseif($row['guard_approval']==-1)
+
+                    echo '<td>Order Reverted By Guard </td>';
             }
+            else  echo '<td>-</td>';
+            // else if( $row['coll_approval'] != -1 )  {
+            //         echo '<td>-</td>';
+            // }
+            // else if( $row['security_approval'] != -1 )  {
+            //         echo '<td>-</td>';
+            // }
+            // else if( $row['guard_approval'] != -1 )  {
+            //         echo '<td>-</td>';
+            // }
+
+
+            // $row['coll_approval'] != -1 || $row['security_approval'] != -1 ||
             if ($designation == "E" && $row['created_by'] == $cpf_no) {
                 if($returnableValue =="Yes"){
-                    if ($row['coll_approval'] == -1 || $row['security_approval'] == -1) {
-                            echo '<td>';
-                            echo '<input type="hidden" name="Orderno" value="' . $row['orderno'] . '">';
-                            echo '<button type="submit" name="edit_order" class="btn btn-outline-secondary" value="' . $row['orderno'] . '">Edit</button>';
-                            echo '</td>';
-                            echo '<td>Order Reverted </td>';
-                    }else if ($row['coll_approval'] == 1 && $row['security_approval'] == 0)
+                    // if ($row['coll_approval'] == -1 || $row['security_approval'] == -1 || $row['guard_approval'] == -1) {
+                    //         echo '<td>';
+                    //         echo '<input type="hidden" name="Orderno" value="' . $row['orderno'] . '">';
+                    //         echo '<button type="submit" name="edit_order" class="btn btn-outline-secondary" value="' . $row['orderno'] . '">Edit</button>';
+                    //         echo '</td>';
+                    //         echo '<td>Order Reverted </td>';
+                    // }
+                    if ($row['coll_approval'] == 1 && $row['security_approval'] == 0)
                         echo '<td>Approved by Collector</td>';
                     
                     else if ($row['security_approval'] == 1 && $row['guard_approval'] == 0)
@@ -200,11 +228,11 @@ function getEmployeesByCpf($cpf)
                         echo '<td>Order Completed</td>';       
                 }
                 elseif($returnableValue=="No"){
-                    if ($row['coll_approval'] == -1 || $row['security_approval'] == -1)
-                        {echo '<td><input type="hidden" name="orderno" value="' . $row['orderno'] . '">';
-                            echo '<button type="submit" name="edit_order">Edit</button></td>';}
+                    // if ($row['coll_approval'] == -1 || $row['security_approval'] == -1 || $row['guard_approval'] == -1 )
+                    //     {echo '<td><input type="hidden" name="orderno" value="' . $row['orderno'] . '">';
+                    //         echo '<button type="submit" name="edit_order">Edit</button></td>';}
                     
-                    else if ($row['coll_approval'] == 1 && $row['guard_approval'] == 0)
+                    if ($row['coll_approval'] == 1 && $row['guard_approval'] == 0)
                         echo '<td>Approved by Collector</td>';
                     
                     else if ($row['guard_approval'] == 1 && $row['security_approval'] == 0)
