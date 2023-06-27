@@ -176,8 +176,22 @@ function getEmployeesByCpf($cpf)
                                 <option value="H" >11 HIGH</option>
                             </select>
                     </td>
-                    <td><label for="pod">Place of Destination</label>
-                        <input type="text" class="form-group" name="pod" required>
+                    <td><label for="placeOfDestination">Place of Destination</label>
+                    <select name="pod" required onchange="showOtherOption(this)">
+                        <option value="N">NBP Green Heights</option>
+                        <option value="V">Vasundhara Bhavan</option>
+                        <option value="H">11 High</option>
+                        <option value="other">Other</option>
+                    </select>
+
+                    <div id="otherOptionContainer" style="display: none;">
+                        <input type="text" name="otherOption" placeholder="Specify other option">
+                    </div>
+
+
+
+
+
                     </td>
                 </tr>
             </table>
@@ -222,6 +236,20 @@ function getEmployeesByCpf($cpf)
         <input type="submit" name="submit" id="submitButton" value="Submit" disabled>
     </form>
     <script type="text/javascript" src="form.js"></script>
+    <script>
+    function showOtherOption(selectElement) {
+        var otherOptionContainer = document.getElementById('otherOptionContainer');
+        var otherOptionInput = otherOptionContainer.querySelector('input[name="otherOption"]');
+        if (selectElement.value === 'other') {
+            otherOptionContainer.style.display = 'block';
+            otherOptionInput.setAttribute('required', 'required');
+        } else {
+            otherOptionContainer.style.display = 'none';
+            otherOptionInput.removeAttribute('required');
+        }
+    }
+    </script>
+
 </body>
 
 </html>
