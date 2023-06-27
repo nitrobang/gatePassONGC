@@ -25,17 +25,42 @@ body {
 
 .container {
     max-width: 100vh;
+    top: 0px;
     margin: 0 auto;
     padding: 20px;
     border-radius: 5px;
+    position: relative;
 }
 .btn-secondary{
     position: absolute;
-    background-color: #717A84;
+    background-color: #717A84 !important;
+}
+.btn-outline-danger{
+    background-color: #69140E ;
+    --bs-btn-color: #69140E;
+    --bs-btn-border-color: #69140E!important;
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: #69140E!important;
+    --bs-btn-hover-border-color: #69140E!important;
+    --bs-btn-focus-shadow-rgb: 220,53,69;
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: #69140E;
+    --bs-btn-active-border-color: #69140E;
+    --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+    --bs-btn-disabled-color: #69140E;
+    --bs-btn-disabled-bg: transparent;
+    --bs-btn-disabled-border-color: #69140E;
+    --bs-gradient: none;
 }
 #lo{
+    position: absolute;
     top: 0px;
     right: 0px;
+}
+#gb{
+    position: absolute;
+    top: 0px;
+    left: 0px;
 }
 h2 {
     text-align: center;

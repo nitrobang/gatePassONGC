@@ -101,7 +101,7 @@ function getEmployeesByCpf($cpf)
 
 <body>
     <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
-        <button type="submit" id="lo" class="btn btn-secondary" name="logout">Logout</button>
+        <button type="submit" id="lo" class="btn btn-outline-danger" name="logout">Logout</button>
     </form>
     <div class="container">
         <table>
@@ -118,7 +118,7 @@ function getEmployeesByCpf($cpf)
     <h3>Dashboard</h3>
     <?php if ($designation == "E") : ?>
         <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
-            <button type="submit" name="new_order">New Order</button>
+            <button type="submit" class="btn btn-primary" name="new_order">New Order</button>
         </form>
     <?php endif; ?>
         <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>"> 
@@ -159,27 +159,31 @@ function getEmployeesByCpf($cpf)
                 $displayText = '11 HIGH';
             }
             echo "<td>" . $displayText . "</td>";
-            echo "<td>" . $displayText . "</td>";
             ?>
             <?php
             echo "<td>" . $row['issueto'] . "</td>";
             $returnableValue = ($row['returnable'] ? 'Yes' : 'No');
 
             echo "<td>" . ($returnableValue) . "</td>";
-            if ($designation == "E" && $row['forwarded_to'] == $cpf_no)
+            
+            if ($designation == "E" && $row['forwarded_to'] == $cpf_no && $row['coll_approval'] == 0){
                 echo "<td><a href='skdash.php?orderno=" . $row['orderno'] . "'>Collector Link</a></td>";
-            if ($designation == "S")
+            }
+            else if ($designation == "S")
                 echo "<td><a href='skdash.php?orderno=" . $row['orderno'] . "'>Security Link</a></td>";
-            if ($designation == "G")
+            else if ($designation == "G")
                 echo "<td><a href='skdash.php?orderno=" . $row['orderno'] . "'>Guard Link</a></td>"; 
+            else if($row['coll_approval'] != -1)  {
+                    echo '<td>-</td>';
+            }
             if ($designation == "E" && $row['created_by'] == $cpf_no) {
-                echo '<td>-</td>';
                 if($returnableValue =="Yes"){
                     if ($row['coll_approval'] == -1 || $row['security_approval'] == -1) {
                             echo '<td>';
                             echo '<input type="hidden" name="Orderno" value="' . $row['orderno'] . '">';
                             echo '<button type="submit" name="edit_order" class="btn btn-outline-secondary" value="' . $row['orderno'] . '">Edit</button>';
                             echo '</td>';
+                            echo '<td>Order Reverted </td>';
                     }else if ($row['coll_approval'] == 1 && $row['security_approval'] == 0)
                         echo '<td>Approved by Collector</td>';
                     
@@ -190,7 +194,7 @@ function getEmployeesByCpf($cpf)
                         echo '<td>Approved and Out</td>'; 
                     
                     else if ($row['coll_approval'] == 0 && $row['security_approval'] == 0 && $row['guard_approval'] == 0 && $row['comp_approval'] == 0)
-                        echo '<td>Order Pending</td>';  
+                        echo '<td>Collector Approval Pending</td>';  
                     
                     else if ($row['coll_approval'] == 1 && $row['security_approval'] == 1 && $row['guard_approval'] == 1 && $row['comp_approval'] == 1)
                         echo '<td>Order Completed</td>';       

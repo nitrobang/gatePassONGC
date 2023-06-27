@@ -139,7 +139,7 @@ function getEmployeesByCpf($cpf)
     <button class="btn btn-secondary" id="gb" onclick="window.location.href = 'skdash.php'">Go Back</button>
 
     <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
-        <button type="submit" id="lo" class="btn btn-secondary" name="logout">Logout</button>
+        <button type="submit" id="lo" class="btn btn-outline-danger" name="logout">Logout</button>
     </form>
 
 

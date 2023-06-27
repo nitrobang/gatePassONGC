@@ -77,12 +77,26 @@ if (isset($_SESSION['orderno'])) {
 <head>
   <title>Order Details</title>
   <link rel="stylesheet" href="css/styles.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
 </head>
 <body>
-  <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
-    <button type="submit" name="logout">Logout</button>
-  </form>
-  <a href="skdash.php">Go Back</a>
+<form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
+        <button type="submit" id="lo" class="btn btn-outline-danger" name="logout">Logout</button>
+    </form>
+    <button class="btn btn-secondary" id="gb" onclick="window.location.href = 'skdash.php'">Go Back</button>
+    <div class="container">
+        <table>
+            <tr>
+                <td><img src="assets/images.png" class="logo"></td>
+                <td>
+                    <h1>Oil and Natural Gas Corporation</h1>
+                    <h3>MUMBAI REGION- REGIONAL OFFICE- INFOCOM</h3>
+                </td>
+            </tr>
+        </table>
+        
+    </div>
+    <h3>Collector Page</h3>
   <table id='dynamic-table'>
     <tr>
       <th>Description</th>
