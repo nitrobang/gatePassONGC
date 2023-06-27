@@ -106,7 +106,7 @@ WHERE o.orderno = " . $_SESSION['orderno'];
             exit();
         } else if (isset($_POST['revert'])) {
             $insert_sql = "UPDATE order_no 
-                SET securityn = '$securityn', guard_approval = -1
+                SET securityn = '$securityn', guard_approval = -1,coll_approval =0,security_approval =0
                 WHERE orderno =" . $_SESSION['orderno'];
             $connection->query($insert_sql);
             header('Location: skdash.php');

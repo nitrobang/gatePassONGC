@@ -75,6 +75,7 @@ if ($result->num_rows > 0) {
     echo '<form method="POST" action="">
             
             <input type="submit" name="approve" value="Approve">
+            <input type="submit" name="revert" value="Revert">
         </form>';
 
 } else {
@@ -95,15 +96,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         header('Location: skdash.php');
         exit();
     } 
-    // else if (isset($_POST['revert'])) {
-    //     $insert_sql = "UPDATE order_no 
-    //             SET securityn = '$securityn', security_approval = -1
-    //             WHERE orderno =" . $_SESSION['orderno'];
-    //     $connection->query($insert_sql);
-    //     header('Location: skdash.php');
-    //     exit();
-    // }
+    else if (isset($_POST['revert'])) {
+    $insert_sql = "UPDATE order_no 
+                 SET  security_approval = -1,guard_approval = 0,coll_approval = 0
+                 WHERE orderno =" . $_SESSION['orderno'];
+         $connection->query($insert_sql);
+         header('Location: skdash.php');
+         exit();
+     }
 }
 
 $connection->close();
-?>
