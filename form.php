@@ -224,6 +224,7 @@ function getEmployeesByCpf($cpf)
     </form>
     <script type="text/javascript" src="form.js"></script>
     <script>
+        
     function showOtherOption(selectElement) {
         var otherOptionContainer = document.getElementById('otherOptionContainer');
         var otherOptionInput = otherOptionContainer.querySelector('input[name="otherOption"]');
@@ -236,7 +237,7 @@ function getEmployeesByCpf($cpf)
         }
     }
     </script>
-
+    <!-- herther -->
 </body>
 
 </html>
