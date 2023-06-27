@@ -159,7 +159,7 @@ function getEmployeesByCpf($cpf)
             if ($designation == "G")
                 echo "<td><a href='skdash.php?orderno=" . $row['orderno'] . "'>Guard Link</a></td>"; 
             if ($designation == "E" && $row['created_by'] == $cpf_no) {
-                echo '<td>default</td>';
+                echo '<td>-</td>';
                 if($returnableValue =="Yes"){
                     if ($row['coll_approval'] == -1 || $row['security_approval'] == -1) {
                             echo '<td>';
