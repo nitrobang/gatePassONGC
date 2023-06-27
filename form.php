@@ -75,7 +75,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         /****************************** Done **********************************/
 
         // Redirect to a success page or display a success message
-        header("Location: form.php");
+        header("Location: skdash.php");
         exit();
     } else {
         // Handle the case where the insertion failed
