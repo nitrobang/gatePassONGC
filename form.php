@@ -32,7 +32,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $issueDesc = mysqli_real_escape_string($conn, $_POST["issued"]);
     $placeOfIssue = mysqli_real_escape_string($conn, $_POST["placei"]);
     $issueTo = mysqli_real_escape_string($conn, $_POST["issuet"]);
-    $placeOfDestination = mysqli_real_escape_string($conn, $_POST["pod"]);
+    $placeOfDestination = '';
+    if ($_POST["pod"] == "other") {
+        $placeOfDestination = mysqli_real_escape_string($conn, $_POST["otherOption"]);
+    } else {
+        $placeOfDestination = mysqli_real_escape_string($conn, $_POST["pod"]);
+    }
     $forwardTo = mysqli_real_escape_string($conn, $_POST["fors"]);
     $collector_name = getEmployeesByCpf($forwardTo);
     $created_by = $_SESSION['cpf_no'];
@@ -185,22 +190,17 @@ function getEmployeesByCpf($cpf)
                             <option value="H">11 HIGH</option>
                         </select>
                     </td>
-                    <td><label for="pod">Place of Destination</label>
-                    <select class="form-group" name="pod" required onchange="showOtherOption(this)">
-                    <option value="N">NBP Green Heights</option>
-                    <option value="V">Vasundhara Bhavan</option>
-                    <option value="H">11 High</option>
-                    <option value="other">Other</option>
+                    <td>
+                    <label for="pod">Place of Destination</label>
+                    <select name="pod" class="form-group" required onchange="showOtherOption(this)">
+                        <option value="NBP Green Heights">NBP Green Heights</option>
+                        <option value="Vasundhara Bhavan">Vasundhara Bhavan</option>
+                        <option value="11 High">11 High</option>
+                        <option value="other">Other</option>
                     </select>
-
                     <div id="otherOptionContainer" style="display: none;">
-                    <input type="text" name="pod" placeholder="Specify other option">
+                        <input type="text" name="otherOption" placeholder="Specify other option">
                     </div>
-
-        
-
-
-
                     </td>
         </div>
         <table id="dynamic-table">

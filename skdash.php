@@ -166,7 +166,7 @@ function getEmployeesByCpf($cpf)
     if ($result && mysqli_num_rows($result) > 0) {
         // Display the data in a table
         echo "<table id='dynamic-table'>";
-        echo "<tr><th>Order No</th><th>Created By</th><th>Order Destination</th><th>Issue Description</th><th>Place of Issue</th><th>Issue To</th><th>Returnable</th>";
+        echo "<tr><th>Order No</th><th>Created By</th><th>Order Destination</th><th>Issue Department</th><th>Place of Issue</th><th>Issue To</th><th>Returnable</th>";
         echo "<th>Action</th>";
         if($designation == "E") echo "<th>Status</th></tr>";
         while ($row = mysqli_fetch_assoc($result)) {

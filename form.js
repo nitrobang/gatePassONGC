@@ -40,7 +40,7 @@ function findet(value) {
       autocompleteList.innerHTML = '';
 
       if (value === '') {
-        // If the input field is empty, hide the autocomplete list
+        // If the input field is empty, hide the autocomplete list and change the sentence
         autocompleteList.style.display = 'none';
         sugges.innerHTML="Forwarded to:";
         disableSubmitButton();
@@ -56,6 +56,9 @@ function findet(value) {
             enableSubmitButton();
           }
           else {
+            sugges.innerHTML="Forwarded to:";
+            autocompleteList.style.visibility='visible';
+            disableSubmitButton();
             var suggestion = document.createElement('li');
             suggestion.textContent = 'Forward to: ' + empname + ' - ' + designation;
             suggestion.addEventListener('click', function () {
