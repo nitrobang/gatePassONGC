@@ -21,15 +21,17 @@ body {
     background-attachment: fixed;
     background-origin: initial;
     background-clip: initial;
+    overflow-y: auto;
 }
 
 .container {
-    max-width: 100vh;
+    width: 100%;
     top: 0px;
     margin: 0 auto;
+    background-color: white;
     padding: 20px;
     border-radius: 5px;
-    position: relative;
+    position: sticky;
 }
 .btn-secondary{
     position: absolute;
@@ -53,21 +55,27 @@ body {
     --bs-gradient: none;
 }
 #lo{
-    position: absolute;
+    position: fixed;
     top: 0px;
     right: 0px;
 }
 #gb{
-    position: absolute;
+    position: sticky;
     top: 0px;
     left: 0px;
 }
 h2 {
     text-align: center;
 }
+.container table {
+    width: 100%;
+}
+.container table td {
+    width: fit-content;
+}
 .logo{
-    width: 150px;
-    height: 150px;
+    width: 100px;
+    height: 100px;
 }
 .form-group {
     margin-bottom: 15px;
