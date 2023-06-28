@@ -83,3 +83,15 @@ function enableSubmitButton() {
   var submitButton = document.getElementById('submitButton');
   submitButton.disabled = false;
 }
+
+function showOtherOption(selectElement) {
+  var otherOptionContainer = document.getElementById('otherOptionContainer');
+  var otherOptionInput = otherOptionContainer.querySelector('input[name="otherOption"]');
+  if (selectElement.value === 'other') {
+      otherOptionContainer.style.display = 'block';
+      otherOptionInput.setAttribute('required', 'required');
+  } else {
+      otherOptionContainer.style.display = 'none';
+      otherOptionInput.removeAttribute('required');
+  }
+}
