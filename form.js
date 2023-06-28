@@ -88,10 +88,12 @@ function enableSubmitButton() {
   var submitButton = document.getElementById('submitButton');
   submitButton.disabled = false;
 }
+
 function disableSubmitButton() {
   var submitButton = document.getElementById('submitButton');
   submitButton.disabled = true;
 }
+
 function showOtherOption(selectElement) {
   var otherOptionContainer = document.getElementById('otherOptionContainer');
   var otherOptionInput = otherOptionContainer.querySelector('input[name="otherOption"]');
@@ -102,4 +104,3 @@ function showOtherOption(selectElement) {
       otherOptionContainer.style.display = 'none';
       otherOptionInput.removeAttribute('required');
   }
-}

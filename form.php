@@ -8,7 +8,7 @@ if (!isset($_SESSION["username"])) {
     exit();
 }
 
-//check if right person(store keeper) is accessing the forms page
+//check if right person (store keeper) is accessing the forms page
 if ($_SESSION["designation"] != "E") {
     header("Location: skdash.php");
     exit();
@@ -48,11 +48,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Prepare the statement
     $stmt = $conn->prepare($insertOrderNoQuery);
 
+
     // Bind the parameters
     $stmt->bind_param('ssssiii', $placeOfDestination, $issueDesc, $placeOfIssue, $issueTo, $returnable, $forwardTo, $created_by);
 
     // Execute the statement
     if ($stmt->execute()) {
+
+    
+
+    if (mysqli_query($conn, $insertOrderNoQuery)) {
+
         $orderNo = mysqli_insert_id($conn); // Get the auto-generated order ID
 
         //*****************/ Insert data into the 'orders' table ************************
@@ -183,7 +189,7 @@ function getEmployeesByCpf($cpf)
                     </td>
                 </tr>
                 <tr>
-                    <td><label for="placei">Place of Issue</label>
+                <td><label for="placei">Place of Issue</label>
                         <select class="form-group" name="placei" required>
                             <option value="N">NBP GREEN HEIGHTS</option>
                             <option value="V">VASUNDHARA BHAVAN</option>
@@ -193,6 +199,7 @@ function getEmployeesByCpf($cpf)
                     <td>
                     <label for="pod">Place of Destination</label>
                     <select name="pod" class="form-group" required onchange="showOtherOption(this)">
+
                         <option value="NBP Green Heights">NBP Green Heights</option>
                         <option value="Vasundhara Bhavan">Vasundhara Bhavan</option>
                         <option value="11 High">11 High</option>
