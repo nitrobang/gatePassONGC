@@ -36,8 +36,10 @@ if(isset($_GET['orderno'])){
         $gApproval = $row['guard_approval'];
         // Check if the 'coll_approval' value is not equal to -1
         if ($collApproval != -1 && $sApproval != -1 && $gApproval != -1) {
-            echo "<script>alert('Form can't be edited.')</script>";
-            echo "<script>window.location.href = 'skdash.php';</script>";
+            $_SESSION['cantedit'] = true; // Using session variable
+
+            // Redirect to the next page
+            header("Location: skdash.php");
             exit();
         }
     }
@@ -103,8 +105,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             /********** Done ************/
 
-            echo "<script>alert('Form can't be edited.')</script>";
-            echo "<script>window.location.href = 'skdash.php';</script>";
+            $_SESSION['esuccess'] = true; // Using session variable
+
+            // Redirect to the next page
+            header("Location: skdash.php");
             exit();
         } else {
             // Handle the case where the insertion failed

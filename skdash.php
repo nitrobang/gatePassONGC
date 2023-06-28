@@ -22,7 +22,36 @@ if (isset($_SESSION["cpf_no"])) {
     $cpf_no = $_SESSION["cpf_no"];
     
 }
-
+if(isset($_SESSION['fsuccess'])){
+    if($_SESSION['fsuccess']){
+        echo"<script>alert('Order Submitted Successfully');</script>";
+        $_SESSION['fsuccess'] = false;
+    }    
+}
+if(isset($_SESSION['esuccess'])){
+    if($_SESSION['esuccess']){
+        echo"<script>alert('Order Edited Successfully');</script>";
+        $_SESSION['esuccess'] = false;
+    }    
+}
+if(isset($_SESSION['cantedit'])){
+    if($_SESSION['cantedit']){
+        echo"<script>alert('Order Can't be Edited');</script>";
+        $_SESSION['cantedit'] = false;
+    }    
+}
+if(isset($_SESSION['asuccess'])){
+    if($_SESSION['asuccess']){
+        echo"<script>alert('Order Approved Successfully');</script>";
+        $_SESSION['asuccess'] = false;
+    }    
+}
+if(isset($_SESSION['rsuccess'])){
+    if($_SESSION['rsuccess']){
+        echo"<script>alert('Order Reverted Successfully');</script>";
+        $_SESSION['rsuccess'] = false;
+    }  
+}
 if(!isset($_SESSION['designation'])){
     //get the designation of the user
     $query = "SELECT * FROM employee WHERE cpfno = '$cpf_no'";
@@ -137,7 +166,7 @@ function getEmployeesByCpf($cpf)
     if ($result && mysqli_num_rows($result) > 0) {
         // Display the data in a table
         echo "<table id='dynamic-table'>";
-        echo "<tr><th>Order No</th><th>Created By</th><th>Order Destination</th><th>Issue Description</th><th>Place of Issue</th><th>Issue To</th><th>Returnable</th>";
+        echo "<tr><th>Order No</th><th>Created By</th><th>Order Destination</th><th>Issue Department</th><th>Place of Issue</th><th>Issue To</th><th>Returnable</th>";
         echo "<th>Action</th>";
         if($designation == "E") echo "<th>Status</th></tr>";
         while ($row = mysqli_fetch_assoc($result)) {

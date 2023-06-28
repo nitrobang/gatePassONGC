@@ -42,13 +42,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $collector_name = getEmployeesByCpf($forwardTo);
     $created_by = $_SESSION['cpf_no'];
 
-    // Insert data into the 'order_no' table
-    $insertOrderNoQuery = "INSERT INTO order_no (order_dest, issue_desc, placeoi, issueto, securityn, collector_name, returnable, forwarded_to, created_by) 
-                           VALUES ('$placeOfDestination', '$issueDesc', '$placeOfIssue', '$issueTo', '', '$collector_name', $returnable, '$forwardTo', '$created_by')";
+    // Prepare the INSERT statement with bind parameters
+    $insertOrderNoQuery = "INSERT INTO order_no (order_dest, issue_desc, placeoi, issueto, securityn, collector_name, returnable, forwarded_to, created_by)VALUES (?, ?, ?, ?, '', '', ?, ?, ?)";
+
+    // Prepare the statement
+    $stmt = $conn->prepare($insertOrderNoQuery);
+
+
+    // Bind the parameters
+    $stmt->bind_param('ssssiii', $placeOfDestination, $issueDesc, $placeOfIssue, $issueTo, $returnable, $forwardTo, $created_by);
+
+    // Execute the statement
+    if ($stmt->execute()) {
 
     
 
     if (mysqli_query($conn, $insertOrderNoQuery)) {
+
         $orderNo = mysqli_insert_id($conn); // Get the auto-generated order ID
 
         //*****************/ Insert data into the 'orders' table ************************
@@ -82,8 +92,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         /****************************** Done **********************************/
 
         // Redirect to a success page or display a success message
-        echo "<script>alert('Order placed Successfully')</script>";
-        echo "<script>window.location.href = 'skdash.php';</script>";
+        $_SESSION['fsuccess'] = true; // Using session variable
+
+        // Redirect to the next page
+        header("Location: skdash.php");
         exit();
     } else {
         // Handle the case where the insertion failed
@@ -157,10 +169,10 @@ function getEmployeesByCpf($cpf)
                 </td>
             </tr>
         </table>
-
+        <h2 class="wlc">Welcome, <?php echo $_SESSION["username"]; ?>!</h2>
     </div>
 
-    <h2 class="wlc">Welcome, <?php echo $_SESSION["username"]; ?>!</h2>
+    
     <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST">
         <div class="pos">
             <label for="return">Returnable</label>
@@ -186,18 +198,17 @@ function getEmployeesByCpf($cpf)
                     </td>
                     <td>
                     <label for="pod">Place of Destination</label>
-                    <select name="pod" required onchange="showOtherOption(this)">
+                    <select name="pod" class="form-group" required onchange="showOtherOption(this)">
+
                         <option value="NBP Green Heights">NBP Green Heights</option>
                         <option value="Vasundhara Bhavan">Vasundhara Bhavan</option>
                         <option value="11 High">11 High</option>
                         <option value="other">Other</option>
                     </select>
-
                     <div id="otherOptionContainer" style="display: none;">
                         <input type="text" name="otherOption" placeholder="Specify other option">
                     </div>
                     </td>
-
         </div>
         <table id="dynamic-table">
             <tr>
