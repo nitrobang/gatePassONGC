@@ -8,7 +8,7 @@ if (!isset($_SESSION["username"])) {
     exit();
 }
 
-//check if right person(store keeper) is accessing the forms page
+//check if right person (store keeper) is accessing the forms page
 if ($_SESSION["designation"] != "E") {
     header("Location: skdash.php");
     exit();
@@ -32,7 +32,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $issueDesc = mysqli_real_escape_string($conn, $_POST["issued"]);
     $placeOfIssue = mysqli_real_escape_string($conn, $_POST["placei"]);
     $issueTo = mysqli_real_escape_string($conn, $_POST["issuet"]);
-    $placeOfDestination = mysqli_real_escape_string($conn, $_POST["pod"]);
+    $placeOfDestination = '';
+    if ($_POST["pod"] == "other") {
+        $placeOfDestination = mysqli_real_escape_string($conn, $_POST["otherOption"]);
+    } else {
+        $placeOfDestination = mysqli_real_escape_string($conn, $_POST["pod"]);
+    }
     $forwardTo = mysqli_real_escape_string($conn, $_POST["fors"]);
     $collector_name = getEmployeesByCpf($forwardTo);
     $created_by = $_SESSION['cpf_no'];
@@ -40,6 +45,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Insert data into the 'order_no' table
     $insertOrderNoQuery = "INSERT INTO order_no (order_dest, issue_desc, placeoi, issueto, securityn, collector_name, returnable, forwarded_to, created_by) 
                            VALUES ('$placeOfDestination', '$issueDesc', '$placeOfIssue', '$issueTo', '', '$collector_name', $returnable, '$forwardTo', '$created_by')";
+
+    
 
     if (mysqli_query($conn, $insertOrderNoQuery)) {
         $orderNo = mysqli_insert_id($conn); // Get the auto-generated order ID
@@ -177,23 +184,20 @@ function getEmployeesByCpf($cpf)
                             <option value="H">11 HIGH</option>
                         </select>
                     </td>
-                    <td><label for="pod">Place of Destination</label>
+                    <td>
+                    <label for="pod">Place of Destination</label>
                     <select name="pod" required onchange="showOtherOption(this)">
-                    <option value="N">NBP Green Heights</option>
-                    <option value="V">Vasundhara Bhavan</option>
-                    <option value="H">11 High</option>
-                    <option value="other">Other</option>
+                        <option value="NBP Green Heights">NBP Green Heights</option>
+                        <option value="Vasundhara Bhavan">Vasundhara Bhavan</option>
+                        <option value="11 High">11 High</option>
+                        <option value="other">Other</option>
                     </select>
 
                     <div id="otherOptionContainer" style="display: none;">
-                    <input type="text" name="otherOption" placeholder="Specify other option">
+                        <input type="text" name="otherOption" placeholder="Specify other option">
                     </div>
-
-        
-
-
-
                     </td>
+
         </div>
         <table id="dynamic-table">
             <tr>
