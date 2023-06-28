@@ -233,20 +233,6 @@ function getEmployeesByCpf($cpf)
         <input type="submit" name="submit" id="submitButton" value="Submit" disabled>
     </form>
     <script type="text/javascript" src="form.js"></script>
-    <script>
-    function showOtherOption(selectElement) {
-        var otherOptionContainer = document.getElementById('otherOptionContainer');
-        var otherOptionInput = otherOptionContainer.querySelector('input[name="otherOption"]');
-        if (selectElement.value === 'other') {
-            otherOptionContainer.style.display = 'block';
-            otherOptionInput.setAttribute('required', 'required');
-        } else {
-            otherOptionContainer.style.display = 'none';
-            otherOptionInput.removeAttribute('required');
-        }
-    }
-</script>
-    <!-- herther -->
 </body>
 
 </html>
