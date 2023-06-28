@@ -186,17 +186,22 @@ function getEmployeesByCpf($cpf)
                         </select>
                     </td>
                     <td><label for="pod">Place of Destination</label>
-                        <input type="text" class="form-group" name="pod" required>
+                    <select class="form-group" name="pod" required onchange="showOtherOption(this)">
+                    <option value="N">NBP Green Heights</option>
+                    <option value="V">Vasundhara Bhavan</option>
+                    <option value="H">11 High</option>
+                    <option value="other">Other</option>
+                    </select>
+
+                    <div id="otherOptionContainer" style="display: none;">
+                    <input type="text" name="pod" placeholder="Specify other option">
+                    </div>
+
+        
+
+
 
                     </td>
-                </tr>
-            </table>
-
-
-
-
-
-            <h4></h4>
         </div>
         <table id="dynamic-table">
             <tr>
