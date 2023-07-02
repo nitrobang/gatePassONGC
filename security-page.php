@@ -19,7 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["logout"])) {
 }
 
 // SQL query to fetch fields from a table
-$sql = "SELECT n.order_dest,n.issue_desc,n.placeoi,n.issueto,o.descrip, o.nop, o.deliverynote, o.remark, n.moc, n.vehno,n.securityn
+$sql = "SELECT n.order_dest,n.issue_desc,n.placeoi,n.issueto,o.descrip, o.nop, o.deliverynote, o.remark, n.moc, n.vehno,n.guard_name
 FROM orders o
 JOIN order_no n ON o.orderno = n.orderno
 WHERE o.orderno = " . $_SESSION['orderno'];
@@ -50,7 +50,7 @@ if ($result->num_rows > 0) {
     </style>";
     echo "<a href='skdash.php'>Go Back</a>";
     echo "<table>";
-    echo "<tr><th>Order Destination</th><th>Issue Description</th><th>Place Of Issue</th><th>Issue TO</th><th>Brief description</th><th>No of Packages</th><th>Delivery Note Or Dispatch Convey Note No OR Indent No</th><th>Remarks</th><th>Mode Of Collection</th><th>Vehicle Number</th><th>Security Name</th></tr>";
+    echo "<tr><th>Order Destination</th><th>Issue Description</th><th>Place Of Issue</th><th>Issue TO</th><th>Brief description</th><th>No of Packages</th><th>Delivery Note Or Dispatch Convey Note No OR Indent No</th><th>Remarks</th><th>Mode Of Collection</th><th>Vehicle Number</th><th>Guard Name</th></tr>";
 
     // Output data of each row
     while ($row = $result->fetch_assoc()) {
@@ -65,7 +65,7 @@ if ($result->num_rows > 0) {
         echo "<td>" . $row["remark"] . "</td>";
         echo "<td>" . $row["moc"] . "</td>";
         echo "<td>" . $row["vehno"] . "</td>";
-        echo "<td>" . $row["securityn"] . "</td>";
+        echo "<td>" . $row["guard_name"] . "</td>";
         echo "</tr>";
     }
 
@@ -73,6 +73,8 @@ if ($result->num_rows > 0) {
 
     // Add form to input "Mode of Collection" and "Vehicle Number"
     echo '<form method="POST" action="">
+            <label for="securityn">Name:</label>
+            <input type="text" id="securityn" name="securityn" required><br><br>
             
             <input type="submit" name="approve" value="Approve">
             <input type="submit" name="revert" value="Revert">
@@ -85,12 +87,13 @@ if ($result->num_rows > 0) {
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Get the input values from the form
-    // $securityn = $_POST["securityn"];
+        $securityn = $_POST["securityn"];
+    
 
     // Insert the values into the orders table
     if (isset($_POST['approve'])) {
         $insert_sql = "UPDATE order_no 
-                SET  security_approval = 1
+                SET securityn = '$securityn',  security_approval = 1
                 WHERE orderno =" . $_SESSION['orderno'];
         $connection->query($insert_sql);
         header('Location: skdash.php');
@@ -98,7 +101,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } 
     else if (isset($_POST['revert'])) {
     $insert_sql = "UPDATE order_no 
-                 SET  security_approval = -1,guard_approval = 0,coll_approval = 0
+                   SET securityn = '$securityn',security_approval = -1,guard_approval = 0,coll_approval = 0
                  WHERE orderno =" . $_SESSION['orderno'];
          $connection->query($insert_sql);
          header('Location: skdash.php');
