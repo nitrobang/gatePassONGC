@@ -147,7 +147,7 @@ function getEmployeesByCpf($cpf)
     <h3>Dashboard</h3>
     <?php if ($designation == "E") : ?>
         <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
-            <button type="submit" class="btn btn-primary" name="new_order">New Order</button>
+            <button type="submit" class="btn btn-primary" class="form-group" name="new_order">New Order</button>
         </form>
     <?php endif; ?>
         <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>"> 
