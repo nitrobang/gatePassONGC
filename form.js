@@ -40,8 +40,10 @@ function findet(value) {
       autocompleteList.innerHTML = '';
 
       if (value === '') {
-        // If the input field is empty, hide the autocomplete list
+        // If the input field is empty, hide the autocomplete list and change the sentence
         autocompleteList.style.display = 'none';
+        sugges.innerHTML="Forwarded to:";
+        disableSubmitButton();
       } else {
         // Display the matching empname, designation, and cpfno as clickable suggestions
         response.forEach(function (user) {
@@ -54,8 +56,11 @@ function findet(value) {
             enableSubmitButton();
           }
           else {
+            sugges.innerHTML="Forwarded to:";
+            autocompleteList.style.visibility='visible';
+            disableSubmitButton();
             var suggestion = document.createElement('li');
-            suggestion.textContent = 'Forwarded to: ' + empname + ' - ' + designation;
+            suggestion.textContent = 'Forward to: ' + empname + ' - ' + designation;
             suggestion.addEventListener('click', function () {
               // Fill the input field with the cpfno of the selected suggestion
               document.querySelector('input[name="fors"]').value = cpfno;
@@ -84,6 +89,11 @@ function enableSubmitButton() {
   submitButton.disabled = false;
 }
 
+function disableSubmitButton() {
+  var submitButton = document.getElementById('submitButton');
+  submitButton.disabled = true;
+}
+
 function showOtherOption(selectElement) {
   var otherOptionContainer = document.getElementById('otherOptionContainer');
   var otherOptionInput = otherOptionContainer.querySelector('input[name="otherOption"]');
@@ -94,4 +104,3 @@ function showOtherOption(selectElement) {
       otherOptionContainer.style.display = 'none';
       otherOptionInput.removeAttribute('required');
   }
-}
