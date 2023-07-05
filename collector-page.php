@@ -73,6 +73,7 @@ if (isset($_SESSION['orderno'])) {
             echo "Error: " . mysqli_error($connection);
         }
     }
+    
 ?>
 
 <!-- HTML Section -->

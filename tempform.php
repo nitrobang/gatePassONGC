@@ -142,12 +142,12 @@ function getEmployeesByDesignation($designation)
 function getEmployeesByCpf($cpf)
 {
     global $connection;
-    $query = "SELECT empname FROM employee WHERE designation = '$cpf'";
+    $query = "SELECT empname FROM employee WHERE cpfno = '$cpf'";
     $result = mysqli_query($connection, $query);
     $employee = null;
     if ($result && mysqli_num_rows($result) > 0) {
         $row = mysqli_fetch_assoc($result);
-        $employee[] = $row['empname'];
+        $employee = $row['empname'];
     }
     return $employee;
 }
