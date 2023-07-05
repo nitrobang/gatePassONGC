@@ -166,13 +166,13 @@ function getEmployeesvenue($cpf)
 
         // Retrieve data from the "order_no" table
         if ($designation == "E") {
-            $query = "SELECT orderno, order_dest, issue_desc, placeoi, issueto, returnable, coll_approval, security_approval, comp_approval, guard_approval, forwarded_to, created_by FROM order_no WHERE coll_approval = 0 AND (forwarded_to = ? OR created_by = ?)";
+            $query = "SELECT orderno, order_dest, issue_desc, placeoi, issueto, returnable, coll_approval, security_approval, comp_approval, guard_approval, forwarded_to, created_by FROM order_no WHERE coll_approval = 0 AND forwarded_to = ? OR created_by = ?";
 
             // Prepare the statement
             $stmt = $conn->prepare($query);
 
             // Bind the parameters
-            $stmt->bind_param('ss', $cpf_no, $cpf_no);
+            $stmt->bind_param('ii', $cpf_no, $cpf_no);
         } else if ($designation == "S") {
             $ven = getEmployeesvenue($cpf_no);
             $query = "SELECT orderno, order_dest, issue_desc, placeoi, issueto, returnable, coll_approval, security_approval, comp_approval, guard_approval, forwarded_to, created_by FROM order_no WHERE placeoi = ? AND security_approval = 0 AND coll_approval = 1 AND guard_approval = 1";
@@ -230,29 +230,43 @@ function getEmployeesvenue($cpf)
 
                 echo "<td>" . ($returnableValue) . "</td>";
 
-                if ($designation == "E" && $row['forwarded_to'] == $cpf_no && $row['coll_approval'] == 0) {
+                if ($designation == "E" && $row['forwarded_to'] == $cpf_no && $row['coll_approval'] == 0 && $row['security_approval'] !=-1 && $row['guard_approval'] !=-1) {
                     echo "<td><a href='skdash.php?orderno=" . $row['orderno'] . "'>Collector Link</a></td>";
                 } else if ($designation == "S")
                     echo "<td><a href='skdash.php?orderno=" . $row['orderno'] . "'>Security Link</a></td>";
                 else if ($designation == "G")
                     echo "<td><a href='skdash.php?orderno=" . $row['orderno'] . "'>Guard Link</a></td>";
-                else  if ($row['created_by'] == $cpf_no && $row['coll_approval'] == -1 || $row['security_approval'] == -1 || $row['guard_approval'] == -1) {
-                    echo '<td>';
-                    echo '<input type="hidden" name="Orderno" value="' . $row['orderno'] . '">';
-                    echo '<button type="submit" name="edit_order" class="btn btn-outline-secondary" value="' . $row['orderno'] . '">Edit</button>';
-                    echo '</td>';
-                    if ($row['coll_approval'] == -1)
-
-                        echo '<td>Order Reverted BY Collector </td>';
-
-                    elseif ($row['security_approval'] == -1)
-
-                        echo '<td>Order Reverted By Security </td>';
-
-                    elseif ($row['guard_approval'] == -1)
-
-                        echo '<td>Order Reverted By Guard </td>';
-                } else  echo '<td>-</td>';
+                    else if ($row['created_by'] == $cpf_no && ($row['coll_approval'] == -1 || $row['security_approval'] == -1 || $row['guard_approval'] == -1)) {
+                        echo '<td>';
+                        echo '<input type="hidden" name="Orderno" value="' . $row['orderno'] . '">';
+                        echo '<button type="submit" name="edit_order" class="btn btn-outline-secondary" value="' . $row['orderno'] . '">Edit</button>';
+                        echo '</td>';
+    
+                        if ($row['coll_approval'] == -1) {
+                            // Fetch collector name from order_no table
+                            $collector_name_query = "SELECT collector_name FROM order_no WHERE orderno = " . $row['orderno'];
+                            $collector_name_result = $connection->query($collector_name_query);
+                            $collector_name_row = $collector_name_result->fetch_assoc();
+    
+                            echo '<td>Order Reverted by Collector: ' . $collector_name_row['collector_name'] . '</td>';
+                        } elseif ($row['security_approval'] == -1) {
+                            // Fetch security name from order_no table
+                            $security_name_query = "SELECT securityn FROM order_no WHERE orderno = " . $row['orderno'];
+                            $security_name_result = $connection->query($security_name_query);
+                            $security_name_row = $security_name_result->fetch_assoc();
+    
+                            echo '<td>Order Reverted by Security: ' . $security_name_row['securityn'] . '</td>';
+                        } elseif ($row['guard_approval'] == -1) {
+                            // Fetch guard name from order_no table
+                            $guard_name_query = "SELECT guard_name FROM order_no WHERE orderno = " . $row['orderno'];
+                            $guard_name_result = $connection->query($guard_name_query);
+                            $guard_name_row = $guard_name_result->fetch_assoc();
+    
+                            echo '<td>Order Reverted by Guard: ' . $guard_name_row['guard_name'] . '</td>';
+                        }
+                    } else {
+                        echo '<td>-</td>';
+                    }
                 // else if( $row['coll_approval'] != -1 )  {
                 //         echo '<td>-</td>';
                 // }
@@ -266,7 +280,7 @@ function getEmployeesvenue($cpf)
 
                 // $row['coll_approval'] != -1 || $row['security_approval'] != -1 ||
                 if ($designation == "E" && $row['created_by'] == $cpf_no) {
-                    if ($returnableValue == "Yes") {
+                    if($returnableValue =="Yes"){
                         // if ($row['coll_approval'] == -1 || $row['security_approval'] == -1 || $row['guard_approval'] == -1) {
                         //         echo '<td>';
                         //         echo '<input type="hidden" name="Orderno" value="' . $row['orderno'] . '">';
@@ -274,39 +288,63 @@ function getEmployeesvenue($cpf)
                         //         echo '</td>';
                         //         echo '<td>Order Reverted </td>';
                         // }
-                        if ($row['coll_approval'] == 1 && $row['security_approval'] == 0)
-                            echo '<td>Approved by Collector</td>';
-
-                        else if ($row['security_approval'] == 1 && $row['guard_approval'] == 0)
-                            echo '<td>Approved by Security</td>';
-
-                        else if ($row['coll_approval'] == 1 && $row['security_approval'] == 1 && $row['guard_approval'] == 1)
-                            echo '<td>Approved and Out</td>';
-
+                        if ($row['coll_approval'] == 1 && $row['security_approval'] == 0 && $row['guard_approval'] == 0){
+                            // echo '<td>Approved by Collector</td>';
+                            $collector_name_query = "SELECT collector_name FROM order_no WHERE orderno = " . $row['orderno'];
+                            $collector_name_result = $connection->query($collector_name_query);
+                            $collector_name_row = $collector_name_result->fetch_assoc();
+    
+                            echo '<td>Order Approved by Collector: ' . $collector_name_row['collector_name'] . '</td>';}
+    
+                        else if ($row['coll_approval'] == 1 &&$row['guard_approval'] == 1 && $row['security_approval'] == 0){
+                            // echo '<td>Approved by Guard</td>';
+                            // Fetch guard name from order_no table
+                            $guard_name_query = "SELECT guard_name FROM order_no WHERE orderno = " . $row['orderno'];
+                            $guard_name_result = $connection->query($guard_name_query);
+                            $guard_name_row = $guard_name_result->fetch_assoc();
+    
+                            echo '<td>Order Approvedd by Guard: ' . $guard_name_row['guard_name'] . '</td>';}
+    
+                        else if ($row['coll_approval'] == 1 && $row['security_approval'] == 1 && $row['guard_approval'] == 1 && $row['comp_approval'] == 0)
+                            echo '<td>Approved and Out</td>'; 
+    
                         else if ($row['coll_approval'] == 0 && $row['security_approval'] == 0 && $row['guard_approval'] == 0 && $row['comp_approval'] == 0)
-                            echo '<td>Collector Approval Pending</td>';
-
+                            echo '<td>Collector Approval Pending</td>';  
+    
                         else if ($row['coll_approval'] == 1 && $row['security_approval'] == 1 && $row['guard_approval'] == 1 && $row['comp_approval'] == 1)
-                            echo '<td>Order Completed</td>';
-                    } elseif ($returnableValue == "No") {
+                            echo '<td>Order Completed</td>';       
+                    }
+                    elseif($returnableValue=="No"){
                         // if ($row['coll_approval'] == -1 || $row['security_approval'] == -1 || $row['guard_approval'] == -1 )
                         //     {echo '<td><input type="hidden" name="orderno" value="' . $row['orderno'] . '">';
                         //         echo '<button type="submit" name="edit_order">Edit</button></td>';}
-
-                        if ($row['coll_approval'] == 1 && $row['guard_approval'] == 0)
-                            echo '<td>Approved by Collector</td>';
-
-                        else if ($row['guard_approval'] == 1 && $row['security_approval'] == 0)
-                            echo '<td>Approved by Guard</td>';
-
+    
+                        if ($row['coll_approval'] == 1 && $row['security_approval'] == 0 && $row['guard_approval'] == 0){
+                            // echo '<td>Approved by Collector</td>';
+                            $collector_name_query = "SELECT collector_name FROM order_no WHERE orderno = " . $row['orderno'];
+                            $collector_name_result = $connection->query($collector_name_query);
+                            $collector_name_row = $collector_name_result->fetch_assoc();
+    
+                            echo '<td>Order Approved by Collector: ' . $collector_name_row['collector_name'] . '</td>';}
+    
+                            else if ($row['coll_approval'] == 1 &&$row['guard_approval'] == 1 && $row['security_approval'] == 0){
+                            // echo '<td>Approved by Guard</td>';
+                             // Fetch guard name from order_no table
+                             $guard_name_query = "SELECT guard_name FROM order_no WHERE orderno = " . $row['orderno'];
+                             $guard_name_result = $connection->query($guard_name_query);
+                             $guard_name_row = $guard_name_result->fetch_assoc();
+    
+                             echo '<td>Order Approved by Guard: ' . $guard_name_row['guard_name'] . '</td>';}
+    
                         else if ($row['coll_approval'] == 0 && $row['guard_approval'] == 0 && $row['guard_approval'] == 0 && $row['comp_approval'] == 0)
                             echo '<td>Order Pending</td>';
-
+    
                         // else if ($row['coll_approval'] == 1 && $row['security_approval'] == 1 && $row['guard_approval'] == 1)
                         //     echo '<td>Approved and Out</td>';    
-
+    
                         else if ($row['coll_approval'] == 1 && $row['security_approval'] == 1 && $row['guard_approval'] == 1)
-                            echo '<td>Order Completed</td>';
+                            echo '<td>Order Completed</td>'; 
+    
                     }
                 }
 
