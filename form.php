@@ -43,14 +43,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $created_by = $_SESSION['cpf_no'];
 
     // Prepare the INSERT statement with bind parameters
-    $insertOrderNoQuery = "INSERT INTO order_no (order_dest, issue_desc, placeoi, issueto, securityn, collector_name, returnable, forwarded_to, created_by)VALUES (?, ?, ?, ?, '', '', ?, ?, ?)";
+    $insertOrderNoQuery = "INSERT INTO order_no (order_dest, issue_desc, placeoi, issueto, collector_name, returnable, forwarded_to, created_by)VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    // $UpdateOrderNoQuery = "UPDATE order_no SET order_dest = '$placeOfDestination',issue_desc = '$issueDesc',placeoi = '$placeOfIssue',issueto = '$issueTo',securityn = '',collector_name = '$collector_name',returnable = $returnable,	coll_approval='$coll_approval',security_approval='$security_approval',guard_approval='$guard_approval',forwarded_to = '$forwardTo',created_by = '$created_by' WHERE orderno = '$orderno'";
 
     // Prepare the statement
     $stmt = $conn->prepare($insertOrderNoQuery);
 
 
     // Bind the parameters
-    $stmt->bind_param('ssssiii', $placeOfDestination, $issueDesc, $placeOfIssue, $issueTo, $returnable, $forwardTo, $created_by);
+    $stmt->bind_param('sssssiii', $placeOfDestination, $issueDesc, $placeOfIssue, $issueTo, $collector_name, $returnable, $forwardTo, $created_by);
 
     // Execute the statement
     if ($stmt->execute()) {
@@ -131,10 +132,11 @@ function getEmployeesByCpf($cpf)
     $employee = null;
     if ($result && mysqli_num_rows($result) > 0) {
         $row = mysqli_fetch_assoc($result);
-        $employee = $row['empname'];
+        $employee = $row['empname'];   
     }
     return $employee;
 }
+
 ?>
 
 <html>
@@ -233,7 +235,7 @@ function getEmployeesByCpf($cpf)
             <div class="result">
                 <p>Forwarded To:</p>
             </div>
-            <input type="text" name="fors" onkeydown="findet(this.value)">
+            <input type="text" name="fors" oninput="findet(this.value)">
             <ul class="autocomplete-list"></ul>
             <div class="clear"></div>
         </div>
