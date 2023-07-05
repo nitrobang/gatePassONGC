@@ -115,6 +115,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         // Add form to input "Mode of Collection" and "Vehicle Number"
         echo '<form method="POST" action="">
+        <label for="securityn">Name:</label>
+        <input type="text" id="securityn" name="securityn" required><br><br>
             <input type="submit" class="btn btn-danger" name="revert" value="Revert">
             <input type="submit" class="btn btn-primary" name="approve" value="Approve">
         </form>';
