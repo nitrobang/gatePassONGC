@@ -104,3 +104,4 @@ function showOtherOption(selectElement) {
       otherOptionContainer.style.display = 'none';
       otherOptionInput.removeAttribute('required');
   }
+}

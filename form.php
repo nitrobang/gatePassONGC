@@ -55,9 +55,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Execute the statement
     if ($stmt->execute()) {
 
-    
-
-    if (mysqli_query($conn, $insertOrderNoQuery)) {
 
         $orderNo = mysqli_insert_id($conn); // Get the auto-generated order ID
 
@@ -106,6 +103,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     mysqli_close($conn);
     $conn2 = null;
 }
+
 
 // Function to get employee names and CPF numbers based on designation
 function getEmployeesByDesignation($designation)
