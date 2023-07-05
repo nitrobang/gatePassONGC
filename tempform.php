@@ -22,7 +22,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["logout"])) {
     header("Location: newlogin.php");
     exit();
 }
-
 $conn = $connection;
 if(isset($_GET['orderno'])){
     $orderno = $_GET['orderno'];
@@ -59,10 +58,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $collector_name = getEmployeesByCpf($forwardTo);
         $orderno = mysqli_real_escape_string($conn, $_POST["orderno"]);
         $created_by = $_SESSION['cpf_no'];
+
+        
+
         $coll_approval=0;
         $security_approval=0;
         $guard_approval=0;
         
+
 
 
 
@@ -139,12 +142,12 @@ function getEmployeesByDesignation($designation)
 function getEmployeesByCpf($cpf)
 {
     global $connection;
-    $query = "SELECT empname FROM employee WHERE designation = '$cpf'";
+    $query = "SELECT empname FROM employee WHERE cpfno = '$cpf'";
     $result = mysqli_query($connection, $query);
     $employee = null;
     if ($result && mysqli_num_rows($result) > 0) {
         $row = mysqli_fetch_assoc($result);
-        $employee[] = $row['empname'];
+        $employee = $row['empname'];
     }
     return $employee;
 }
@@ -186,7 +189,7 @@ function getEmployeesByCpf($cpf)
 
     <h2 class="wlc">Welcome, <?php echo $_SESSION["username"]; ?>!</h2><br>
     <?php
-    $orderno = $_GET['orderno']; // Get the 'orderno' parameter from the URL
+    // $orderno = $_GET['orderno']; // Get the 'orderno' parameter from the URL
     echo $orderno;
     $selectOrderNoQuery = "SELECT * FROM order_no WHERE orderno = '$orderno'";
     $result1 = mysqli_query($conn, $selectOrderNoQuery);

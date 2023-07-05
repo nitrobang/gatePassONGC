@@ -55,9 +55,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Execute the statement
     if ($stmt->execute()) {
 
-    
-
-    if (mysqli_query($conn, $insertOrderNoQuery)) {
 
         $orderNo = mysqli_insert_id($conn); // Get the auto-generated order ID
 
@@ -107,6 +104,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $conn2 = null;
 }
 
+
 // Function to get employee names and CPF numbers based on designation
 function getEmployeesByDesignation($designation)
 {
@@ -128,12 +126,12 @@ function getEmployeesByDesignation($designation)
 function getEmployeesByCpf($cpf)
 {
     global $connection;
-    $query = "SELECT empname FROM employee WHERE designation = '$cpf'";
+    $query = "SELECT empname FROM employee WHERE cpfno = '$cpf'";
     $result = mysqli_query($connection, $query);
     $employee = null;
     if ($result && mysqli_num_rows($result) > 0) {
         $row = mysqli_fetch_assoc($result);
-        $employee[] = $row['empname'];
+        $employee = $row['empname'];
     }
     return $employee;
 }
@@ -189,12 +187,12 @@ function getEmployeesByCpf($cpf)
                     </td>
                 </tr>
                 <tr>
-                    <td><label for="placei">Place of Issue</label>
-                            <select class="form-group" name="placei" required>
-                                <option value="N" >NBP GREEN HEIGHTS</option>
-                                <option value="V" >VASUNDHARA BHAVAN</option>
-                                <option value="H" >11 HIGH</option>
-                            </select>
+                <td><label for="placei">Place of Issue</label>
+                        <select class="form-group" name="placei" required>
+                            <option value="N">NBP GREEN HEIGHTS</option>
+                            <option value="V">VASUNDHARA BHAVAN</option>
+                            <option value="H">11 HIGH</option>
+                        </select>
                     </td>
                     <td>
                     <label for="pod">Place of Destination</label>
