@@ -24,6 +24,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["logout"])) {
 }
 
 $conn = $connection;
+if(isset($_GET['orderno'])){
+    $orderno = $_GET['orderno'];
+
+    $checkquery = "SELECT coll_approval,security_approval,guard_approval  FROM order_no WHERE orderno = '$orderno'";
+    $result = mysqli_query($conn, $checkquery);
+    
+    if ($result) {
+        $row = mysqli_fetch_assoc($result);
+        $collApproval = $row['coll_approval'];
+        $sApproval = $row['security_approval'];
+        $gApproval = $row['guard_approval'];
+        // Check if the 'coll_approval' value is not equal to -1
+        if ($collApproval != -1 && $sApproval != -1 && $gApproval != -1) {
+            $_SESSION['cantedit'] = true; // Using session variable
+
+            // Redirect to the next page
+            header("Location: skdash.php");
+            exit();
+        }
+    }
+}
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if (isset($_POST["submit"])) {
@@ -80,7 +102,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             /********** Done ************/
 
-            // Redirect to a success page or display a success message
+            $_SESSION['esuccess'] = true; // Using session variable
+
+            // Redirect to the next page
             header("Location: skdash.php");
             exit();
         } else {
