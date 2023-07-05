@@ -81,8 +81,8 @@ WHERE o.orderno = " . $_SESSION['orderno'];
 
         // Add form to input "Mode of Collection" and "Vehicle Number"
         echo '<form method="POST" action="">
-            <label for="securityn">Name:</label>
-            <input type="text" id="securityn" name="securityn" required><br><br>
+            <label for="guard_name">Name:</label>
+            <input type="text" id="guard_name" name="guard_name" required><br><br>
 
             <input type="submit" class="btn btn-danger" name="revert" value="Revert">
             <input type="submit" class="btn btn-primary" name="approve" value="Approve">
@@ -94,12 +94,12 @@ WHERE o.orderno = " . $_SESSION['orderno'];
 
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Get the input values from the form
-        $securityn = $_POST["securityn"];
+        $guard_name = $_POST["guard_name"];
 
         // Insert the values into the orders table
         if (isset($_POST['approve'])) {
             $insert_sql = "UPDATE order_no 
-                SET securityn = '$securityn', guard_approval = 1
+                SET guard_name = '$guard_name', guard_approval = 1
                 WHERE orderno =" . $_SESSION['orderno'];
             $connection->query($insert_sql);
             $_SESSION['asuccess'] = true; // Using session variable
@@ -108,7 +108,7 @@ WHERE o.orderno = " . $_SESSION['orderno'];
             exit();
         } else if (isset($_POST['revert'])) {
             $insert_sql = "UPDATE order_no 
-                SET securityn = '$securityn', guard_approval = -1,coll_approval =0,security_approval =0
+                SET guard_name = '$guard_name', guard_approval = -1,coll_approval =0,security_approval =0
                 WHERE orderno =" . $_SESSION['orderno'];
             $connection->query($insert_sql);
             header('Location: skdash.php');
