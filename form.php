@@ -55,10 +55,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Execute the statement
     if ($stmt->execute()) {
 
-    
-
-    if (mysqli_query($conn, $insertOrderNoQuery)) {
-
         $orderNo = mysqli_insert_id($conn); // Get the auto-generated order ID
 
         //*****************/ Insert data into the 'orders' table ************************
@@ -172,7 +168,7 @@ function getEmployeesByCpf($cpf)
         <h2 class="wlc">Welcome, <?php echo $_SESSION["username"]; ?>!</h2>
     </div>
 
-    
+
     <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST">
         <div class="pos">
             <label for="return">Returnable</label>
@@ -189,7 +185,7 @@ function getEmployeesByCpf($cpf)
                     </td>
                 </tr>
                 <tr>
-                <td><label for="placei">Place of Issue</label>
+                    <td><label for="placei">Place of Issue</label>
                         <select class="form-group" name="placei" required>
                             <option value="N">NBP GREEN HEIGHTS</option>
                             <option value="V">VASUNDHARA BHAVAN</option>
@@ -197,17 +193,17 @@ function getEmployeesByCpf($cpf)
                         </select>
                     </td>
                     <td>
-                    <label for="pod">Place of Destination</label>
-                    <select name="pod" class="form-group" required onchange="showOtherOption(this)">
+                        <label for="pod">Place of Destination</label>
+                        <select name="pod" class="form-group" required onchange="showOtherOption(this)">
 
-                        <option value="NBP Green Heights">NBP Green Heights</option>
-                        <option value="Vasundhara Bhavan">Vasundhara Bhavan</option>
-                        <option value="11 High">11 High</option>
-                        <option value="other">Other</option>
-                    </select>
-                    <div id="otherOptionContainer" style="display: none;">
-                        <input type="text" name="otherOption" placeholder="Specify other option">
-                    </div>
+                            <option value="NBP Green Heights">NBP Green Heights</option>
+                            <option value="Vasundhara Bhavan">Vasundhara Bhavan</option>
+                            <option value="11 High">11 High</option>
+                            <option value="other">Other</option>
+                        </select>
+                        <div id="otherOptionContainer" style="display: none;">
+                            <input type="text" name="otherOption" placeholder="Specify other option">
+                        </div>
                     </td>
         </div>
         <table id="dynamic-table">

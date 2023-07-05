@@ -30,6 +30,7 @@ body {
     margin: 0 auto;
     background-color: white;
     padding: 20px;
+    padding-top: 0px;
     border-radius: 5px;
 
 }
@@ -68,11 +69,11 @@ h2 {
     text-align: center;
 }
 .container table {
-    width: 100%;
+    width: 75%;
     height: 100px;
 }
 .container table td {
-    width: fit-content;
+    width:fit-content;
 }
 .logo{
     width: 100px;
