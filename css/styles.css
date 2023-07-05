@@ -30,8 +30,9 @@ body {
     margin: 0 auto;
     background-color: white;
     padding: 20px;
+    padding-top: 0px;
     border-radius: 5px;
-    position: sticky;
+
 }
 .btn-secondary{
     position: absolute;
@@ -55,12 +56,12 @@ body {
     --bs-gradient: none;
 }
 #lo{
-    position: fixed;
+    position: absolute;
     top: 0px;
     right: 0px;
 }
 #gb{
-    position: sticky;
+
     top: 0px;
     left: 0px;
 }
@@ -68,10 +69,11 @@ h2 {
     text-align: center;
 }
 .container table {
-    width: 100%;
+    width: 75%;
+    height: 100px;
 }
 .container table td {
-    width: fit-content;
+    width:fit-content;
 }
 .logo{
     width: 100px;
@@ -137,19 +139,24 @@ clear{
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 20px;
+    margin-top: 20px;
+    
 }
 
-#dynamic-table,#orderTable th, td {
+
+#dynamic-table th,#orderTable th, td {
+
     padding: 8px;
     text-align: left;
     border-bottom: 1px solid #ddd;
 }
 
-#dynamic-table,#orderTable th {
+
+#dynamic-table th,#orderTable th {
     background-color: #98C1D9;
 }
 
-#dynamic-table,#orderTable tr:hover {
+#dynamic-table  tr:hover,#orderTable tr:hover { 
     background-color: #f5f5f5;
 }
 select{
