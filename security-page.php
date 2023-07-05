@@ -73,11 +73,9 @@ if ($result->num_rows > 0) {
 
     // Add form to input "Mode of Collection" and "Vehicle Number"
     echo '<form method="POST" action="">
-            <label for="securityn">Name:</label>
-            <input type="text" id="securityn" name="securityn" required><br><br>
+            <input type="submit" class="btn btn-danger" name="revert" value="Revert">
+            <input type="submit" class="btn btn-primary" name="approve" value="Approve">
             
-            <input type="submit" name="approve" value="Approve">
-            <input type="submit" name="revert" value="Revert">
         </form>';
 
 } else {
@@ -96,7 +94,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 SET securityn = '$securityn',  security_approval = 1
                 WHERE orderno =" . $_SESSION['orderno'];
         $connection->query($insert_sql);
-        header('Location: skdash.php');
+        $_SESSION['asuccess'] = true; // Using session variable
+        // Redirect to the next page
+        header("Location: skdash.php");
         exit();
     } 
     else if (isset($_POST['revert'])) {
@@ -104,8 +104,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                    SET securityn = '$securityn',security_approval = -1,guard_approval = 0,coll_approval = 0
                  WHERE orderno =" . $_SESSION['orderno'];
          $connection->query($insert_sql);
-         header('Location: skdash.php');
-         exit();
+         $_SESSION['rsuccess'] = true; // Using session variable
+        // Redirect to the next page
+        header("Location: skdash.php");
+        exit();
      }
 }
 

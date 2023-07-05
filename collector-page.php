@@ -46,6 +46,8 @@ if (isset($_SESSION['orderno'])) {
 
         if ($updateResult) {
             // Redirect to the dashboard or a success page
+            $_SESSION['asuccess'] = true; // Using session variable
+            // Redirect to the next page
             header("Location: skdash.php");
             exit();
         } else {
@@ -62,6 +64,8 @@ if (isset($_SESSION['orderno'])) {
 
         if ($updateResult) {
             // Redirect to the dashboard or a success page
+            $_SESSION['rsuccess'] = true; // Using session variable
+            // Redirect to the next page
             header("Location: skdash.php");
             exit();
         } else {
@@ -122,8 +126,9 @@ if (isset($_SESSION['orderno'])) {
     <input type="text" name="moc" value="<?php echo $moc; ?>">
     <label for="vehno">Vehno:</label>
     <input type="text" name="vehno" value="<?php echo $vehno; ?>">
-    <button type="submit" name="submit">Submit and Approve</button>
-    <button type="submit" name="deny">Revert</button>
+    <button type="submit" class="btn btn-danger" name="deny">Revert</button>
+    <button type="submit" class="btn btn-primary" name="submit">Submit and Approve</button>
+    
   </form>
 
 </body>

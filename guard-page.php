@@ -84,8 +84,8 @@ WHERE o.orderno = " . $_SESSION['orderno'];
             <label for="guard_name">Name:</label>
             <input type="text" id="guard_name" name="guard_name" required><br><br>
 
-            <input type="submit" name="revert" value="Revert">
-            <input type="submit" name="approve" value="Approve">
+            <input type="submit" class="btn btn-danger" name="revert" value="Revert">
+            <input type="submit" class="btn btn-primary" name="approve" value="Approve">
           </form>';
     } else {
         echo "No fields found in the table.";
@@ -102,7 +102,9 @@ WHERE o.orderno = " . $_SESSION['orderno'];
                 SET guard_name = '$guard_name', guard_approval = 1
                 WHERE orderno =" . $_SESSION['orderno'];
             $connection->query($insert_sql);
-            header('Location: skdash.php');
+            $_SESSION['asuccess'] = true; // Using session variable
+            // Redirect to the next page
+            header("Location: skdash.php");
             exit();
         } else if (isset($_POST['revert'])) {
             $insert_sql = "UPDATE order_no 

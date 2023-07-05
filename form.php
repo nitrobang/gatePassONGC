@@ -8,7 +8,7 @@ if (!isset($_SESSION["username"])) {
     exit();
 }
 
-//check if right person(store keeper) is accessing the forms page
+//check if right person (store keeper) is accessing the forms page
 if ($_SESSION["designation"] != "E") {
     header("Location: skdash.php");
     exit();
@@ -32,16 +32,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $issueDesc = mysqli_real_escape_string($conn, $_POST["issued"]);
     $placeOfIssue = mysqli_real_escape_string($conn, $_POST["placei"]);
     $issueTo = mysqli_real_escape_string($conn, $_POST["issuet"]);
-    $placeOfDestination = mysqli_real_escape_string($conn, $_POST["pod"]);
+    $placeOfDestination = '';
+    if ($_POST["pod"] == "other") {
+        $placeOfDestination = mysqli_real_escape_string($conn, $_POST["otherOption"]);
+    } else {
+        $placeOfDestination = mysqli_real_escape_string($conn, $_POST["pod"]);
+    }
     $forwardTo = mysqli_real_escape_string($conn, $_POST["fors"]);
     $collector_name = getEmployeesByCpf($forwardTo);
     $created_by = $_SESSION['cpf_no'];
 
-    // Insert data into the 'order_no' table
-    $insertOrderNoQuery = "INSERT INTO order_no (order_dest, issue_desc, placeoi, issueto, securityn, collector_name, returnable, forwarded_to, created_by) 
-                           VALUES ('$placeOfDestination', '$issueDesc', '$placeOfIssue', '$issueTo', '', '$collector_name', $returnable, '$forwardTo', '$created_by')";
+    // Prepare the INSERT statement with bind parameters
+    $insertOrderNoQuery = "INSERT INTO order_no (order_dest, issue_desc, placeoi, issueto, securityn, collector_name, returnable, forwarded_to, created_by)VALUES (?, ?, ?, ?, '', '', ?, ?, ?)";
 
-    if (mysqli_query($conn, $insertOrderNoQuery)) {
+    // Prepare the statement
+    $stmt = $conn->prepare($insertOrderNoQuery);
+
+
+    // Bind the parameters
+    $stmt->bind_param('ssssiii', $placeOfDestination, $issueDesc, $placeOfIssue, $issueTo, $returnable, $forwardTo, $created_by);
+
+    // Execute the statement
+    if ($stmt->execute()) {
+
+
         $orderNo = mysqli_insert_id($conn); // Get the auto-generated order ID
 
         //*****************/ Insert data into the 'orders' table ************************
@@ -75,8 +89,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         /****************************** Done **********************************/
 
         // Redirect to a success page or display a success message
-        echo "<script>alert('Order placed Successfully')</script>";
-        echo "<script>window.location.href = 'skdash.php';</script>";
+        $_SESSION['fsuccess'] = true; // Using session variable
+
+        // Redirect to the next page
+        header("Location: skdash.php");
         exit();
     } else {
         // Handle the case where the insertion failed
@@ -87,6 +103,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     mysqli_close($conn);
     $conn2 = null;
 }
+
 
 // Function to get employee names and CPF numbers based on designation
 function getEmployeesByDesignation($designation)
@@ -150,10 +167,10 @@ function getEmployeesByCpf($cpf)
                 </td>
             </tr>
         </table>
-
+        <h2 class="wlc">Welcome, <?php echo $_SESSION["username"]; ?>!</h2>
     </div>
 
-    <h2 class="wlc">Welcome, <?php echo $_SESSION["username"]; ?>!</h2>
+    
     <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST">
         <div class="pos">
             <label for="return">Returnable</label>
@@ -177,22 +194,18 @@ function getEmployeesByCpf($cpf)
                             <option value="H">11 HIGH</option>
                         </select>
                     </td>
-                    <td><label for="pod">Place of Destination</label>
-                    <select name="pod" required onchange="showOtherOption(this)">
-                    <option value="N">NBP Green Heights</option>
-                    <option value="V">Vasundhara Bhavan</option>
-                    <option value="H">11 High</option>
-                    <option value="other">Other</option>
+                    <td>
+                    <label for="pod">Place of Destination</label>
+                    <select name="pod" class="form-group" required onchange="showOtherOption(this)">
+
+                        <option value="NBP Green Heights">NBP Green Heights</option>
+                        <option value="Vasundhara Bhavan">Vasundhara Bhavan</option>
+                        <option value="11 High">11 High</option>
+                        <option value="other">Other</option>
                     </select>
-
                     <div id="otherOptionContainer" style="display: none;">
-                    <input type="text" name="otherOption" placeholder="Specify other option">
+                        <input type="text" name="otherOption" placeholder="Specify other option">
                     </div>
-
-        
-
-
-
                     </td>
         </div>
         <table id="dynamic-table">
@@ -229,20 +242,6 @@ function getEmployeesByCpf($cpf)
         <input type="submit" name="submit" id="submitButton" value="Submit" disabled>
     </form>
     <script type="text/javascript" src="form.js"></script>
-    <script>
-    function showOtherOption(selectElement) {
-        var otherOptionContainer = document.getElementById('otherOptionContainer');
-        var otherOptionInput = otherOptionContainer.querySelector('input[name="otherOption"]');
-        if (selectElement.value === 'other') {
-            otherOptionContainer.style.display = 'block';
-            otherOptionInput.setAttribute('required', 'required');
-        } else {
-            otherOptionContainer.style.display = 'none';
-            otherOptionInput.removeAttribute('required');
-        }
-    }
-</script>
-    <!-- herther -->
 </body>
 
 </html>
