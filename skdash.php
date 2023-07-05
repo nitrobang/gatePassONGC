@@ -112,6 +112,20 @@ function getEmployeesByCpf($cpf)
     }
     return $employee;
 }
+function getEmployeesvenue($cpf)
+{
+    global $connection;
+    $query = "SELECT venue FROM employee WHERE cpfno = '$cpf'";
+    $result = mysqli_query($connection, $query);
+    $employee = null;
+    if ($result && mysqli_num_rows($result) > 0) {
+        $row = mysqli_fetch_assoc($result);
+        $venue = $row['venue'];
+    }
+    return $venue;
+}
+
+
 
 ?>
 
@@ -155,13 +169,39 @@ function getEmployeesByCpf($cpf)
     
     // Retrieve data from the "order_no" table
     if ($designation == "E") {
-        $query = "SELECT orderno, order_dest, issue_desc, placeoi, issueto, returnable, coll_approval, security_approval,comp_approval,guard_approval,forwarded_to,created_by FROM order_no WHERE coll_approval = 0 AND forwarded_to = {$cpf_no} OR created_by = {$cpf_no}";
+        $query = "SELECT orderno, order_dest, issue_desc, placeoi, issueto, returnable, coll_approval, security_approval, comp_approval, guard_approval, forwarded_to, created_by FROM order_no WHERE coll_approval = 0 AND (forwarded_to = ? OR created_by = ?)";
+    
+        // Prepare the statement
+        $stmt = $conn->prepare($query);
+    
+        // Bind the parameters
+        $stmt->bind_param('ss', $cpf_no, $cpf_no);
+    
     } else if ($designation == "S") {
-        $query = "SELECT orderno, order_dest, issue_desc, placeoi, issueto, returnable, coll_approval, security_approval,comp_approval,guard_approval,forwarded_to,created_by FROM order_no WHERE security_approval = 0 AND coll_approval = 1 AND guard_approval = 1";
+        $ven = getEmployeesvenue($cpf_no);
+        $query = "SELECT orderno, order_dest, issue_desc, placeoi, issueto, returnable, coll_approval, security_approval, comp_approval, guard_approval, forwarded_to, created_by FROM order_no WHERE placeoi = ? AND security_approval = 0 AND coll_approval = 1 AND guard_approval = 1";
+    
+        // Prepare the statement
+        $stmt = $conn->prepare($query);
+    
+        // Bind the parameter
+        $stmt->bind_param('s', $ven);
+    
     } else {
-        $query = "SELECT orderno, order_dest, issue_desc, placeoi, issueto, returnable, coll_approval, security_approval,comp_approval,guard_approval,forwarded_to,created_by FROM order_no WHERE placeoi = '{$_SESSION["venue"]}' AND coll_approval = 1 AND guard_approval = 0";
+        $query = "SELECT orderno, order_dest, issue_desc, placeoi, issueto, returnable, coll_approval, security_approval, comp_approval, guard_approval, forwarded_to, created_by FROM order_no WHERE placeoi = ? AND coll_approval = 1 AND guard_approval = 0";
+    
+        // Prepare the statement
+        $stmt = $conn->prepare($query);
+    
+        // Bind the parameter
+        $stmt->bind_param('s', $_SESSION["venue"]);
     }
-    $result = mysqli_query($connection, $query);
+    
+    // Execute the statement
+    $stmt->execute();
+    
+    // Get the result
+    $result = $stmt->get_result();
     // Check if the query was successful
     if ($result && mysqli_num_rows($result) > 0) {
         // Display the data in a table
@@ -270,7 +310,7 @@ function getEmployeesByCpf($cpf)
                         $guard_name_result = $connection->query($guard_name_query);
                         $guard_name_row = $guard_name_result->fetch_assoc();
                 
-                        echo '<td>Order Approvedd by Guard: ' . $guard_name_row['guard_name'] . '</td>';}
+                        echo '<td>Order Approved by Guard: ' . $guard_name_row['guard_name'] . '</td>';}
                     
                     else if ($row['coll_approval'] == 1 && $row['security_approval'] == 1 && $row['guard_approval'] == 1 && $row['comp_approval'] == 0)
                         echo '<td>Approved and Out</td>'; 

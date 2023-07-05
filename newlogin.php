@@ -79,6 +79,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $_SESSION["username"] = $user["username"];
                     $_SESSION["cpf_no"] = $cpf_no;
                     $_SESSION['designation'] = $designation;
+                    
+                    
                     header("Location: skdash.php");
                     exit();
                 } else {
