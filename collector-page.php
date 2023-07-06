@@ -58,22 +58,28 @@ if (isset($_SESSION['orderno'])) {
 
     // Handle form submission to Revert the order
     if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["deny"])) {
-        // Update the order_no table with coll_approval = -1 to indicate denial
-        $updateQuery = "UPDATE order_no SET coll_approval = -1,security_approval = 0,guard_approval = 0 WHERE orderno = $orderno";
-        $updateResult = mysqli_query($connection, $updateQuery);
+        $new_remarks = $_POST["new_remarks"];
 
-        if ($updateResult) {
-            // Redirect to the dashboard or a success page
-            $_SESSION['rsuccess'] = true; // Using session variable
-            // Redirect to the next page
-            header("Location: skdash.php");
-            exit();
+        // Check if remarks field is empty for revert
+        if (empty($new_remarks)) {
+            $error = "Remarks is required for revert.";
         } else {
-            // Handle the error, display a message, or redirect to an error page
-            echo "Error: " . mysqli_error($connection);
+            // Update the order_no table with coll_approval = -1 to indicate denial
+            $updateQuery = "UPDATE order_no SET coll_approval = -1, security_approval = 0, guard_approval = 0, new_remarks = '$new_remarks' WHERE orderno = $orderno";
+            $updateResult = mysqli_query($connection, $updateQuery);
+
+            if ($updateResult) {
+                // Redirect to the dashboard or a success page
+                $_SESSION['rsuccess'] = true; // Using session variable
+                // Redirect to the next page
+                header("Location: skdash.php");
+                exit();
+            } else {
+                // Handle the error, display a message, or redirect to an error page
+                echo "Error: " . mysqli_error($connection);
+            }
         }
     }
-    
 ?>
 
 <!-- HTML Section -->
@@ -119,13 +125,18 @@ if (isset($_SESSION['orderno'])) {
     <?php } ?>
   </table>
 
-  <!-- Display the input fields for moc and vehno -->
+  <!-- Display the input fields for moc, vehno, and remarks -->
   <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
     <input type="hidden" name="orderno" value="<?php echo $orderno; ?>">
     <label for="moc">MOC:</label>
     <input type="text" name="moc" value="<?php echo $moc; ?>">
     <label for="vehno">Vehno:</label>
     <input type="text" name="vehno" value="<?php echo $vehno; ?>">
+    <label for="new_remarks">Remarks:</label>
+    <input type="text" name="new_remarks" value="<?php echo isset($new_remarks) ? $new_remarks : ''; ?>">
+    <?php if (isset($error)) { ?>
+      <p class="error"><?php echo $error; ?></p>
+    <?php } ?>
     <button type="submit" class="btn btn-danger" name="deny">Revert</button>
     <button type="submit" class="btn btn-primary" name="submit">Submit and Approve</button>
     
