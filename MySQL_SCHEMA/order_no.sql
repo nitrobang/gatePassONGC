@@ -19,3 +19,4 @@ CREATE TABLE order_no (
   created_by INT NOT NULL
 );
 ALTER TABLE order_no AUTO_INCREMENT = 1;
+ALTER TABLE order_no ADD new_remarks VARCHAR(255) AFTER security_approval;

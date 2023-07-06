@@ -190,7 +190,8 @@ function getEmployeesByCpf($cpf)
     <h2 class="wlc">Welcome, <?php echo $_SESSION["username"]; ?>!</h2><br>
     <?php
     // $orderno = $_GET['orderno']; // Get the 'orderno' parameter from the URL
-    echo $orderno;
+    echo "Order No:".$orderno;
+    
     $selectOrderNoQuery = "SELECT * FROM order_no WHERE orderno = '$orderno'";
     $result1 = mysqli_query($conn, $selectOrderNoQuery);
     $selectOrdersQuery = "SELECT * FROM orders WHERE orderno = '$orderno'";
@@ -199,10 +200,10 @@ function getEmployeesByCpf($cpf)
     while ($row = mysqli_fetch_assoc($result)) {
         $orderItems[] = $row;
     }
-
+    
     if ($result1 && mysqli_num_rows($result1) > 0) {
         $orderData = mysqli_fetch_assoc($result1);
-
+        echo "<br><h5>Remarks:".$orderData['new_remarks']."</h5>";
     ?>
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST">
             <div class="pos">

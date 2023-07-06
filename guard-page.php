@@ -83,8 +83,11 @@ WHERE o.orderno = " . $_SESSION['orderno'];
         echo '<form method="POST" action="">
             <label for="guard_name">Name:</label>
             <input type="text" id="guard_name" name="guard_name" required><br><br>
+            
+            <label for="new_remarks">Remarks:</label>
+            <input type="text" id="new_remarks" name="new_remarks"><br><br>';
 
-            <input type="submit" class="btn btn-danger" name="revert" value="Revert">
+        echo '<input type="submit" class="btn btn-danger" name="revert" value="Revert">
             <input type="submit" class="btn btn-primary" name="approve" value="Approve">
           </form>';
     } else {
@@ -107,12 +110,18 @@ WHERE o.orderno = " . $_SESSION['orderno'];
             header("Location: skdash.php");
             exit();
         } else if (isset($_POST['revert'])) {
-            $insert_sql = "UPDATE order_no 
-                SET guard_name = '$guard_name', guard_approval = -1,coll_approval =0,security_approval =0
-                WHERE orderno =" . $_SESSION['orderno'];
-            $connection->query($insert_sql);
-            header('Location: skdash.php');
-            exit();
+            // Check if the new_remarks field is empty
+            if (empty($_POST['new_remarks'])) {
+                echo "Please enter remarks before reverting.";
+            } else {
+                $new_remarks = $_POST['new_remarks'];
+                $insert_sql = "UPDATE order_no 
+                    SET guard_name = '$guard_name', guard_approval = -1, coll_approval = 0, security_approval = 0, new_remarks = '$new_remarks'
+                    WHERE orderno =" . $_SESSION['orderno'];
+                $connection->query($insert_sql);
+                header('Location: skdash.php');
+                exit();
+            }
         }
     }
     ?>
