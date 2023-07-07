@@ -39,11 +39,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $placeOfDestination = mysqli_real_escape_string($conn, $_POST["pod"]);
     }
     $forwardTo = mysqli_real_escape_string($conn, $_POST["fors"]);
-    $collector_name = getEmployeesByCpf($forwardTo);
     $created_by = $_SESSION['cpf_no'];
 
     // Prepare the INSERT statement with bind parameters
-    $insertOrderNoQuery = "INSERT INTO order_no (order_dest, issue_desc, placeoi, issueto, securityn, collector_name, returnable, forwarded_to, created_by)VALUES (?, ?, ?, ?,'', ?, ?, ?, ?)";
+    $insertOrderNoQuery = "INSERT INTO order_no (order_dest, issue_desc, placeoi, issueto, securityn, returnable, forwarded_to, created_by)VALUES (?, ?, ?, ?,'', ?, ?, ?)";
     // $UpdateOrderNoQuery = "UPDATE order_no SET order_dest = '$placeOfDestination',issue_desc = '$issueDesc',placeoi = '$placeOfIssue',issueto = '$issueTo',securityn = '',collector_name = '$collector_name',returnable = $returnable,	coll_approval='$coll_approval',security_approval='$security_approval',guard_approval='$guard_approval',forwarded_to = '$forwardTo',created_by = '$created_by' WHERE orderno = '$orderno'";
 
     // Prepare the statement
@@ -51,7 +50,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 
     // Bind the parameters
-    $stmt->bind_param('sssssiii', $placeOfDestination, $issueDesc, $placeOfIssue, $issueTo, $collector_name, $returnable, $forwardTo, $created_by);
+    $stmt->bind_param('ssssiii', $placeOfDestination, $issueDesc, $placeOfIssue, $issueTo, $returnable, $forwardTo, $created_by);
 
     // Execute the statement
     if ($stmt->execute()) {
