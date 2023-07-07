@@ -80,7 +80,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["logout"])) {
 </head>
 
 <body>
-    <button class="btn btn-secondary" id="gb" onclick="window.location.href = 'skdash.php'">Go Back</button>
+
+<button class="btn btn-secondary" id="gb" onclick="goBack()">Go Back</button>
+
+<script>
+function goBack() {
+    <?php if ($designation == "G") : ?>
+        window.location.href = "guard_dash.php";
+    <?php elseif ($designation == "E") : ?>
+        window.location.href = "skdash.php";
+    <?php endif; ?>
+}
+</script>
 
     <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
         <button type="submit" id="lo" class="btn btn-outline-danger" name="logout">Logout</button>
@@ -144,7 +155,7 @@ WHERE o.orderno = " . $orderno;
                 $connection->query($insert_sql);
                 $_SESSION['resuccess'] = true; // Using session variable
                 // Redirect to the next page
-                header("Location: skdash.php");
+                header("Location: guard_dash.php");
                 exit();
             }
         } else if ($designation =="E") {

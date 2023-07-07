@@ -21,36 +21,36 @@ $conn = $connection;
 if (isset($_SESSION["cpf_no"])) {
     $cpf_no = $_SESSION["cpf_no"];
 }
-if (isset($_SESSION['fsuccess'])) {
-    if ($_SESSION['fsuccess']) {
-        echo "<script>alert('Order Submitted Successfully');</script>";
-        $_SESSION['fsuccess'] = false;
-    }
-}
-if (isset($_SESSION['esuccess'])) {
-    if ($_SESSION['esuccess']) {
-        echo "<script>alert('Order Edited Successfully');</script>";
-        $_SESSION['esuccess'] = false;
-    }
-}
-if (isset($_SESSION['cantedit'])) {
-    if ($_SESSION['cantedit']) {
-        echo "<script>alert('Order Can't be Edited');</script>";
-        $_SESSION['cantedit'] = false;
-    }
-}
-if (isset($_SESSION['asuccess'])) {
-    if ($_SESSION['asuccess']) {
-        echo "<script>alert('Order Approved Successfully');</script>";
-        $_SESSION['asuccess'] = false;
-    }
-}
-if (isset($_SESSION['rsuccess'])) {
-    if ($_SESSION['rsuccess']) {
-        echo "<script>alert('Order Reverted Successfully');</script>";
-        $_SESSION['rsuccess'] = false;
-    }
-}
+// if (isset($_SESSION['fsuccess'])) {
+//     if ($_SESSION['fsuccess']) {
+//         echo "<script>alert('Order Submitted Successfully');</script>";
+//         $_SESSION['fsuccess'] = false;
+//     }
+// }
+// if (isset($_SESSION['esuccess'])) {
+//     if ($_SESSION['esuccess']) {
+//         echo "<script>alert('Order Edited Successfully');</script>";
+//         $_SESSION['esuccess'] = false;
+//     }
+// }
+// if (isset($_SESSION['cantedit'])) {
+//     if ($_SESSION['cantedit']) {
+//         echo "<script>alert('Order Can't be Edited');</script>";
+//         $_SESSION['cantedit'] = false;
+//     }
+// }
+// if (isset($_SESSION['asuccess'])) {
+//     if ($_SESSION['asuccess']) {
+//         echo "<script>alert('Order Approved Successfully');</script>";
+//         $_SESSION['asuccess'] = false;
+//     }
+// }
+// if (isset($_SESSION['rsuccess'])) {
+//     if ($_SESSION['rsuccess']) {
+//         echo "<script>alert('Order Reverted Successfully');</script>";
+//         $_SESSION['rsuccess'] = false;
+//     }
+// }
 if (isset($_SESSION['resuccess'])) {
     if ($_SESSION['resuccess']) {
         echo "<script>alert('Order Received Successfully');</script>";
@@ -62,7 +62,7 @@ if (!isset($_SESSION['designation'])) {
     $query = "SELECT * FROM employee WHERE cpfno = '$cpf_no'";
     $result = mysqli_query($connection, $query);
     if (!$result || mysqli_num_rows($result) == 0) {
-        header("Location: skdash.php");
+        header("Location: guard_dash.php");
         exit();
     }
     $user = mysqli_fetch_assoc($result);
@@ -71,31 +71,25 @@ if (!isset($_SESSION['designation'])) {
 
 
 // Check if the user clicked on the collector link
-if (($designation == "E") && isset($_GET['orderno'])) {
-    $_SESSION['orderno'] = $_GET['orderno'];
-    header("Location: collector-page.php");
-    exit();
-}
+// if (($designation == "E") && isset($_GET['orderno'])) {
+//     $_SESSION['orderno'] = $_GET['orderno'];
+//     header("Location: collector-page.php");
+//     exit();
+// }
 
-//Check if the user clicked on the security link
-if (($designation == "S") && isset($_GET['orderno'])) {
-    $_SESSION['orderno'] = $_GET['orderno'];
-    header("Location: security-page.php");
-    exit();
-}
+// //Check if the user clicked on the security link
+// if (($designation == "S") && isset($_GET['orderno'])) {
+//     $_SESSION['orderno'] = $_GET['orderno'];
+//     header("Location: security-page.php");
+//     exit();
+// }
 
 //Check if the user clicked on the guard link
-if (($designation == "G"  && isset($_GET['orderno']))) {
-    $_SESSION['orderno'] = $_GET['orderno'];
-    header("Location: guard-page.php");
-    exit();
-}
-
-if (($designation == "G"  && isset($_GET['orderno']))) {
-    $_SESSION['orderno'] = $_GET['orderno'];
-    header("Location: guard-page.php");
-    exit();
-}
+// if (($designation == "G"  && isset($_GET['orderno']))) {
+//     $_SESSION['orderno'] = $_GET['orderno'];
+//     header("Location: guard-page.php");
+//     exit();
+// }
 
 //  redirect to receive.php for "receive" button
 if (($designation == "G"||$designation == "E") && isset($_POST['receivebtn'])) {
@@ -105,19 +99,19 @@ if (($designation == "G"||$designation == "E") && isset($_POST['receivebtn'])) {
 } 
 
 // Set the session variable 'isEditable' and redirect to form.php for "Edit" button
-if ($designation == "E" && isset($_POST['edit_order'])) {
-    $orderno = $_POST['edit_order'];
-    header("Location: tempform.php?orderno=$orderno");
-    exit();
-}
-if ($designation == "E" && isset($_POST['new_order'])) {
-    $orderno = $_POST['edit_order'];
-    header("Location: form.php");
-    exit();
-}
-if ($designation == "G" && isset($_POST['receive'])) {
-    $orderno = $_POST['receive'];
-    header("Location: guard_dash.php");
+// if ($designation == "E" && isset($_POST['edit_order'])) {
+//     $orderno = $_POST['edit_order'];
+//     header("Location: tempform.php?orderno=$orderno");
+//     exit();
+// }
+// if ($designation == "E" && isset($_POST['new_order'])) {
+//     $orderno = $_POST['edit_order'];
+//     header("Location: form.php");
+//     exit();
+// }
+if ($designation == "G" && isset($_POST['pending'])) {
+    $orderno = $_POST['pending'];
+    header("Location: skdash.php");
     exit();
 }
 function getEmployeesByCpf($cpf)
@@ -177,15 +171,11 @@ function getEmployeesvenue($cpf)
 
     </div>
     <h3>Dashboard</h3>
-    <?php if ($designation == "E") : ?>
-        <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
-            <button type="submit" class="btn btn-primary" class="form-group" name="new_order">New Order</button>
-        </form>
-    <?php endif; ?>
+    
     <?php if ($designation == "G") : ?>
-    <form method="POST" action="guard_dash.php">
-        <button type="submit" class="btn btn-primary" class="form-group" name="receive">Receive Items</button>
-    </form>
+        <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
+            <button type="submit" class="btn btn-primary" class="form-group" name="pending">Pending Orders</button>
+        </form>
     <?php endif; ?>
     <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
         <?php
@@ -209,7 +199,7 @@ function getEmployeesvenue($cpf)
             // Bind the parameter
             $stmt->bind_param('s', $ven);
         } else {
-            $query = "SELECT orderno, order_dest, issue_desc, placeoi, issueto, returnable, coll_approval, security_approval, comp_approval, guard_approval, forwarded_to, created_by FROM order_no WHERE placeoi = ? AND (coll_approval = 1 AND guard_approval = 0) ";
+            $query = "SELECT orderno, order_dest, issue_desc, placeoi, issueto, returnable, coll_approval, security_approval, comp_approval, guard_approval, forwarded_to, created_by FROM order_no WHERE placeoi = ? AND (guard_approval = 1 AND comp_approval=-1 AND returnable=1) ";
 
             // Prepare the statement
             $stmt = $conn->prepare($query);
