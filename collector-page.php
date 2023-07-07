@@ -27,21 +27,42 @@ if (isset($_SESSION['orderno'])) {
     // Retrieve moc and vehno values from the order_no table if they exist
     $moc = '';
     $vehno = '';
-    $fetchQuery = "SELECT moc, vehno FROM order_no WHERE orderno = $orderno";
+    $collector_name = '';
+    $fetchQuery = "SELECT moc, vehno, collector_name FROM order_no WHERE orderno = $orderno";
     $fetchResult = mysqli_query($connection, $fetchQuery);
     if (mysqli_num_rows($fetchResult) > 0) {
         $row = mysqli_fetch_assoc($fetchResult);
         $moc = $row['moc'];
+        $collector_name = $row['collector_name'];
         $vehno = $row['vehno'];
     }
-
+    $conn = $connection;
     // Handle form submission to insert moc and vehno into the order_no table
     if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["submit"])) {
+        // $moc = $_POST["moc"];
+        $moc = '';
+    if ($_POST["moc"] == "other") {
         $moc = $_POST["moc"];
+        if(isset($_POST["otherOption"])){
+            $collector_name =  $_POST["otherOption"];
+        }
+        else {
+            $collector_name = '';
+        }
+    } else {
+        $moc = mysqli_real_escape_string($conn, $_POST["moc"]);
+    }
+        // if(isset($_POST["otherOption"])){
+        //     $collector_name =  $_POST["otherOption"];
+        // }
+        // else {
+        //     $collector_name = '';
+        // }
+        
         $vehno = $_POST["vehno"];
 
         // Update the order_no table with moc and vehno values
-        $updateQuery = "UPDATE order_no SET moc = '$moc', vehno = '$vehno', coll_approval = 1 WHERE orderno = $orderno";
+        $updateQuery = "UPDATE order_no SET moc = '$moc', vehno = '$vehno', collector_name = '$collector_name', coll_approval = 1 WHERE orderno = '$orderno'";
         $updateResult = mysqli_query($connection, $updateQuery);
 
         if ($updateResult) {
@@ -129,7 +150,14 @@ if (isset($_SESSION['orderno'])) {
   <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
     <input type="hidden" name="orderno" value="<?php echo $orderno; ?>">
     <label for="moc">MOC:</label>
-    <input type="text" name="moc" value="<?php echo $moc; ?>">
+    <select name="moc" class="form-group" required onchange="showOtherOption(this)">
+
+<option value="Self">Self</option>
+<option value="other">Other</option>
+</select>
+<div id="otherOptionContainer" style="display: none;">
+<input type="text" name="otherOption" placeholder="Specify Collector's Name - Phone number">
+</div>
     <label for="vehno">Vehno:</label>
     <input type="text" name="vehno" value="<?php echo $vehno; ?>">
     <label for="new_remarks">Remarks:</label>
@@ -141,7 +169,7 @@ if (isset($_SESSION['orderno'])) {
     <button type="submit" class="btn btn-primary" name="submit">Submit and Approve</button>
     
   </form>
-
+  <script type="text/javascript" src="form.js"></script>
 </body>
 </html>
 

@@ -18,6 +18,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["logout"])) {
     exit();
 }
 
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -80,9 +81,10 @@ WHERE o.orderno = " . $_SESSION['orderno'];
         echo "</table>";
 
         // Add form to input "Mode of Collection" and "Vehicle Number"
+        // <label for="guard_name">Name:</label>
+        //     <input type="text" id="guard_name" name="guard_name" required><br><br>
         echo '<form method="POST" action="">
-            <label for="guard_name">Name:</label>
-            <input type="text" id="guard_name" name="guard_name" required><br><br>
+            
             
             <label for="new_remarks">Remarks:</label>
             <input type="text" id="new_remarks" name="new_remarks"><br><br>';
@@ -97,12 +99,15 @@ WHERE o.orderno = " . $_SESSION['orderno'];
 
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Get the input values from the form
-        $guard_name = $_POST["guard_name"];
+        
+        $phone_no=$_SESSION["phone_no"] ;
 
-        // Insert the values into the orders table
+
+        // Insert the values into the orders table 
+        // 
         if (isset($_POST['approve'])) {
             $insert_sql = "UPDATE order_no 
-                SET guard_name = '$guard_name', guard_approval = 1
+                 SET guard_name = '$phone_no',guard_approval = 1
                 WHERE orderno =" . $_SESSION['orderno'];
             $connection->query($insert_sql);
             $_SESSION['asuccess'] = true; // Using session variable
@@ -116,7 +121,7 @@ WHERE o.orderno = " . $_SESSION['orderno'];
             } else {
                 $new_remarks = $_POST['new_remarks'];
                 $insert_sql = "UPDATE order_no 
-                    SET guard_name = '$guard_name', guard_approval = -1, coll_approval = 0, security_approval = 0, new_remarks = '$new_remarks'
+                    SET guard_name = '$phone_no', guard_approval = -1, coll_approval = 0, security_approval = 0, new_remarks = '$new_remarks'
                     WHERE orderno =" . $_SESSION['orderno'];
                 $connection->query($insert_sql);
                 header('Location: skdash.php');
