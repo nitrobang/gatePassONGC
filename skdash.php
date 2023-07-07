@@ -111,8 +111,11 @@ if ($designation == "E" && isset($_POST['edit_order'])) {
     exit();
 }
 if ($designation == "E" && isset($_POST['new_order'])) {
-    $orderno = $_POST['edit_order'];
     header("Location: form.php");
+    exit();
+}
+if ( isset($_POST['reports'])) {
+    header("Location: skdash_exp.php");
     exit();
 }
 function getEmployeesByCpf($cpf)
@@ -175,6 +178,11 @@ function getEmployeesvenue($cpf)
     <?php if ($designation == "E") : ?>
         <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
             <button type="submit" class="btn btn-primary" class="form-group" name="new_order">New Order</button>
+        </form>
+    <?php endif; ?>
+    <?php if ($designation == "E"||$designation == "S"||$designation == "G") : ?>
+        <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
+            <button type="submit" class="btn btn-primary" class="form-group" name="reports">Reports</button>
         </form>
     <?php endif; ?>
     <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">

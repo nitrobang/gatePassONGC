@@ -24,7 +24,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["logout"])) {
 
 $conn = $connection;
 
-$conn = $connection;
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     var_dump($_POST);
     // Escape user inputs to prevent SQL injection
