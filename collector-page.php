@@ -62,7 +62,7 @@ if (isset($_SESSION['orderno'])) {
 
         // Check if remarks field is empty for revert
         if (empty($new_remarks)) {
-            $error = "Remarks is required for revert.";
+            echo '<p class="error">' . $error . '</p>';
         } else {
             // Update the order_no table with coll_approval = -1 to indicate denial
             $updateQuery = "UPDATE order_no SET coll_approval = -1, security_approval = 0, guard_approval = 0, new_remarks = '$new_remarks' WHERE orderno = $orderno";
