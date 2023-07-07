@@ -21,19 +21,17 @@ if (isset($_SESSION['orderno'])) {
     }
 
     // Retrieve values from the orders table
-    $query = "SELECT n.order_dest, n.issue_desc, n.placeoi, n.issueto, o.descrip, o.nop, o.deliverynote, o.remark, n.moc, n.vehno, n.securityn
+    $query = "SELECT n.order_dest, n.issue_desc, n.placeoi, n.issueto, o.descrip, o.nop, o.deliverynote, o.remark, n.moc, n.vehno, n.guard_name
               FROM orders o
               JOIN order_no n ON o.orderno = n.orderno
               WHERE o.orderno = $orderno";
     $result = mysqli_query($connection, $query);
-
     // Retrieve securityn value from the order_no table if it exists
-    $securityn = '';
+    $securityn = $_SESSION['cpf_no'];
     $fetchQuery = "SELECT securityn FROM order_no WHERE orderno = $orderno";
     $fetchResult = mysqli_query($connection, $fetchQuery);
     if (mysqli_num_rows($fetchResult) > 0) {
         $row = mysqli_fetch_assoc($fetchResult);
-        $securityn = $row['securityn'];
     }
 
     // Handle form submission to update security_approval and remarks in the order_no table
@@ -42,7 +40,7 @@ if (isset($_SESSION['orderno'])) {
         $new_remarks = $_POST["new_remarks"];
 
         // Update the order_no table with security_approval = 1 and remarks
-        $updateQuery = "UPDATE order_no SET security_approval = 1,comp_approval=-1, new_remarks = '$new_remarks' WHERE orderno = $orderno";
+        $updateQuery = "UPDATE order_no SET securityn='$securityn',security_approval = 1,comp_approval=-1, new_remarks = '$new_remarks' WHERE orderno = $orderno";
         $updateResult = mysqli_query($connection, $updateQuery);
 
         if ($updateResult) {
@@ -66,7 +64,7 @@ if (isset($_SESSION['orderno'])) {
         }
         else{
              // Update the order_no table with security_approval = -1 and remarks
-        $updateQuery = "UPDATE order_no SET security_approval = -1, guard_approval = 0, coll_approval = 0, new_remarks = '$new_remarks' WHERE orderno = $orderno";
+        $updateQuery = "UPDATE order_no SET  securityn='$securityn',security_approval = -1, guard_approval = 0, coll_approval = 0, new_remarks = '$new_remarks' WHERE orderno = $orderno";
         $updateResult = mysqli_query($connection, $updateQuery);
 
         if ($updateResult) {
@@ -122,9 +120,14 @@ if (isset($_SESSION['orderno'])) {
       <th>Remarks</th>
       <th>Mode Of Collection</th>
       <th>Vehicle Number</th>
-      <th>Security Name</th>
+      <th>Guard Name</th>
     </tr>
-    <?php while ($row = mysqli_fetch_assoc($result)) { ?>
+    <?php while ($row= mysqli_fetch_assoc($result) ) {
+            $stmt = "SELECT guard_name FROM security_guard WHERE phone_no = {$row['guard_name']}";
+            $guardres=mysqli_query($connection, $stmt);
+            $guardrow=mysqli_fetch_assoc($guardres);
+            $guardn=$guardrow['guard_name'].'-'.$row['guard_name'];
+         ?>
       <tr>
         <td><?php echo $row['order_dest']; ?></td>
         <td><?php echo $row['issue_desc']; ?></td>
@@ -136,7 +139,7 @@ if (isset($_SESSION['orderno'])) {
         <td><?php echo $row['remark']; ?></td>
         <td><?php echo $row['moc']; ?></td>
         <td><?php echo $row['vehno']; ?></td>
-        <td><?php echo $row['securityn']; ?></td>
+        <td><?php echo $guardn; ?></td>
       </tr>
     <?php } ?>
   </table>
@@ -144,8 +147,8 @@ if (isset($_SESSION['orderno'])) {
   <!-- Display the input fields for securityn and remarks -->
   <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
     <input type="hidden" name="orderno" value="<?php echo $orderno; ?>">
-    <label for="securityn">Security Name:</label>
-    <input type="text" name="securityn" value="<?php echo $securityn; ?>">
+    <!-- <label for="securityn">Security Name:</label>
+    <input type="text" name="securityn" value="<?php echo $securityn; ?>"> -->
     <label for="new_remarks">Remarks:</label>
     <input type="text" name="new_remarks" value="<?php echo isset($new_remarks) ? $new_remarks : ''; ?>">
     <?php if (isset($error)) { ?>
