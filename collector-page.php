@@ -80,10 +80,10 @@ if (isset($_SESSION['orderno'])) {
     // Handle form submission to Revert the order
     if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["deny"])) {
         $new_remarks = $_POST["new_remarks"];
-
+        $error="Please enter Remarks";
         // Check if remarks field is empty for revert
         if (empty($new_remarks)) {
-            echo '<p class="error">' . $error . '</p>';
+            echo '<script>alert("Please Enter Remarks");</script>';
         } else {
             // Update the order_no table with coll_approval = -1 to indicate denial
             $updateQuery = "UPDATE order_no SET coll_approval = -1, security_approval = 0, guard_approval = 0, new_remarks = '$new_remarks' WHERE orderno = $orderno";

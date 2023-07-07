@@ -117,7 +117,7 @@ WHERE o.orderno = " . $_SESSION['orderno'];
         } else if (isset($_POST['revert'])) {
             // Check if the new_remarks field is empty
             if (empty($_POST['new_remarks'])) {
-                echo '<p class="error">' . $error . '</p>';
+                echo '<script>alert("Please Enter Remarks");</script>';
             } else {
                 $new_remarks = $_POST['new_remarks'];
                 $insert_sql = "UPDATE order_no 

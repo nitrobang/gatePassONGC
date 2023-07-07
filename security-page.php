@@ -60,7 +60,7 @@ if (isset($_SESSION['orderno'])) {
         // Get the input values from the form
         $new_remarks = $_POST["new_remarks"];
         if (empty($new_remarks)) {
-            echo '<p class="error">' . $error . '</p>';
+            echo '<script>alert("Please Enter Remarks");</script>';
         }
         else{
              // Update the order_no table with security_approval = -1 and remarks
