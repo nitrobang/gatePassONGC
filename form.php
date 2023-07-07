@@ -23,8 +23,36 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["logout"])) {
 }
 
 $conn = $connection;
+$datenow = date("Ymd");
+$checkquery = "SELECT MAX(created_at) as 'Max date'  FROM order_no ";
+$result = mysqli_query($connection, $checkquery);
 
-$conn = $connection;
+$orderNo = '';
+
+if ($result) {
+    $row = mysqli_fetch_assoc($result);
+    $ca = $row['Max date'];
+    echo "Max Created at " . $ca . "<br>";
+    $justdca = substr($ca, 0, 10);
+    $justdca = str_ireplace('-', '', $justdca);
+    echo "Max Created at after trim " . $justdca . "<br>";
+    if ($justdca < $datenow) {
+        $orderNo = $datenow . '001';
+        echo "Orderno " . $orderNo . "<br>";
+    } elseif ($justdca == $datenow) {
+        $checkquery = "SELECT orderno FROM order_no where created_at = '" . $ca . "'";
+        $result1 = mysqli_query($connection, $checkquery);
+        if ($result1) {
+            $row1 = mysqli_fetch_assoc($result1);
+            echo "Orderno " .$row1['orderno'] . "<br>";
+            $orderNo = $row1['orderno'] + 1;
+        }
+    }
+}
+
+echo "Order No ". $orderNo;
+
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     var_dump($_POST);
     // Escape user inputs to prevent SQL injection
@@ -42,7 +70,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $created_by = $_SESSION['cpf_no'];
 
     // Prepare the INSERT statement with bind parameters
-    $insertOrderNoQuery = "INSERT INTO order_no (order_dest, issue_desc, placeoi, issueto, securityn, returnable, forwarded_to, created_by)VALUES (?, ?, ?, ?,'', ?, ?, ?)";
+    $insertOrderNoQuery = "INSERT INTO order_no (orderno,order_dest, issue_desc, placeoi, issueto, securityn, returnable, forwarded_to, created_by)VALUES (?, ?, ?, ?, ?,'', ?, ?, ?)";
     // $UpdateOrderNoQuery = "UPDATE order_no SET order_dest = '$placeOfDestination',issue_desc = '$issueDesc',placeoi = '$placeOfIssue',issueto = '$issueTo',securityn = '',collector_name = '$collector_name',returnable = $returnable,	coll_approval='$coll_approval',security_approval='$security_approval',guard_approval='$guard_approval',forwarded_to = '$forwardTo',created_by = '$created_by' WHERE orderno = '$orderno'";
 
     // Prepare the statement
@@ -50,14 +78,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 
     // Bind the parameters
-    $stmt->bind_param('ssssiii', $placeOfDestination, $issueDesc, $placeOfIssue, $issueTo, $returnable, $forwardTo, $created_by);
+    $stmt->bind_param('issssiii',$orderNo, $placeOfDestination, $issueDesc, $placeOfIssue, $issueTo, $returnable, $forwardTo, $created_by);
 
     // Execute the statement
     if ($stmt->execute()) {
-
-        $orderNo = mysqli_insert_id($conn); // Get the auto-generated order ID
-
-        //*****************/ Insert data into the 'orders' table ************************
 
         // Retrieve the form data
         $serialNumbers = $_POST['serial_number'];

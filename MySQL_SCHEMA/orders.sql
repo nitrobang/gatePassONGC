@@ -3,7 +3,7 @@ CREATE TABLE orders (
   nop INT NOT NULL,
   deliverynote VARCHAR(1000),
   remark VARCHAR(1000),
-  orderno INT NOT NULL,
+  orderno BIGINT(20) NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 ALTER TABLE orders
