@@ -20,10 +20,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["logout"])) {
 $conn = $connection;
 if (isset($_SESSION["cpf_no"])) {
     $cpf_no = $_SESSION["cpf_no"];
-    
 }
 
-if(!isset($_SESSION['designation'])){
+if (!isset($_SESSION['designation'])) {
     //get the designation of the user
     $query = "SELECT * FROM employee WHERE cpfno = '$cpf_no'";
     $result = mysqli_query($connection, $query);
@@ -79,12 +78,12 @@ function getEmployeesByCpf($cpf)
     $employee = null;
     if ($result && mysqli_num_rows($result) > 0) {
         $row = mysqli_fetch_assoc($result);
-        $employee = $row['empname'];   
+        $employee = $row['empname'];
     }
     return $employee;
 }
 
-$query = "SELECT created_at, orderno, order_dest, issue_desc, placeoi, issueto, securityn, guard_name, collector_name, returnable, forwarded_to, moc, vehno, created_by FROM order_no";
+$query = "SELECT created_at, orderno, order_dest, issue_dep, placeoi, issueto, securityn, guard_name, collector_name, returnable, forwarded_to, moc, vehno, created_by FROM order_no";
 $result = mysqli_query($connection, $query);
 
 if (!$result) {
@@ -105,7 +104,7 @@ $columns = array(
     'created_at',
     'orderno',
     'order_dest',
-    'issue_desc',
+    'issue_dep',
     'placeoi',
     'issueto',
     'securityn',
@@ -148,154 +147,10 @@ $columns = array(
                 </td>
             </tr>
         </table>
-        
+
     </div>
     <h3>Dashboard</h3>
-    <?php if ($designation == "E") : ?>
-        <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
-            <button type="submit" class="btn btn-primary" name="new_order">New Order</button>
-        </form>
-    <?php endif; ?>
-        <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>"> 
-    <?php
-    
-    // Retrieve data from the "order_no" table
-    if ($designation == "E") {
-        $query = "SELECT orderno, order_dest, issue_desc, placeoi, issueto, returnable, coll_approval, security_approval,comp_approval,guard_approval,forwarded_to,created_by FROM order_no WHERE coll_approval = 0 AND forwarded_to = {$cpf_no} OR created_by = {$cpf_no}";
-    } else if ($designation == "S") {
-        $query = "SELECT orderno, order_dest, issue_desc, placeoi, issueto, returnable, coll_approval, security_approval,comp_approval,guard_approval,forwarded_to,created_by FROM order_no WHERE security_approval = 0 AND coll_approval = 1 AND guard_approval = 1";
-    } else {
-        $query = "SELECT orderno, order_dest, issue_desc, placeoi, issueto, returnable, coll_approval, security_approval,comp_approval,guard_approval,forwarded_to,created_by FROM order_no WHERE placeoi = '{$_SESSION["venue"]}' AND coll_approval = 1 AND guard_approval = 0";
-    }
-    $result = mysqli_query($connection, $query);
-    // Check if the query was successful
-    if ($result && mysqli_num_rows($result) > 0) {
-        // Display the data in a table
-        echo "<table id='dynamic-table'>";
-        echo "<tr><th>Order No</th><th>Created By</th><th>Order Destination</th><th>Issue Description</th><th>Place of Issue</th><th>Issue To</th><th>Returnable</th>";
-        echo "<th>Action</th>";
-        if($designation == "E") echo "<th>Status</th></tr>";
-        while ($row = mysqli_fetch_assoc($result)) {
-            echo "<tr>";
-            echo "<td>" . $row['orderno'] . "</td>";
-            $creatorname = getEmployeesByCpf($row['created_by']);
-            echo "<td>" . $creatorname . "</td>";
-            echo "<td>" . $row['order_dest'] . "</td>";
-            echo "<td>" . $row['issue_desc'] . "</td>";
-            ?><?php
-            $placeoi = $row['placeoi']; // Assuming $row['placeoi'] contains the value
-            $displayText = '';
-        
-            if ($placeoi === 'N') {
-                $displayText = 'NBP Green Heights';
-            } elseif ($placeoi === 'V') {
-                $displayText = 'Vasundhara Bhavan';
-            } elseif ($placeoi === 'H') {
-                $displayText = '11 HIGH';
-            }
-            echo "<td>" . $displayText . "</td>";
-            ?>
-            <?php
-            echo "<td>" . $row['issueto'] . "</td>";
-            $returnableValue = ($row['returnable'] ? 'Yes' : 'No');
 
-            echo "<td>" . ($returnableValue) . "</td>";
-            
-            if ($designation == "E" && $row['forwarded_to'] == $cpf_no && $row['coll_approval'] == 0){
-                echo "<td><a href='skdash.php?orderno=" . $row['orderno'] . "'>Collector Link</a></td>";
-            }
-            else if ($designation == "S")
-                echo "<td><a href='skdash.php?orderno=" . $row['orderno'] . "'>Security Link</a></td>";
-            else if ($designation == "G")
-                echo "<td><a href='skdash.php?orderno=" . $row['orderno'] . "'>Guard Link</a></td>";
-            else  if ($row['created_by'] == $cpf_no && $row['coll_approval'] == -1 || $row['security_approval'] == -1 || $row['guard_approval'] == -1) {
-                echo '<td>';
-                echo '<input type="hidden" name="Orderno" value="' . $row['orderno'] . '">';
-                echo '<button type="submit" name="edit_order" class="btn btn-outline-secondary" value="' . $row['orderno'] . '">Edit</button>';
-                echo '</td>';
-                if ($row['coll_approval']==-1)
-
-                    echo '<td>Order Reverted BY Collector </td>';
-                
-                elseif ($row['security_approval']==-1)
-
-                echo '<td>Order Reverted By Security </td>';
-
-                elseif($row['guard_approval']==-1)
-
-                    echo '<td>Order Reverted By Guard </td>';
-            }
-            else  echo '<td>-</td>';
-            // else if( $row['coll_approval'] != -1 )  {
-            //         echo '<td>-</td>';
-            // }
-            // else if( $row['security_approval'] != -1 )  {
-            //         echo '<td>-</td>';
-            // }
-            // else if( $row['guard_approval'] != -1 )  {
-            //         echo '<td>-</td>';
-            // }
-
-
-            // $row['coll_approval'] != -1 || $row['security_approval'] != -1 ||
-            if ($designation == "E" && $row['created_by'] == $cpf_no) {
-                if($returnableValue =="Yes"){
-                    // if ($row['coll_approval'] == -1 || $row['security_approval'] == -1 || $row['guard_approval'] == -1) {
-                    //         echo '<td>';
-                    //         echo '<input type="hidden" name="Orderno" value="' . $row['orderno'] . '">';
-                    //         echo '<button type="submit" name="edit_order" class="btn btn-outline-secondary" value="' . $row['orderno'] . '">Edit</button>';
-                    //         echo '</td>';
-                    //         echo '<td>Order Reverted </td>';
-                    // }
-                    if ($row['coll_approval'] == 1 && $row['security_approval'] == 0)
-                        echo '<td>Approved by Collector</td>';
-                    
-                    else if ($row['security_approval'] == 1 && $row['guard_approval'] == 0)
-                        echo '<td>Approved by Security</td>';
-                    
-                    else if ($row['coll_approval'] == 1 && $row['security_approval'] == 1 && $row['guard_approval'] == 1)
-                        echo '<td>Approved and Out</td>'; 
-                    
-                    else if ($row['coll_approval'] == 0 && $row['security_approval'] == 0 && $row['guard_approval'] == 0 && $row['comp_approval'] == 0)
-                        echo '<td>Collector Approval Pending</td>';  
-                    
-                    else if ($row['coll_approval'] == 1 && $row['security_approval'] == 1 && $row['guard_approval'] == 1 && $row['comp_approval'] == 1)
-                        echo '<td>Order Completed</td>';       
-                }
-                elseif($returnableValue=="No"){
-                    // if ($row['coll_approval'] == -1 || $row['security_approval'] == -1 || $row['guard_approval'] == -1 )
-                    //     {echo '<td><input type="hidden" name="orderno" value="' . $row['orderno'] . '">';
-                    //         echo '<button type="submit" name="edit_order">Edit</button></td>';}
-                    
-                    if ($row['coll_approval'] == 1 && $row['guard_approval'] == 0)
-                        echo '<td>Approved by Collector</td>';
-                    
-                    else if ($row['guard_approval'] == 1 && $row['security_approval'] == 0)
-                        echo '<td>Approved by Guard</td>';
-                    
-                    else if ($row['coll_approval'] == 0 && $row['guard_approval'] == 0 && $row['guard_approval'] == 0 && $row['comp_approval'] == 0)
-                        echo '<td>Order Pending</td>';
-                    
-                    // else if ($row['coll_approval'] == 1 && $row['security_approval'] == 1 && $row['guard_approval'] == 1)
-                    //     echo '<td>Approved and Out</td>';    
-                    
-                    else if ($row['coll_approval'] == 1 && $row['security_approval'] == 1 && $row['guard_approval'] == 1)
-                        echo '<td>Order Completed</td>'; 
-
-                }
-            }
-            
-            echo '</tr>';
-        }
-
-        echo "</table>";
-    } else {
-        echo "No records found.";
-    }
-    // Close the database connection
-    mysqli_close($connection);
-    ?>
-    </form>
 
 
     <div>
@@ -311,13 +166,22 @@ $columns = array(
         <button id="removeFilterBtn">Remove Filter</button>
     </div>
 
+    <div>
+        <label for="dateFrom">From:</label>
+        <input type="date" id="dateFrom">
+        <label for="dateTo">To:</label>
+        <input type="date" id="dateTo">
+        <button id="applyDateRangeBtn">Apply Date Range</button>
+    </div>
+
+
     <table id="orderTable">
         <thead>
             <tr>
                 <th>created_at</th>
                 <th>orderno</th>
                 <th>order_dest</th>
-                <th>issue_desc</th>
+                <th>issue_dep</th>
                 <th>placeoi</th>
                 <th>issueto</th>
                 <th>securityn</th>
@@ -332,27 +196,55 @@ $columns = array(
         </thead>
     </table>
 
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
     <script>
         $(document).ready(function() {
             var table = $('#orderTable').DataTable({
                 "data": <?php echo json_encode($jsonData['data']); ?>,
-                "columns": [
-                    { "data": "created_at" },
-                    { "data": "orderno" },
-                    { "data": "order_dest" },
-                    { "data": "issue_desc" },
-                    { "data": "placeoi" },
-                    { "data": "issueto" },
-                    { "data": "securityn" },
-                    { "data": "guard_name" },
-                    { "data": "collector_name" },
-                    { "data": "returnable" },
-                    { "data": "forwarded_to" },
-                    { "data": "moc" },
-                    { "data": "vehno" },
-                    { "data": "created_by" }
+                "columns": [{
+                        "data": "created_at"
+                    },
+                    {
+                        "data": "orderno"
+                    },
+                    {
+                        "data": "order_dest"
+                    },
+                    {
+                        "data": "issue_dep"
+                    },
+                    {
+                        "data": "placeoi"
+                    },
+                    {
+                        "data": "issueto"
+                    },
+                    {
+                        "data": "securityn"
+                    },
+                    {
+                        "data": "guard_name"
+                    },
+                    {
+                        "data": "collector_name"
+                    },
+                    {
+                        "data": "returnable"
+                    },
+                    {
+                        "data": "forwarded_to"
+                    },
+                    {
+                        "data": "moc"
+                    },
+                    {
+                        "data": "vehno"
+                    },
+                    {
+                        "data": "created_by"
+                    }
                 ]
             });
 
@@ -367,6 +259,26 @@ $columns = array(
                 table.search('').columns().search('').draw();
                 $('#columnSelect').prop('selectedIndex', 0);
                 $('#filterInput').val('');
+            });
+
+            function formatDate(dateString) {
+                var date = new Date(dateString);
+                var year = date.getFullYear();
+                var month = (date.getMonth() + 1).toString().padStart(2, '0');
+                var day = date.getDate().toString().padStart(2, '0');
+                return year + month + day;
+            }
+            $('#applyDateRangeBtn').click(function() {
+                var dateFrom = $('#dateFrom').val();
+                var dateTo = $('#dateTo').val();
+                // Convert dateFrom to yyyymmdd format
+                var convertedDateFrom = formatDate(dateFrom);
+                // Convert dateTo to yyyymmdd format
+                var convertedDateTo = formatDate(dateTo);
+                dateFrom=convertedDateFrom.concat("001");
+                dateTo=convertedDateTo.concat("999");
+                var table = $('#orderTable').DataTable();
+                table.columns(1).search(dateFrom + ' to ' + dateTo).draw();
             });
         });
     </script>

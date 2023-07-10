@@ -95,16 +95,22 @@ input[type="email"] {
     padding: 5px;
 }
 
-clear{
+input[type="date"]{
+    padding: 5px;
+}
+.clear,
+.clear1{
     clear:both;
     margin-top: 20px;
 }
 
-.autocomplete-list{
+.autocomplete-list,
+.autocomplete-list1{
     width: 250px;
     position: relative;
 }
-.autocomplete-list {
+.autocomplete-list ,
+.autocomplete-list1{
     list-style: none;
     padding: 0px;
     width: 100%;
@@ -113,23 +119,34 @@ clear{
     background: white;
 }
 
-.autocomplete-list  li{
+.autocomplete-list  li
+,.autocomplete-list1  li{
     background: #EDCB96;
     padding: 4px;
     margin-bottom: 1px;
 }
+@media print {
+    @page {
+      margin-left: 0.8in;
+      margin-right: 0.8in;
+      margin-top: 0;
+      margin-bottom: 0;
+    }
+ }
 
-
-.autocomplete-list  li:hover{
+.autocomplete-list  li:hover,
+.autocomplete-list1  li:hover{
     cursor: pointer;
     background: #717A84;
 }
 
-.sugg input[type=text]{
+.sugg input[type=text],
+.sugges input[type=text]{
     padding: 5px;
     width: 100%;
     letter-spacing: 1px;
 }
+
 
 .submit-btn {
     margin-top: 10px;

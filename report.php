@@ -1,7 +1,7 @@
 <?php
 require_once 'db_connection.php';
 
-$query = "SELECT created_at, orderno, order_dest, issue_desc, placeoi, issueto, securityn, guard_name, collector_name, returnable, forwarded_to, moc, vehno, created_by FROM order_no";
+$query = "SELECT created_at, orderno, order_dest, issue_dep, placeoi, issueto, securityn, guard_name, collector_name, returnable, forwarded_to, moc, vehno, created_by FROM order_no";
 $result = mysqli_query($connection, $query);
 
 if (!$result) {
@@ -22,7 +22,7 @@ $columns = array(
     'created_at',
     'orderno',
     'order_dest',
-    'issue_desc',
+    'issue_dep',
     'placeoi',
     'issueto',
     'securityn',
@@ -60,7 +60,7 @@ $columns = array(
                 <th>created_at</th>
                 <th>orderno</th>
                 <th>order_dest</th>
-                <th>issue_desc</th>
+                <th>issue_dep</th>
                 <th>placeoi</th>
                 <th>issueto</th>
                 <th>securityn</th>
@@ -85,7 +85,7 @@ $columns = array(
                     { "data": "created_at" },
                     { "data": "orderno" },
                     { "data": "order_dest" },
-                    { "data": "issue_desc" },
+                    { "data": "issue_dep" },
                     { "data": "placeoi" },
                     { "data": "issueto" },
                     { "data": "securityn" },

@@ -32,25 +32,25 @@ $orderNo = '';
 if ($result) {
     $row = mysqli_fetch_assoc($result);
     $ca = $row['Max date'];
-    echo "Max Created at " . $ca . "<br>";
+    // echo "Max Created at " . $ca . "<br>";
     $justdca = substr($ca, 0, 10);
     $justdca = str_ireplace('-', '', $justdca);
-    echo "Max Created at after trim " . $justdca . "<br>";
+    // echo "Max Created at after trim " . $justdca . "<br>";
     if ($justdca < $datenow) {
         $orderNo = $datenow . '001';
-        echo "Orderno " . $orderNo . "<br>";
+        // echo "Orderno " . $orderNo . "<br>";
     } elseif ($justdca == $datenow) {
         $checkquery = "SELECT orderno FROM order_no where created_at = '" . $ca . "'";
         $result1 = mysqli_query($connection, $checkquery);
         if ($result1) {
             $row1 = mysqli_fetch_assoc($result1);
-            echo "Orderno " .$row1['orderno'] . "<br>";
+            // echo "Orderno " .$row1['orderno'] . "<br>";
             $orderNo = $row1['orderno'] + 1;
         }
     }
 }
 
-echo "Order No ". $orderNo;
+// echo "Order No ". $orderNo;
 
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -58,27 +58,37 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Escape user inputs to prevent SQL injection
     $returnable = $_POST["return"] == "1" ? 1 : 0;
     $issueDesc = mysqli_real_escape_string($conn, $_POST["issued"]);
+    if ($issueDesc == "Infocom") {
+        $issueDesc = "I";
+    } elseif ($issueDesc == "Management") {
+        $issueDesc = "M";
+    } elseif ($issueDesc == "Production") {
+        $issueDesc = "P";
+    }
     $placeOfIssue = mysqli_real_escape_string($conn, $_POST["placei"]);
     $issueTo = mysqli_real_escape_string($conn, $_POST["issuet"]);
     $placeOfDestination = '';
+    $returnDate = strtotime($_POST['returnDate']);
+    $returnDate=date('Y-m-d', $returnDate);
     if ($_POST["pod"] == "other") {
         $placeOfDestination = mysqli_real_escape_string($conn, $_POST["otherOption"]);
     } else {
         $placeOfDestination = mysqli_real_escape_string($conn, $_POST["pod"]);
     }
     $forwardTo = mysqli_real_escape_string($conn, $_POST["fors"]);
+    $signatory = mysqli_real_escape_string($conn, $_POST["signatory"]);
     $created_by = $_SESSION['cpf_no'];
 
     // Prepare the INSERT statement with bind parameters
-    $insertOrderNoQuery = "INSERT INTO order_no (orderno,order_dest, issue_desc, placeoi, issueto, securityn, returnable, forwarded_to, created_by)VALUES (?, ?, ?, ?, ?,'', ?, ?, ?)";
-    // $UpdateOrderNoQuery = "UPDATE order_no SET order_dest = '$placeOfDestination',issue_desc = '$issueDesc',placeoi = '$placeOfIssue',issueto = '$issueTo',securityn = '',collector_name = '$collector_name',returnable = $returnable,	coll_approval='$coll_approval',security_approval='$security_approval',guard_approval='$guard_approval',forwarded_to = '$forwardTo',created_by = '$created_by' WHERE orderno = '$orderno'";
+    $insertOrderNoQuery = "INSERT INTO order_no (orderno,order_dest, issue_dep, placeoi, issueto, securityn, returnable,returndate, forwarded_to, signatory, created_by)VALUES (?, ?, ?, ?, ?,'', ?, ?, ?, ?, ?)";
+    // $UpdateOrderNoQuery = "UPDATE order_no SET order_dest = '$placeOfDestination',issue_dep = '$issueDesc',placeoi = '$placeOfIssue',issueto = '$issueTo',securityn = '',collector_name = '$collector_name',returnable = $returnable,	coll_approval='$coll_approval',security_approval='$security_approval',guard_approval='$guard_approval',forwarded_to = '$forwardTo',created_by = '$created_by' WHERE orderno = '$orderno'";
 
     // Prepare the statement
     $stmt = $conn->prepare($insertOrderNoQuery);
 
 
     // Bind the parameters
-    $stmt->bind_param('issssiii',$orderNo, $placeOfDestination, $issueDesc, $placeOfIssue, $issueTo, $returnable, $forwardTo, $created_by);
+    $stmt->bind_param('issssisiii', $orderNo, $placeOfDestination, $issueDesc, $placeOfIssue, $issueTo, $returnable, $returnDate, $forwardTo, $signatory, $created_by);
 
     // Execute the statement
     if ($stmt->execute()) {
@@ -154,11 +164,17 @@ function getEmployeesByCpf($cpf)
     $employee = null;
     if ($result && mysqli_num_rows($result) > 0) {
         $row = mysqli_fetch_assoc($result);
-        $employee = $row['empname'];   
+        $employee = $row['empname'];
     }
     return $employee;
 }
-
+if ($_SESSION["department"] == "I") {
+    $department = "Infocom";
+} elseif ($_SESSION["department"] == "M") {
+    $department = "Management";
+} elseif ($_SESSION["department"] == "P") {
+    $department = "Production";
+}
 ?>
 
 <html>
@@ -170,6 +186,7 @@ function getEmployeesByCpf($cpf)
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="css/styles.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
 </head>
 
@@ -194,6 +211,7 @@ function getEmployeesByCpf($cpf)
         <h2 class="wlc">Welcome, <?php echo $_SESSION["username"]; ?>!</h2>
     </div>
 
+    <h6><?php echo "Order No " . $orderNo; ?></h6>
 
     <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST">
         <div class="pos">
@@ -203,8 +221,9 @@ function getEmployeesByCpf($cpf)
             <input type="radio" class="form-group" name="return" value="0"><br>
             <table class="postt">
                 <tr>
-                    <td><label for="issued">Issuing department/Office</label>
-                        <input type="text" class="form-group" name="issued" required><br>
+                    <td>
+                        <label for="issued">Issuing department/Office</label>
+                        <input type="text" class="form-group" name="issued" value="<?php echo $department; ?>" readonly>
                     </td>
                     <td><label for="issuet">Issue To</label>
                         <input type="text" class="form-group" name="issuet" required><br>
@@ -253,6 +272,18 @@ function getEmployeesByCpf($cpf)
         <br>
         <button type="button" onclick="addRow()">Add Row</button>
         <br><br>
+        <div id="returnDateForm" style="display: none;">
+            <label for="returnDate">Return Date:</label>
+            <input type="date" name="returnDate" id="returnDate">
+        </div>
+        <div class="sugges">
+            <div class="result1">
+                <p>Signatory Officer:</p>
+            </div>
+            <input type="text" name="signatory" oninput="findso(this.value)">
+            <ul class="autocomplete-list1"></ul>
+            <div class="clear1"></div>
+        </div>
         <div class="sugg">
             <div class="result">
                 <p>Forwarded To:</p>
