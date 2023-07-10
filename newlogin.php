@@ -69,7 +69,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     exit();
                 }
                 $user2 = mysqli_fetch_assoc($result2);
-                $designation = $user2["designation"]; 
+                $designation = $user2["designation"];
+                $department= $user2["department"];
+                $venue= $user2["venue"];
+                $_SESSION['signatory']=$user2['signatory'];
             }
 
             if ($loginType === "ongc") {
@@ -79,8 +82,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $_SESSION["username"] = $user["username"];
                     $_SESSION["cpf_no"] = $cpf_no;
                     $_SESSION['designation'] = $designation;
-                    
-                    
+                    $_SESSION['department'] = $department;
+                    $_SESSION['venue']=$venue;
                     header("Location: skdash.php");
                     exit();
                 } else {

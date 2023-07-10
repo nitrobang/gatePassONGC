@@ -36,7 +36,7 @@ if (isset($_GET['orderno'])) {
             $compapproval = $row['comp_approval'];
             $return = $row['returnable'];
             // Check if the 'comp_approval' value is not equal to -1
-            if ($collApproval != 1 || $sApproval != 1 || $gApproval != 1 || $compapproval != 1 || $return != 1) {
+            if ($collApproval != 1 || $sApproval != 1 || $gApproval != 1 || $compapproval != 2 || $return != 1) {
                 header("Location: skdash.php");
                 exit();
             }
@@ -51,6 +51,21 @@ if (isset($_GET['orderno'])) {
             $return = $row['returnable'];
             // Check if the 'comp_approval' value is not equal to -1
             if ($collApproval != 1 || $sApproval != 1 || $gApproval != 1 || $compapproval != -1 || $return != 1) {
+                header("Location: skdash.php");
+                exit();
+            }
+        }
+    }
+    elseif ($designation == "S") {
+        if ($result) {
+            $row = mysqli_fetch_assoc($result);
+            $collApproval = $row['coll_approval'];
+            $sApproval = $row['security_approval'];
+            $gApproval = $row['guard_approval'];
+            $compapproval = $row['comp_approval'];
+            $return = $row['returnable'];
+            // Check if the 'comp_approval' value is not equal to -1
+            if ($collApproval != 1 || $sApproval != 1 || $gApproval != 1 || $compapproval != 1 || $return != 1) {
                 header("Location: skdash.php");
                 exit();
             }
@@ -148,6 +163,18 @@ WHERE o.orderno = " . $orderno;
                 exit();
             }
         } else if ($designation =="E") {
+            if (isset($_POST['receive'])) {
+                $insert_sql = "UPDATE order_no 
+                    SET  comp_approval = 3
+                    WHERE orderno =" . $orderno;
+                $connection->query($insert_sql);
+                $_SESSION['resuccess'] = true; // Using session variable
+                // Redirect to the next page
+                header("Location: skdash.php");
+                exit();
+            }
+        }
+        else if ($designation =="S") {
             if (isset($_POST['receive'])) {
                 $insert_sql = "UPDATE order_no 
                     SET  comp_approval = 2

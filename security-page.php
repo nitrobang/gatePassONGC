@@ -21,7 +21,7 @@ if (isset($_SESSION['orderno'])) {
     }
 
     // Retrieve values from the orders table
-    $query = "SELECT n.order_dest, n.issue_desc, n.placeoi, n.issueto, o.descrip, o.nop, o.deliverynote, o.remark, n.moc, n.vehno, n.guard_name
+    $query = "SELECT n.order_dest, n.issue_dep, n.placeoi, n.issueto, o.descrip, o.nop, o.deliverynote, o.remark, n.moc, n.vehno, n.guard_name
               FROM orders o
               JOIN order_no n ON o.orderno = n.orderno
               WHERE o.orderno = $orderno";
@@ -64,7 +64,7 @@ if (isset($_SESSION['orderno'])) {
         }
         else{
              // Update the order_no table with security_approval = -1 and remarks
-        $updateQuery = "UPDATE order_no SET  securityn='$securityn',security_approval = -1, guard_approval = 0, coll_approval = 0, new_remarks = '$new_remarks' WHERE orderno = $orderno";
+        $updateQuery = "UPDATE order_no SET  securityn='$securityn',security_approval = -1, guard_approval = 0, coll_approval = 0,sign_approval=0, new_remarks = '$new_remarks' WHERE orderno = $orderno";
         $updateResult = mysqli_query($connection, $updateQuery);
 
         if ($updateResult) {
@@ -130,7 +130,7 @@ if (isset($_SESSION['orderno'])) {
          ?>
       <tr>
         <td><?php echo $row['order_dest']; ?></td>
-        <td><?php echo $row['issue_desc']; ?></td>
+        <td><?php echo $row['issue_dep']; ?></td>
         <td><?php echo $row['placeoi']; ?></td>
         <td><?php echo $row['issueto']; ?></td>
         <td><?php echo $row['descrip']; ?></td>

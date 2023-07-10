@@ -41,24 +41,23 @@ if (isset($_SESSION['orderno'])) {
     if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["submit"])) {
         // $moc = $_POST["moc"];
         $moc = '';
-    if ($_POST["moc"] == "other") {
-        $moc = $_POST["moc"];
-        if(isset($_POST["otherOption"])){
-            $collector_name =  $_POST["otherOption"];
+        if ($_POST["moc"] == "other") {
+            $moc = $_POST["moc"];
+            if (isset($_POST["otherOption"])) {
+                $collector_name =  $_POST["otherOption"];
+            } else {
+                $collector_name = '';
+            }
+        } else {
+            $moc = mysqli_real_escape_string($conn, $_POST["moc"]);
         }
-        else {
-            $collector_name = '';
-        }
-    } else {
-        $moc = mysqli_real_escape_string($conn, $_POST["moc"]);
-    }
         // if(isset($_POST["otherOption"])){
         //     $collector_name =  $_POST["otherOption"];
         // }
         // else {
         //     $collector_name = '';
         // }
-        
+
         $vehno = $_POST["vehno"];
 
         // Update the order_no table with moc and vehno values
@@ -80,7 +79,7 @@ if (isset($_SESSION['orderno'])) {
     // Handle form submission to Revert the order
     if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["deny"])) {
         $new_remarks = $_POST["new_remarks"];
-        $error="Please enter Remarks";
+        $error = "Please enter Remarks";
         // Check if remarks field is empty for revert
         if (empty($new_remarks)) {
             echo '<script>alert("Please Enter Remarks");</script>';
@@ -103,75 +102,78 @@ if (isset($_SESSION['orderno'])) {
     }
 ?>
 
-<!-- HTML Section -->
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Order Details</title>
-  <link rel="stylesheet" href="css/styles.css">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
-</head>
-<body>
-<form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
-        <button type="submit" id="lo" class="btn btn-outline-danger" name="logout">Logout</button>
-    </form>
-    <button class="btn btn-secondary" id="gb" onclick="window.location.href = 'skdash.php'">Go Back</button>
-    <div class="container">
-        <table>
+    <!-- HTML Section -->
+    <!DOCTYPE html>
+    <html>
+
+    <head>
+        <title>Order Details</title>
+        <link rel="stylesheet" href="css/styles.css">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    </head>
+
+    <body>
+        <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
+            <button type="submit" id="lo" class="btn btn-outline-danger" name="logout">Logout</button>
+        </form>
+        <button class="btn btn-secondary" id="gb" onclick="window.location.href = 'skdash.php'">Go Back</button>
+        <div class="container">
+            <table>
+                <tr>
+                    <td><img src="assets/images.png" class="logo"></td>
+                    <td>
+                        <h1>Oil and Natural Gas Corporation</h1>
+                        <h3>MUMBAI REGION- REGIONAL OFFICE- INFOCOM</h3>
+                    </td>
+                </tr>
+            </table>
+
+        </div>
+        <h3>Collector Page</h3>
+        <table id='dynamic-table'>
             <tr>
-                <td><img src="assets/images.png" class="logo"></td>
-                <td>
-                    <h1>Oil and Natural Gas Corporation</h1>
-                    <h3>MUMBAI REGION- REGIONAL OFFICE- INFOCOM</h3>
-                </td>
+                <th>Description</th>
+                <th>NOP</th>
+                <th>Delivery Note</th>
+                <th>Remark</th>
             </tr>
+            <?php while ($row = mysqli_fetch_assoc($result)) { ?>
+                <tr>
+                    <td><?php echo $row['descrip']; ?></td>
+                    <td><?php echo $row['nop']; ?></td>
+                    <td><?php echo $row['deliverynote']; ?></td>
+                    <td><?php echo $row['remark']; ?></td>
+                </tr>
+            <?php } ?>
         </table>
-        
-    </div>
-    <h3>Collector Page</h3>
-  <table id='dynamic-table'>
-    <tr>
-      <th>Description</th>
-      <th>NOP</th>
-      <th>Delivery Note</th>
-      <th>Remark</th>
-    </tr>
-    <?php while ($row = mysqli_fetch_assoc($result)) { ?>
-      <tr>
-        <td><?php echo $row['descrip']; ?></td>
-        <td><?php echo $row['nop']; ?></td>
-        <td><?php echo $row['deliverynote']; ?></td>
-        <td><?php echo $row['remark']; ?></td>
-      </tr>
-    <?php } ?>
-  </table>
 
-  <!-- Display the input fields for moc, vehno, and remarks -->
-  <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
-    <input type="hidden" name="orderno" value="<?php echo $orderno; ?>">
-    <label for="moc">MOC:</label>
-    <select name="moc" class="form-group" required onchange="showOtherOption(this)">
+        <!-- Display the input fields for moc, vehno, and remarks -->
+        <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
+            <input type="hidden" name="orderno" value="<?php echo $orderno; ?>">
+            <label for="moc">MOC:</label>
+            <select name="moc" class="form-group" required onchange="showOtherOption(this)">
 
-<option value="Self">Self</option>
-<option value="other">Other</option>
-</select>
-<div id="otherOptionContainer" style="display: none;">
-<input type="text" name="otherOption" placeholder="Specify Collector's Name - Phone number">
-</div>
-    <label for="vehno">Vehno:</label>
-    <input type="text" name="vehno" value="<?php echo $vehno; ?>">
-    <label for="new_remarks">Remarks:</label>
-    <input type="text" name="new_remarks" value="<?php echo isset($new_remarks) ? $new_remarks : ''; ?>">
-    <?php if (isset($error)) { ?>
-      <p class="error"><?php echo $error; ?></p>
-    <?php } ?>
-    <button type="submit" class="btn btn-danger" name="deny">Revert</button>
-    <button type="submit" class="btn btn-primary" name="submit">Submit and Approve</button>
-    
-  </form>
-  <script type="text/javascript" src="form.js"></script>
-</body>
-</html>
+                <option value="Self">Self</option>
+                <option value="other">Other</option>
+            </select>
+            <div id="otherOptionContainer" style="display: none;">
+                <input type="text" name="otherOption" placeholder="Specify Collector's Name - Phone number">
+            </div>
+            <label for="vehno">Vehno:</label>
+            <input type="text" name="vehno" value="<?php echo $vehno; ?>">
+            <label for="new_remarks">Remarks:</label>
+            <input type="text" name="new_remarks" value="<?php echo isset($new_remarks) ? $new_remarks : ''; ?>">
+            <?php if (isset($error)) { ?>
+                <p class="error"><?php echo $error; ?></p>
+            <?php } ?>
+            <button type="submit" class="btn btn-danger" name="deny">Revert</button>
+            <button type="submit" class="btn btn-primary" name="submit">Submit and Approve</button>
+
+        </form>
+        <script type="text/javascript" src="form.js"></script>
+    </body>
+
+    </html>
 
 <?php
 } else {

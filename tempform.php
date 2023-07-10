@@ -23,62 +23,74 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["logout"])) {
     exit();
 }
 $conn = $connection;
-if(isset($_GET['orderno'])){
-    $orderno = $_GET['orderno'];
+$orderno = $_SESSION['orderno'];
 
-    $checkquery = "SELECT coll_approval,security_approval,guard_approval  FROM order_no WHERE orderno = '$orderno'";
-    $result = mysqli_query($conn, $checkquery);
-    
-    if ($result) {
-        $row = mysqli_fetch_assoc($result);
-        $collApproval = $row['coll_approval'];
-        $sApproval = $row['security_approval'];
-        $gApproval = $row['guard_approval'];
-        // Check if the 'coll_approval' value is not equal to -1
-        if ($collApproval != -1 && $sApproval != -1 && $gApproval != -1) {
-            $_SESSION['cantedit'] = true; // Using session variable
+$checkquery = "SELECT coll_approval,security_approval,guard_approval  FROM order_no WHERE orderno = '$orderno'";
+$result = mysqli_query($conn, $checkquery);
 
-            // Redirect to the next page
-            header("Location: skdash.php");
-            exit();
-        }
+if ($result) {
+    $row = mysqli_fetch_assoc($result);
+    $collApproval = $row['coll_approval'];
+    $sApproval = $row['security_approval'];
+    $gApproval = $row['guard_approval'];
+    // Check if the 'coll_approval' value is not equal to -1
+    if ($collApproval != -1 && $sApproval != -1 && $gApproval != -1) {
+        $_SESSION['cantedit'] = true; // Using session variable
+
+        // Redirect to the next page
+        header("Location: skdash.php");
+        exit();
     }
 }
+
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if (isset($_POST["submit"])) {
         // Escape user inputs to prevent SQL injection
+        // Escape user inputs to prevent SQL injection
         $returnable = $_POST["return"] == "1" ? 1 : 0;
         $issueDesc = mysqli_real_escape_string($conn, $_POST["issued"]);
+        if ($issueDesc == "Infocom") {
+            $$issueDesc = "I";
+        } elseif ($issueDesc == "Management") {
+            $$issueDesc = "M";
+        } elseif ($issueDesc == "Production") {
+            $$issueDesc = "P";
+        }
         $placeOfIssue = mysqli_real_escape_string($conn, $_POST["placei"]);
         $issueTo = mysqli_real_escape_string($conn, $_POST["issuet"]);
-        $placeOfDestination = mysqli_real_escape_string($conn, $_POST["pod"]);
+        $placeOfDestination = '';
+        $returnDate = strtotime($_POST['returnDate']);
+        $returnDate = date('Y-m-d', $returnDate);
+        if ($_POST["pod"] == "other") {
+            $placeOfDestination = mysqli_real_escape_string($conn, $_POST["otherOption"]);
+        } else {
+            $placeOfDestination = mysqli_real_escape_string($conn, $_POST["pod"]);
+        }
         $forwardTo = mysqli_real_escape_string($conn, $_POST["fors"]);
-        $collector_name = getEmployeesByCpf($forwardTo);
-        $orderno = mysqli_real_escape_string($conn, $_POST["orderno"]);
-        $created_by = $_SESSION['cpf_no'];
-
-        
-
-        $coll_approval=0;
-        $security_approval=0;
-        $guard_approval=0;
-        
-
-
-
+        $signatory = mysqli_real_escape_string($conn, $_POST["signatory"]);
+        $coll_approval = 0;
+        $security_approval = 0;
+        $guard_approval = 0;
+        $sign_approval = 0;
 
         // Insert data into the 'order_no' table
-        $UpdateOrderNoQuery = "UPDATE order_no SET order_dest = '$placeOfDestination',issue_desc = '$issueDesc',placeoi = '$placeOfIssue',issueto = '$issueTo',securityn = '',collector_name = '$collector_name',returnable = $returnable,	coll_approval='$coll_approval',security_approval='$security_approval',guard_approval='$guard_approval',forwarded_to = '$forwardTo',created_by = '$created_by' WHERE orderno = '$orderno'";
+        $UpdateOrderNoQuery = "UPDATE order_no SET order_dest = ?, issue_dep = ?, placeoi = ?, issueto = ?, securityn = '', returnable = ?, returndate= ?,coll_approval = ?, sign_approval=?,security_approval = ?, guard_approval = ?, forwarded_to = ?, signatory= ?, created_by = ? WHERE orderno = ?";
 
+        // Prepare the statement
+        $stmt = $conn->prepare($UpdateOrderNoQuery);
 
-        if (mysqli_query($conn, $UpdateOrderNoQuery)) {
+        // Bind the parameters
+        $stmt->bind_param('ssssissssssii', $placeOfDestination, $issueDesc, $placeOfIssue, $issueTo, $returnable, $returnDate, $coll_approval, $sign_approval, $security_approval, $guard_approval, $forwardTo,  $signatory, $orderno);
+
+        // Execute the statement
+        if ($stmt->execute()) {
 
             //******/ Insert data into the 'orders' table *********
-
-            // Retrieve the form data
-            $serialNumbers = $_POST['serial_number'];
+            $orderno =
+                // Retrieve the form data
+                $serialNumbers = $_POST['serial_number'];
             $description = $_POST['description'];
             $num = $_POST['num'];
             $dispatchnotes = $_POST['dispatchnotes'];
@@ -190,8 +202,8 @@ function getEmployeesByCpf($cpf)
     <h2 class="wlc">Welcome, <?php echo $_SESSION["username"]; ?>!</h2><br>
     <?php
     // $orderno = $_GET['orderno']; // Get the 'orderno' parameter from the URL
-    echo "Order No:".$orderno;
-    
+    echo "Order No:" . $orderno;
+
     $selectOrderNoQuery = "SELECT * FROM order_no WHERE orderno = '$orderno'";
     $result1 = mysqli_query($conn, $selectOrderNoQuery);
     $selectOrdersQuery = "SELECT * FROM orders WHERE orderno = '$orderno'";
@@ -200,21 +212,31 @@ function getEmployeesByCpf($cpf)
     while ($row = mysqli_fetch_assoc($result)) {
         $orderItems[] = $row;
     }
-    
+
     if ($result1 && mysqli_num_rows($result1) > 0) {
         $orderData = mysqli_fetch_assoc($result1);
-        echo "<br><h5>Remarks:".$orderData['new_remarks']."</h5>";
+        echo "<br><h5>Remarks:" . $orderData['new_remarks'] . "</h5>";
     ?>
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST">
             <div class="pos">
+                
                 <label for="return">Returnable</label>
-                <input type="radio" class="form-group" name="return" value="1" <?php echo $orderData['returnable'] == 1 ? 'checked' : ''; ?> required>
+                <input type="radio" class="form-group" name="return" value="1" <?php $returnable = $orderData['returnable'];
+                                                                                echo $orderData['returnable'] == 1 ? 'checked' : ''; ?> required>
                 <label for="nreturn">Non Returnable</label>
                 <input type="radio" class="form-group" name="return" value="0" <?php echo $orderData['returnable'] == 0 ? 'checked' : ''; ?>><br>
                 <table class="postt">
                     <tr>
                         <td><label for="issued">Issuing department/Office</label>
-                            <input type="text" class="form-group" name="issued" value="<?php echo $orderData['issue_desc']; ?>" required><br>
+                            <input type="text" class="form-group" name="issued" value="<?php
+                                                                                        if ($orderData['issue_dep'] == "I") {
+                                                                                            $department = "Infocom";
+                                                                                        } elseif ($orderData['issue_dep'] == "M") {
+                                                                                            $department = "Management";
+                                                                                        } elseif ($orderData['issue_dep'] == "P") {
+                                                                                            $department = "Production";
+                                                                                        }
+                                                                                        echo $department; ?>" required readonly><br>
                         </td>
                         <td><label for="issuet">Issue To</label>
                             <input type="text" class="form-group" name="issuet" value="<?php echo $orderData['issueto']; ?>" required><br>
@@ -262,6 +284,25 @@ function getEmployeesByCpf($cpf)
             <br>
             <button type="button" onclick="addRow()">Add Row</button>
             <br><br>
+            <?php
+            // echo $returnable;
+            if ($returnable == 1) {
+                echo '  <div id="returnDateForm" style="display: none;">
+                        <label for="returnDate">Return Date:</label>
+                        <input type="date" name="returnDate" id="returnDate" value="' . $orderData['returndate'] . '">
+                        </div>';
+            }
+            ?>
+            <div class="sugges">
+                <div class="result1">
+                    <p>Signatory Officer:</p>
+                </div>
+                <input type="text" name="signatory" oninput="findso(this.value)" value="<?php echo $orderData['signatory']; ?>">
+                <ul class="autocomplete-list1"></ul>
+                <div class="clear1"></div>
+            </div>
+            
+
             <div class="sugg">
                 <div class="result">
                     <p>Forwarded To:</p>

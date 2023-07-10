@@ -1,6 +1,6 @@
 CREATE TABLE order_no (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  orderno INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  orderno BIGINT(20) NOT NULL PRIMARY KEY,
   order_dest VARCHAR(100) NOT NULL,
   issue_desc VARCHAR(1000) NOT NULL,
   placeoi ENUM('N', 'V', 'H') NOT NULL,
@@ -14,9 +14,9 @@ CREATE TABLE order_no (
   guard_approval TINYINT(1) signed NOT NULL DEFAULT 0,
   comp_approval TINYINT(1) NOT NULL DEFAULT 0,
   forwarded_to INT NOT NULL,
+  new_remarks VARCHAR(255),
   moc VARCHAR(100),
   vehno VARCHAR(10),
   created_by INT NOT NULL
 );
-ALTER TABLE order_no AUTO_INCREMENT = 1;
-ALTER TABLE order_no ADD new_remarks VARCHAR(255) AFTER security_approval;
+

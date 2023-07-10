@@ -20,10 +20,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["logout"])) {
 $conn = $connection;
 if (isset($_SESSION["cpf_no"])) {
     $cpf_no = $_SESSION["cpf_no"];
-    
 }
 
-if(!isset($_SESSION['designation'])){
+if (!isset($_SESSION['designation'])) {
     //get the designation of the user
     $query = "SELECT * FROM employee WHERE cpfno = '$cpf_no'";
     $result = mysqli_query($connection, $query);
@@ -79,12 +78,12 @@ function getEmployeesByCpf($cpf)
     $employee = null;
     if ($result && mysqli_num_rows($result) > 0) {
         $row = mysqli_fetch_assoc($result);
-        $employee = $row['empname'];   
+        $employee = $row['empname'];
     }
     return $employee;
 }
 
-$query = "SELECT created_at, orderno, order_dest, issue_desc, placeoi, issueto, securityn, guard_name, collector_name, returnable, forwarded_to, moc, vehno, created_by FROM order_no";
+$query = "SELECT created_at, orderno, order_dest, issue_dep, placeoi, issueto, securityn, guard_name, collector_name, returnable, forwarded_to, moc, vehno, created_by FROM order_no";
 $result = mysqli_query($connection, $query);
 
 if (!$result) {
@@ -105,7 +104,7 @@ $columns = array(
     'created_at',
     'orderno',
     'order_dest',
-    'issue_desc',
+    'issue_dep',
     'placeoi',
     'issueto',
     'securityn',
@@ -148,10 +147,10 @@ $columns = array(
                 </td>
             </tr>
         </table>
-        
+
     </div>
     <h3>Dashboard</h3>
-    <!--  -->
+
 
 
     <div>
@@ -167,13 +166,22 @@ $columns = array(
         <button id="removeFilterBtn">Remove Filter</button>
     </div>
 
+    <div>
+        <label for="dateFrom">From:</label>
+        <input type="date" id="dateFrom">
+        <label for="dateTo">To:</label>
+        <input type="date" id="dateTo">
+        <button id="applyDateRangeBtn">Apply Date Range</button>
+    </div>
+
+
     <table id="orderTable">
         <thead>
             <tr>
-                
+                <th>created_at</th>
                 <th>orderno</th>
                 <th>order_dest</th>
-                <th>issue_desc</th>
+                <th>issue_dep</th>
                 <th>placeoi</th>
                 <th>issueto</th>
                 <th>securityn</th>
@@ -188,26 +196,55 @@ $columns = array(
         </thead>
     </table>
 
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
     <script>
         $(document).ready(function() {
             var table = $('#orderTable').DataTable({
                 "data": <?php echo json_encode($jsonData['data']); ?>,
-                "columns": [
-                    { "data": "orderno" },
-                    { "data": "order_dest" },
-                    { "data": "issue_desc" },
-                    { "data": "placeoi" },
-                    { "data": "issueto" },
-                    { "data": "securityn" },
-                    { "data": "guard_name" },
-                    { "data": "collector_name" },
-                    { "data": "returnable" },
-                    { "data": "forwarded_to" },
-                    { "data": "moc" },
-                    { "data": "vehno" },
-                    { "data": "created_by" }
+                "columns": [{
+                        "data": "created_at"
+                    },
+                    {
+                        "data": "orderno"
+                    },
+                    {
+                        "data": "order_dest"
+                    },
+                    {
+                        "data": "issue_dep"
+                    },
+                    {
+                        "data": "placeoi"
+                    },
+                    {
+                        "data": "issueto"
+                    },
+                    {
+                        "data": "securityn"
+                    },
+                    {
+                        "data": "guard_name"
+                    },
+                    {
+                        "data": "collector_name"
+                    },
+                    {
+                        "data": "returnable"
+                    },
+                    {
+                        "data": "forwarded_to"
+                    },
+                    {
+                        "data": "moc"
+                    },
+                    {
+                        "data": "vehno"
+                    },
+                    {
+                        "data": "created_by"
+                    }
                 ]
             });
 
@@ -222,6 +259,26 @@ $columns = array(
                 table.search('').columns().search('').draw();
                 $('#columnSelect').prop('selectedIndex', 0);
                 $('#filterInput').val('');
+            });
+
+            function formatDate(dateString) {
+                var date = new Date(dateString);
+                var year = date.getFullYear();
+                var month = (date.getMonth() + 1).toString().padStart(2, '0');
+                var day = date.getDate().toString().padStart(2, '0');
+                return year + month + day;
+            }
+            $('#applyDateRangeBtn').click(function() {
+                var dateFrom = $('#dateFrom').val();
+                var dateTo = $('#dateTo').val();
+                // Convert dateFrom to yyyymmdd format
+                var convertedDateFrom = formatDate(dateFrom);
+                // Convert dateTo to yyyymmdd format
+                var convertedDateTo = formatDate(dateTo);
+                dateFrom=convertedDateFrom.concat("001");
+                dateTo=convertedDateTo.concat("999");
+                var table = $('#orderTable').DataTable();
+                table.columns(1).search(dateFrom + ' to ' + dateTo).draw();
             });
         });
     </script>
