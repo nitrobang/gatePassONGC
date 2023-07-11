@@ -48,7 +48,7 @@ if (!empty($startDate) && !empty($endDate)) {
     else if($_SESSION["designation"] == "G"){
         $query = "SELECT $selectedColumnsString FROM order_no WHERE created_at BETWEEN ? AND ? AND placeoi = ?";
         $statement = mysqli_prepare($connection, $query);
-        mysqli_stmt_bind_param($statement, "ssi", $startDate, $endDate, $_SESSION["venue"]);
+        mysqli_stmt_bind_param($statement, "sss", $startDate, $endDate, $_SESSION["venue"]);
     } else{
         $query = "SELECT $selectedColumnsString FROM order_no WHERE created_at BETWEEN ? AND ?";
         $statement = mysqli_prepare($connection, $query);
@@ -102,7 +102,7 @@ if (!empty($startDate) && !empty($endDate)) {
                         </td>
                     </tr>
                 </table>
-                <h2 class="wlc">Welcome, <?php echo $_SESSION["username"]; ?>!</h2>
+                <h2 class="wlc"><?php echo $_SESSION["designation"] == "E" || $_SESSION["designation"] == "S" ? "Welcome, ".$_SESSION["username"] : "Welcome"; ?>!</h2>
             </div>    
         </div>
         
@@ -133,11 +133,11 @@ if (!empty($startDate) && !empty($endDate)) {
                         <h2>Select Columns to display</h2>
                         <?php foreach ($columns as $columnKey => $columnLabel) { ?>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" name="columns[]" value="<?php echo $columnKey; ?>" <?php if (in_array($columnKey, $selectedColumns)) echo 'checked'; ?>>
-                                <label class="form-check-label"><?php echo $columnLabel; ?></label>
+                                <input class="form-check-input" type="checkbox" name="columns[]" value="<?php echo $columnKey; ?>" id="checkbox-<?php echo $columnKey; ?>" <?php if (in_array($columnKey, $selectedColumns)) echo 'checked'; ?>>
+                                <label class="form-check-label" for="checkbox-<?php echo $columnKey; ?>"><?php echo $columnLabel; ?></label>
                             </div>
                         <?php } ?>
-                    </div>
+                    </div>                  
                     <div class="form-group">
                         <button type="submit" class="btn btn-primary">Submit</button>
                     </div>
@@ -212,6 +212,7 @@ if (!empty($startDate) && !empty($endDate)) {
             var table = $('#orderTable').DataTable();
 
             $('#applyFilterBtn').click(function() {
+                table.search('').columns().search('').draw();
                 var columnValue = $('#columnSelect').prop('selectedIndex');
                 var filterValue = $('#filterInput').val().trim();
                 table.column(columnValue).search(filterValue, true).draw();
