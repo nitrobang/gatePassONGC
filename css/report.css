@@ -1,0 +1,24 @@
+.dash-heading{
+    display: flex;
+    justify-content: space-around;
+    padding: 2rem;
+}
+.container {
+    margin-top: 50px;
+}
+
+.card {
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.logo{
+    width: 100px;
+    height: 100px;
+}
+.wlc{
+    text-align: center;
+}
