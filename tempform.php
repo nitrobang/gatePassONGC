@@ -25,16 +25,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["logout"])) {
 $conn = $connection;
 $orderno = $_SESSION['orderno'];
 
-$checkquery = "SELECT coll_approval,security_approval,guard_approval  FROM order_no WHERE orderno = '$orderno'";
+$checkquery = "SELECT coll_approval,security_approval,guard_approval, sign_approval  FROM order_no WHERE orderno = '$orderno'";
 $result = mysqli_query($conn, $checkquery);
 
 if ($result) {
     $row = mysqli_fetch_assoc($result);
     $collApproval = $row['coll_approval'];
     $sApproval = $row['security_approval'];
+    $sgApproval = $row['sign_approval'];
     $gApproval = $row['guard_approval'];
     // Check if the 'coll_approval' value is not equal to -1
-    if ($collApproval != -1 && $sApproval != -1 && $gApproval != -1) {
+    if ($collApproval != -1 && $sApproval != -1 && $gApproval != -1 && $sgApproval != -1) {
         $_SESSION['cantedit'] = true; // Using session variable
 
         // Redirect to the next page
@@ -76,19 +77,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $sign_approval = 0;
 
         // Insert data into the 'order_no' table
-        $UpdateOrderNoQuery = "UPDATE order_no SET order_dest = ?, issue_dep = ?, placeoi = ?, issueto = ?, securityn = '', returnable = ?, returndate= ?,coll_approval = ?, sign_approval=?,security_approval = ?, guard_approval = ?, forwarded_to = ?, signatory= ?, created_by = ? WHERE orderno = ?";
+        $UpdateOrderNoQuery = "UPDATE order_no SET order_dest = ?, issue_dep = ?, placeoi = ?, issueto = ?, securityn = '', returnable = ?, returndate= ?,coll_approval = ?, sign_approval=?,security_approval = ?, guard_approval = ?, forwarded_to = ?, signatory= ? WHERE orderno = ?";
 
         // Prepare the statement
         $stmt = $conn->prepare($UpdateOrderNoQuery);
 
         // Bind the parameters
-        $stmt->bind_param('ssssissssssii', $placeOfDestination, $issueDesc, $placeOfIssue, $issueTo, $returnable, $returnDate, $coll_approval, $sign_approval, $security_approval, $guard_approval, $forwardTo,  $signatory, $orderno);
+        $stmt->bind_param('ssssisiiiiiii', $placeOfDestination, $issueDesc, $placeOfIssue, $issueTo, $returnable, $returnDate, $coll_approval, $sign_approval, $security_approval, $guard_approval, $forwardTo,  $signatory, $orderno);
 
         // Execute the statement
         if ($stmt->execute()) {
 
             //******/ Insert data into the 'orders' table *********
-            $orderno =
+            // $orderno = $_POST['serial_number'];
                 // Retrieve the form data
                 $serialNumbers = $_POST['serial_number'];
             $description = $_POST['description'];
@@ -229,11 +230,11 @@ function getEmployeesByCpf($cpf)
                     <tr>
                         <td><label for="issued">Issuing department/Office</label>
                             <input type="text" class="form-group" name="issued" value="<?php
-                                                                                        if ($orderData['issue_dep'] == "I") {
+                                                                                        if ($orderData['issue_dep'] === "I") {
                                                                                             $department = "Infocom";
-                                                                                        } elseif ($orderData['issue_dep'] == "M") {
+                                                                                        } elseif ($orderData['issue_dep'] === "M") {
                                                                                             $department = "Management";
-                                                                                        } elseif ($orderData['issue_dep'] == "P") {
+                                                                                        } elseif ($orderData['issue_dep'] === "P") {
                                                                                             $department = "Production";
                                                                                         }
                                                                                         echo $department; ?>" required readonly><br>
