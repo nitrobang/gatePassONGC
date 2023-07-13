@@ -113,39 +113,123 @@ if (isset($_SESSION['orderno'])) {
     </head>
 
     <body>
-        <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
-            <button type="submit" id="lo" class="btn btn-outline-danger" name="logout">Logout</button>
-        </form>
-        <button class="btn btn-secondary" id="gb" onclick="window.location.href = 'skdash.php'">Go Back</button>
-        <div class="container">
-            <table>
+    <button class="btn btn-secondary" id="gb" onclick="window.location.href = 'skdash.php'">Go Back</button>
+
+<form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
+    <button type="submit" id="lo" class="btn btn-outline-danger" name="logout">Logout</button>
+</form>
+<div id="print">
+<div class="container">
+    <table>
+        <tr>
+            <td><img src="assets/images.png" class="logo"></td>
+            <td>
+                <h1>Oil and Natural Gas Corporation</h1>
+                <h3>MUMBAI REGION- REGIONAL OFFICE- INFOCOM</h3>
+            </td>
+        </tr>
+    </table>
+
+</div>
+<div class="tableclass">
+<h2 class="wlc">Welcome, <?php echo $_SESSION["username"]; ?>!</h2><br>
+
+
+<h5>Order Number:<?php echo $orderno;?></h5>
+<?php
+   
+
+$selectOrderNoQuery = "SELECT * FROM order_no WHERE orderno = '$orderno'";
+$result1 = mysqli_query($conn, $selectOrderNoQuery);
+$selectOrdersQuery = "SELECT * FROM orders WHERE orderno = '$orderno'";
+$result = mysqli_query($conn, $selectOrdersQuery);
+$orderItems = array();
+while ($row = mysqli_fetch_assoc($result)) {
+    $orderItems[] = $row;
+}
+
+if ($result1 && mysqli_num_rows($result1) > 0) {
+    $orderData = mysqli_fetch_assoc($result1);
+?>
+    <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST">
+        <div class="pos">
+        <label for="return">Returnable</label>
+                <input type="radio" class="form-group" name="return" value="1" <?php echo $orderData['returnable'] == 1 ? 'checked' : ''; ?> <?php echo $orderData['returnable'] == 1 ? '' : 'hidden'; ?> readonly required>
+
+                <label for="nreturn">Non Returnable</label>
+                <input type="radio" class="form-group" name="return" value="0" <?php echo $orderData['returnable'] == 0 ? 'checked' : ''; ?> <?php echo $orderData['returnable'] == 0 ? '' : 'hidden'; ?> readonly><br>
+            <table class="postt">
                 <tr>
-                    <td><img src="assets/images.png" class="logo"></td>
+                    <td><<label for="issued">Issuing department/Office</label>
+                            <input type="text" class="form-group" name="issued" value="<?php
+                                                                                        if ($orderData['issue_dep'] === "I") {
+                                                                                            $department = "Infocom";
+                                                                                        } elseif ($orderData['issue_dep'] === "M") {
+                                                                                            $department = "Management";
+                                                                                        } elseif ($orderData['issue_dep'] === "P") {
+                                                                                            $department = "Production";
+                                                                                        }
+                                                                                        echo $department; ?>" required readonly><br><br>
+                    </td>
+                    <td><label for="issuet">Issue To</label>
+                        <input type="text" class="form-group" name="issuet" value="<?php echo $orderData['issueto']; ?>" required readonly><br>
+                    </td>
+                </tr>
+                <tr>
                     <td>
-                        <h1>Oil and Natural Gas Corporation</h1>
-                        <h3>MUMBAI REGION- REGIONAL OFFICE- INFOCOM</h3>
+                    <label for="placei">Place of Issue</label>
+                            <input type="text" class="form-group" name="placei" value="<?php
+                                                                                        if ($orderData['placeoi'] == "N") {
+                                                                                            $venue = "NBP Green Heights";
+                                                                                        } elseif ($orderData['placeoi'] == "V") {
+                                                                                            $venue = "Vasundhara Bhavan";
+                                                                                        } elseif ($orderData['placeoi'] == "H") {
+                                                                                            $venue = "11 High";
+                                                                                        }
+                                                                                        echo $venue; ?>" readonly>
+                    </td>
+                    <td><label for="pod">Place of Destination</label>
+                        <input type="text" class="form-group" name="pod" value="<?php echo $orderData['order_dest']; ?>" required readonly>
                     </td>
                 </tr>
             </table>
 
+            <h4></h4>
         </div>
-        <h3>Collector Page</h3>
-        <table id='dynamic-table'>
+        <table id="dynamic-table">
             <tr>
-                <th>Description</th>
-                <th>NOP</th>
-                <th>Delivery Note</th>
-                <th>Remark</th>
+                <th>Sr No</th>
+                <th>Brief description</th>
+                <th>No of Packages</th>
+                <th>Deliver Note Or Dispatch convey note no OR Indent no</th>
+                <th>Remarks</th>
+                <th>Action</th>
             </tr>
-            <?php while ($row = mysqli_fetch_assoc($result)) { ?>
+            <?php foreach ($orderItems as $index => $item) { ?>
                 <tr>
-                    <td><?php echo $row['descrip']; ?></td>
-                    <td><?php echo $row['nop']; ?></td>
-                    <td><?php echo $row['deliverynote']; ?></td>
-                    <td><?php echo $row['remark']; ?></td>
+                    <td><input type='hidden' name='serial_number[]'> <?php echo $index + 1; ?></input></td>
+                    <td><input type="text" name="description[]" value="<?php echo $item['descrip']; ?>" required readonly></td>
+                    <td><input type="text" name="num[]" value="<?php echo $item['nop']; ?>" required readonly></td>
+                    <td><input type="text" name="dispatchnotes[]" value="<?php echo $item['deliverynote']; ?>" required readonly></td>
+                    <td><input type="text" name="remarks[]" value="<?php echo $item['remark']; ?>" required readonly></td>
+                    <td> </td>
                 </tr>
-            <?php } ?>
+
+            <?php }
+            ?>
         </table>
+        <br>
+        <div id="returnDateForm" style="display: none;">
+            <label for="returnDate">Return Date:</label>
+            <input type="date" name="returnDate" id="returnDate"value="<?php echo $orderData['returndate']; ?>">
+        </div>
+               
+    </form><?php
+        } else {
+            // Handle the case where no rows were found
+            echo "No order data found.";
+        }
+            ?>
 
         <!-- Display the input fields for moc, vehno, and remarks -->
         <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
@@ -170,6 +254,8 @@ if (isset($_SESSION['orderno'])) {
             <button type="submit" class="btn btn-primary" name="submit">Submit and Approve</button>
 
         </form>
+</div>
+</div>  
         <script type="text/javascript" src="form.js"></script>
     </body>
 

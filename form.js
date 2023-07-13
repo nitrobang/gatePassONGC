@@ -32,7 +32,17 @@ $(document).ready(function() {
           $('#returnDateForm').hide();
       }
   });
+
 });
+function toggleReturnDateForm(value) {
+  var returnDateForm = document.getElementById("returnDateForm");
+
+  if (value === "1") {
+    returnDateForm.style.display = "block";
+  } else {
+    returnDateForm.style.display = "none";
+  }
+}
 function printFunction() {
     var printWindow = window.open('', '', 'height=500, width=500');
     
