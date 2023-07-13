@@ -1,6 +1,16 @@
 <?php
 session_start();
-
+require_once "enc_dec.php";
+$decryptedClientIP = decrypt($_SESSION['encrypted_client_ip'], $secretKey);
+$decryptedUserAgent = decrypt($_SESSION['encrypted_user_agent'], $secretKey);
+if ($_SERVER['REMOTE_ADDR'] != $decryptedClientIP && $_SESSION['user_agent'] !== $decryptedUserAgent){
+    session_unset();
+    session_destroy();
+}
+if (!isset($_SESSION['regenerated']) || ($_SESSION['regenerated'] + 30 * 60) < time()) {
+    session_regenerate_id(true);
+    $_SESSION['regenerated'] = time();
+}
 // Include the database connection file
 require_once "db_connection.php";
 

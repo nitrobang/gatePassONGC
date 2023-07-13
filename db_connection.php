@@ -1,13 +1,17 @@
 <?php
+require_once 'vendor/autoload.php';
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+$dotenv->load();
+
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
 // Create a MySQL database connection
-$servername = "localhost";
-$username = "root";
-$password = "Qweasdzxc@007";
-$dbname = "gate_pass_new";
+$servername = $_ENV["SERVERNAME"];
+$username = $_ENV["USERNAME"];
+$password = $_ENV["PASSWORD"];
+$dbname = $_ENV["DBNAME"];
 $connection = mysqli_connect($servername, $username, $password, $dbname);
 
 // Check if the connection was successful

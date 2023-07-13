@@ -1,8 +1,13 @@
 <?php
+//setting session lifetime 
+$lifetime = 1200; // 20 minutes
+session_set_cookie_params($lifetime);
+
 session_start();
 
 // Include the database connection file
 require_once "db_connection.php";
+require_once "enc_dec.php";
 
 // Check if the user is already logged in
 if (isset($_SESSION["username"]) && isset($_SESSION["phone_no"])) {
@@ -79,11 +84,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 // Verify the password for ONGC login
                 if (password_verify($password, $user["password"])) {
                     // Password is correct, create a session and redirect to the dashboard
+                    session_regenerate_id(true);
                     $_SESSION["username"] = $user["username"];
                     $_SESSION["cpf_no"] = $cpf_no;
                     $_SESSION['designation'] = $designation;
                     $_SESSION['department'] = $department;
                     $_SESSION['venue']=$venue;
+
+                    $_SESSION['encrypted_client_ip'] = encrypt($_SERVER['REMOTE_ADDR'], $secretKey);
+                    $_SESSION['encrypted_user_agent'] = encrypt($_SERVER['HTTP_USER_AGENT'], $secretKey);
+                    
                     header("Location: skdash.php");
                     exit();
                 } else {
@@ -94,9 +104,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $hashedPassword = $user["password"]; // Retrieve the hashed password from the database
                 if (password_verify($password, $hashedPassword)) {
                     // Password is correct, create a session and redirect to the guard dashboard
+                    session_regenerate_id(true);
                     $_SESSION["phone_no"] = $phone_no;
                     $_SESSION["designation"] = 'G';
-                    $_SESSION['venue'] = $user['venue'];
+                    $_SESSION['venue'] = $user['venue'];   
+
+                    $_SESSION['encrypted_client_ip'] = encrypt($_SERVER['REMOTE_ADDR'], $secretKey);
+                    $_SESSION['encrypted_user_agent'] = encrypt($_SERVER['HTTP_USER_AGENT'], $secretKey); 
+
                     header("Location: skdash.php");
                 } else {
                     $errorMessage = "Invalid password";
