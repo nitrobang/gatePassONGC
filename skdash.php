@@ -113,7 +113,7 @@ if ($designation == "E" && isset($_POST['new_order'])) {
     exit();
 }
 if (isset($_POST['reports'])) {
-    header("Location: skdash_exp.php");
+    header("Location: report.php");
     exit();
 }
 function getEmployeesByCpf($cpf)
@@ -170,7 +170,6 @@ function getEmployeesvenue($cpf)
                 </td>
             </tr>
         </table>
-
     </div>
     <h3>Dashboard</h3>
     <?php echo "Designation " . $designation;
