@@ -2,6 +2,16 @@
 session_start();
 require_once "db_connection.php";
 
+//Protection Against Session Hijacking
+if ($_SERVER['REMOTE_ADDR'] != $_SESSION['client_ip'] && $_SESSION['user_agent'] !== $_SERVER['HTTP_USER_AGENT']){
+    session_unset();
+    session_destroy();
+}
+if (!isset($_SESSION['regenerated']) || ($_SESSION['regenerated'] + 30 * 60) < time()) {
+    session_regenerate_id(true);
+    $_SESSION['regenerated'] = time();
+}
+
 // Check if the user is not logged in
 if (!isset($_SESSION["username"])) {
     header("Location: newlogin.php");
@@ -168,7 +178,13 @@ function getEmployeesByCpf($cpf)
     }
     return $employee;
 }
-
+if ($_SESSION["department"] == "I") {
+    $department = "Infocom";
+} elseif ($_SESSION["department"] == "M") {
+    $department = "Management";
+} elseif ($_SESSION["department"] == "P") {
+    $department = "Production";
+} else $department = "No Department";
 ?>
 
 <html>
