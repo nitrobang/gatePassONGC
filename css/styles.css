@@ -1,6 +1,5 @@
 body {
-    background-color: transparent;
-    color: #000;
+    background-color: transparent !important;
     font-family: "Open Sans", sans-serif !important;
     font-size: 14px;
     -moz-osx-font-smoothing: grayscale;
@@ -14,7 +13,9 @@ body {
     height: 100%;
     width: 100%;
     overflow-x: hidden;
-
+    background-image: url("bg.png") !important;
+    background-repeat: no-repeat;
+    background-size: cover;
     background-position-x: center;
     background-position-y: top;
     background-size: cover;
@@ -28,11 +29,11 @@ body {
     width: 100%;
     top: 0px;
     margin: 0 auto;
-    background-color: white;
+    color: white;
     padding: 20px;
     padding-top: 0px;
     border-radius: 5px;
-
+    background-color: transparent;
 }
 .btn-secondary{
     position: absolute;
@@ -40,7 +41,7 @@ body {
 }
 .btn-outline-danger{
     background-color: #69140E ;
-    --bs-btn-color: #69140E;
+    --bs-btn-color: #ffffff !important;
     --bs-btn-border-color: #69140E!important;
     --bs-btn-hover-color: #fff;
     --bs-btn-hover-bg: #69140E!important;
@@ -60,6 +61,34 @@ body {
     top: 0px;
     right: 0px;
 }
+.but {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#neworder {
+    margin-right: auto;
+}
+
+#reports {
+    margin-left: auto;
+}
+#printer{
+    position: absolute;
+    top: 50px;
+    right: 0px;
+}
+.tableclass{
+    
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: #98C1D9;
+    border-radius: 20px;
+    padding: 20px;
+    padding-top: 5px;
+}
 #gb{
 
     top: 0px;
@@ -71,6 +100,7 @@ h2 {
 .container table {
     width: 75%;
     height: 100px;
+    background-color: transparent;
 }
 .container table td {
     width:fit-content;
@@ -155,27 +185,35 @@ input[type="date"]{
  table {
     width: 100%;
     border-collapse: collapse;
+    border-radius: 20px;
     margin-bottom: 20px;
     margin-top: 20px;
     
 }
 
-
 #dynamic-table th,#orderTable th, td {
-
-    padding: 8px;
     text-align: left;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid #98C1D9;
+    padding: 10px;
 }
-
+/* #dynamic-table tr:last-child td:first-child {
+    border: 2px solid rgb(15, 15, 15);
+    border-bottom-left-radius: 10px;
+}
+    
+#dynamic-table tr:last-child td:last-child {
+    border: 2px solid rgb(0, 0, 0);
+    border-bottom-right-radius: 10px;
+} */
 
 #dynamic-table th,#orderTable th {
+    background-color: #274C77;
+    color: white;
+}
+#dynamic-table  tr:hover,#orderTable tr:hover { 
     background-color: #98C1D9;
 }
 
-#dynamic-table  tr:hover,#orderTable tr:hover { 
-    background-color: #f5f5f5;
-}
 select{
     width: 100%;
     border: 1px solid #ccc;

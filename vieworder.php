@@ -19,11 +19,7 @@ if (!isset($_SESSION["username"])) {
     exit();
 }
 
-//check if right person(store keeper) is accessing the forms page   
-if ($_SESSION["designation"] != "E") {
-    header("Location: skdash.php");
-    exit();
-}
+
 
 // Logout handling
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["logout"])) {
@@ -32,32 +28,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["logout"])) {
     header("Location: newlogin.php");
     exit();
 }
-$orderno=$_GET['orderno'];
+$orderno = $_GET['orderno'];
 $conn = $connection;
-// if (isset($_GET['orderno'])) {
-//     $orderno = $_GET['orderno'];
-
-//     $checkquery = "SELECT coll_approval,security_approval,guard_approval  FROM order_no WHERE orderno = '$orderno'";
-//     $result = mysqli_query($conn, $checkquery);
-
-//     if ($result) {
-//         $row = mysqli_fetch_assoc($result);
-//         $collApproval = $row['coll_approval'];
-//         $sApproval = $row['security_approval'];
-//         $gApproval = $row['guard_approval'];
-//         // Check if the 'coll_approval' value is not equal to -1
-//         if ($collApproval != -1 && $sApproval != -1 && $gApproval != -1) {
-//             $_SESSION['cantedit'] = true; // Using session variable
-
-//             // Redirect to the next page
-//             header("Location: skdash.php");
-//             exit();
-//         }
-//     }
-// }
-
-
 // Function to get employee names and CPF numbers based on designation
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["printer"])) {
+    // Set the orderno session variable
+    // Redirect to printorder.php
+    $orderno=$_POST['printer'];
+    header("Location: printorder.php?orderno=".$orderno);
+    exit();
+}
 function getEmployeesByDesignation($designation)
 {
     global $connection;
@@ -94,7 +74,7 @@ function getEmployeesByCpf($cpf)
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>New Order</title>
+    <title>View Order</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="css/styles.css">
@@ -107,49 +87,62 @@ function getEmployeesByCpf($cpf)
 
     <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
         <button type="submit" id="lo" class="btn btn-outline-danger" name="logout">Logout</button>
+        <button class='btn btn-primary' id='printer' name='printer' value="<?php echo $orderno;?>">Print</button>
     </form>
 
-    <?php  echo "<button class='btn btn-primary' id='printer' name='printer' onclick='printFunction()'>Print</button>";?>
+    
     <div id="print">
-    <div class="container">
-        <table>
-            <tr>
-                <td><img src="assets/images.png" class="logo"></td>
-                <td>
-                    <h1>Oil and Natural Gas Corporation</h1>
-                    <h3>MUMBAI REGION- REGIONAL OFFICE- INFOCOM</h3>
-                </td>
-            </tr>
-        </table>
+        <div class="container">
+            <table>
+                <tr>
+                    <td><img src="assets/images.png" class="logo"></td>
+                    <td>
+                        <h1>Oil and Natural Gas Corporation</h1>
+                        <h3>MUMBAI REGION- REGIONAL OFFICE- INFOCOM</h3>
+                    </td>
+                </tr>
+            </table>
 
-    </div>
+        </div>
+        <div class="tableclass">
+        <h2 class="wlc">Welcome, <?php echo $_SESSION["username"]; ?>!</h2><br>
 
-    <h2 class="wlc">Welcome, <?php echo $_SESSION["username"]; ?>!</h2><br>
-    
-    
-    <h5>Order Number:<?php echo $orderno;?></h5>
-    <?php
-       
-    
-    $selectOrderNoQuery = "SELECT * FROM order_no WHERE orderno = '$orderno'";
-    $result1 = mysqli_query($conn, $selectOrderNoQuery);
-    $selectOrdersQuery = "SELECT * FROM orders WHERE orderno = '$orderno'";
-    $result = mysqli_query($conn, $selectOrdersQuery);
-    $orderItems = array();
-    while ($row = mysqli_fetch_assoc($result)) {
-        $orderItems[] = $row;
-    }
 
-    if ($result1 && mysqli_num_rows($result1) > 0) {
-        $orderData = mysqli_fetch_assoc($result1);
-    ?>
-        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST">
-            <div class="pos">
-                <label for="return">Returnable</label>
-                <input type="radio" class="form-group" name="return" value="1" <?php echo $orderData['returnable'] == 1 ? 'checked' : ''; ?> readonly required>
-                <label for="nreturn">Non Returnable</label>
-                <input type="radio" class="form-group" name="return" value="0" <?php echo $orderData['returnable'] == 0 ? 'checked' : ''; ?> readonly><br>
-                <table class="postt">
+        <h5>Order Number:<?php echo $orderno; ?></h5>
+        <?php
+
+
+        $selectOrderNoQuery = "SELECT * FROM order_no WHERE orderno = '$orderno'";
+        $result1 = mysqli_query($conn, $selectOrderNoQuery);
+        $selectOrdersQuery = "SELECT * FROM orders WHERE orderno = '$orderno'";
+        $result = mysqli_query($conn, $selectOrdersQuery);
+        $orderItems = array();
+        while ($row = mysqli_fetch_assoc($result)) {
+            $orderItems[] = $row;
+        }
+
+        if ($result1 && mysqli_num_rows($result1) > 0) {
+            $orderData = mysqli_fetch_assoc($result1);
+        ?>
+            <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST">
+                <div class="pos">
+                
+                <table>
+                    <tr>
+                        <td><label for="securityn">Security ID</label>
+                        <input type="text" class="form-group" name="createdby" value="<?php echo $orderData['created_by']; ?>" required readonly><br></td>
+                        <td><label for="collectorn">Collector-ID</label>
+                    <input type="text" class="form-group" name="issuet" value="<?php echo $orderData['forwarded_to']; ?>" required readonly><br></td>
+                        <td> <label for="collectorn">Collector-ID</label>
+                    <input type="text" class="form-group" name="issuet" value="<?php echo $orderData['forwarded_to']; ?>" required readonly><br></td>
+                    </tr>
+                </table>
+                    <label for="return">Returnable</label>
+                    <input type="radio" class="form-group" name="return" value="1" <?php echo $orderData['returnable'] == 1 ? 'checked' : ''; ?> <?php echo $orderData['returnable'] == 1 ? '' : 'hidden'; ?> readonly required>
+
+                    <label for="nreturn">Non Returnable</label>
+                    <input type="radio" class="form-group" name="return" value="0" <?php echo $orderData['returnable'] == 0 ? 'checked' : ''; ?> <?php echo $orderData['returnable'] == 0 ? '' : 'hidden'; ?> readonly><br>
+                    <table class="postt">
                     <tr>
                         <td><label for="issued">Issuing department/Office</label>
                             <input type="text" class="form-group" name="issued" value="<?php echo $orderData['issue_dep']; ?>" required readonly><br>
@@ -171,45 +164,46 @@ function getEmployeesByCpf($cpf)
                             <input type="text" class="form-group" name="pod" value="<?php echo $orderData['order_dest']; ?>" required readonly>
                         </td>
                     </tr>
-                </table>
+                    </table>
 
-                <h4></h4>
-            </div>
-            <table id="dynamic-table">
-                <tr>
-                    <th>Sr No</th>
-                    <th>Brief description</th>
-                    <th>No of Packages</th>
-                    <th>Deliver Note Or Dispatch convey note no OR Indent no</th>
-                    <th>Remarks</th>
-                    <th>Action</th>
-                </tr>
-                <?php foreach ($orderItems as $index => $item) { ?>
+                    <h4></h4>
+                </div>
+                <table id="dynamic-table">
                     <tr>
-                        <td><input type='hidden' name='serial_number[]'> <?php echo $index + 1; ?></input></td>
-                        <td><input type="text" name="description[]" value="<?php echo $item['descrip']; ?>" required readonly></td>
-                        <td><input type="text" name="num[]" value="<?php echo $item['nop']; ?>" required readonly></td>
-                        <td><input type="text" name="dispatchnotes[]" value="<?php echo $item['deliverynote']; ?>" required readonly></td>
-                        <td><input type="text" name="remarks[]" value="<?php echo $item['remark']; ?>" required readonly></td>
-                        <td> </td>
+                        <th>Sr No</th>
+                        <th>Brief description</th>
+                        <th>No of Packages</th>
+                        <th>Deliver Note Or Dispatch convey note no OR Indent no</th>
+                        <th>Remarks</th>
+                        <th>Action</th>
                     </tr>
+                    <?php foreach ($orderItems as $index => $item) { ?>
+                        <tr>
+                            <td><input type='hidden' name='serial_number[]'> <?php echo $index + 1; ?></input></td>
+                            <td><input type="text" name="description[]" value="<?php echo $item['descrip']; ?>" required readonly></td>
+                            <td><input type="text" name="num[]" value="<?php echo $item['nop']; ?>" required readonly></td>
+                            <td><input type="text" name="dispatchnotes[]" value="<?php echo $item['deliverynote']; ?>" required readonly></td>
+                            <td><input type="text" name="remarks[]" value="<?php echo $item['remark']; ?>" required readonly></td>
+                            <td> </td>
+                        </tr>
 
-                <?php }
-                ?>
-            </table>
-            <br>
-            <div id="returnDateForm" style="display: none;">
+                    <?php }
+                    ?>
+                </table>
+                <br>
+                <div id="returnDateForm" style="display: <?php echo $orderData['returnable'] == 1 ? 'block' : 'none'; ?>">
                 <label for="returnDate">Return Date:</label>
-                <input type="date" name="returnDate" id="returnDate"value="<?php echo $orderData['returndate']; ?>">
+                <input type="date" name="returnDate" id="returnDate" min="<?php echo date('Y-m-d', strtotime('+1 day')); ?>" value="<?php echo $orderData['returndate']; ?>"readonly>
             </div>
-            </div>         
-        </form><?php
-            } else {
-                // Handle the case where no rows were found
-                echo "No order data found.";
-            }
-                ?>
-    <script type="text/javascript" src="form.js"></script>
+    </div>
+    </form>
+    </div><?php
+        } else {
+            // Handle the case where no rows were found
+            echo "No order data found.";
+        }
+            ?>
+<script type="text/javascript" src="form.js"></script>
 </body>
 
 </html>

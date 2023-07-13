@@ -13,7 +13,7 @@ if (!isset($_SESSION['regenerated']) || ($_SESSION['regenerated'] + 30 * 60) < t
 }
 // Include the database connection file
 require_once "db_connection.php";
-
+$conn=$connection;
 // Check if the user is not logged in
 if (!isset($_SESSION["username"]) && !isset($_SESSION["phone_no"])) {
     header("Location: newlogin.php");
@@ -82,6 +82,45 @@ if (isset($_GET['orderno'])) {
         }
     }
 }
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    if ($designation == "G") {
+        if (isset($_POST['receive'])) {
+            $insert_sql = "UPDATE order_no 
+                SET  comp_approval = 1
+                WHERE orderno =" . $orderno;
+            $connection->query($insert_sql);
+            $_SESSION['resuccess'] = true; // Using session variable
+            // Redirect to the next page
+            header("Location: skdash.php");
+            exit();
+        }
+    } else if ($designation =="E") {
+        if (isset($_POST['receive'])) {
+            $insert_sql = "UPDATE order_no 
+                SET  comp_approval = 3
+                WHERE orderno =" . $orderno;
+            $connection->query($insert_sql);
+            $_SESSION['resuccess'] = true; // Using session variable
+            // Redirect to the next page
+            header("Location: skdash.php");
+            exit();
+        }
+    }
+    else if ($designation =="S") {
+        if (isset($_POST['receive'])) {
+            $insert_sql = "UPDATE order_no 
+                SET  comp_approval = 2
+                WHERE orderno =" . $orderno;
+            $connection->query($insert_sql);
+            $_SESSION['resuccess'] = true; // Using session variable
+            // Redirect to the next page
+            header("Location: skdash.php");
+            exit();
+        }
+    }
+    // Insert the values into the orders table
+
+}
 // Logout handling
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["logout"])) {
     // Destroy the session and redirect to the login page
@@ -123,34 +162,95 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["logout"])) {
         </table>
 
     </div>
-    <h3>Guard Page</h3>
+    <div class="tableclass">
     <?php
-    // SQL query to fetch fields from a table
-    $sql = "SELECT o.descrip, o.nop, o.deliverynote, o.remark, n.moc, n.vehno
-FROM orders o
-JOIN order_no n ON o.orderno = n.orderno
-WHERE o.orderno = " . $orderno;
+       
+    
+    $selectOrderNoQuery = "SELECT * FROM order_no WHERE orderno = '$orderno'";
+    $result1 = mysqli_query($conn, $selectOrderNoQuery);
+    $selectOrdersQuery = "SELECT * FROM orders WHERE orderno = '$orderno'";
+    $result = mysqli_query($conn, $selectOrdersQuery);
+    $orderItems = array();
+    while ($row = mysqli_fetch_assoc($result)) {
+        $orderItems[] = $row;
+    }
 
-    $result = $connection->query($sql);
+    if ($result1 && mysqli_num_rows($result1) > 0) {
+        $orderData = mysqli_fetch_assoc($result1);
+    ?>
+        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST">
+            <div class="pos">
+            <label for="return">Returnable</label>
+                    <input type="radio" class="form-group" name="return" value="1" <?php echo $orderData['returnable'] == 1 ? 'checked' : ''; ?> <?php echo $orderData['returnable'] == 1 ? '' : 'hidden'; ?> readonly required>
 
-    if ($result->num_rows > 0) {
-        echo "<table id='dynamic-table'>";
-        echo "<tr><th>Brief description</th><th>No of Packages</th><th>Delivery Note Or Dispatch Convey Note No OR Indent No</th><th>Remarks</th><th>Mode Of Collection</th><th>Vehicle Number</th></tr>";
+                    <label for="nreturn">Non Returnable</label>
+                    <input type="radio" class="form-group" name="return" value="0" <?php echo $orderData['returnable'] == 0 ? 'checked' : ''; ?> <?php echo $orderData['returnable'] == 0 ? '' : 'hidden'; ?> readonly><br>
+                <table class="postt">
+                    <tr>
+                        <td><label for="issued">Issuing department/Office</label>
+                            <input type="text" class="form-group" name="issued" value="<?php
+                                                                                        if ($orderData['issue_dep'] === "I") {
+                                                                                            $department = "Infocom";
+                                                                                        } elseif ($orderData['issue_dep'] === "M") {
+                                                                                            $department = "Management";
+                                                                                        } elseif ($orderData['issue_dep'] === "P") {
+                                                                                            $department = "Production";
+                                                                                        }
+                                                                                        echo $department; ?>" required readonly><br>
+                        </td>
+                        <td><label for="issuet">Issue To</label>
+                            <input type="text" class="form-group" name="issuet" value="<?php echo $orderData['issueto']; ?>" required readonly><br>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                        <label for="placei">Place of Issue</label>
+                            <input type="text" class="form-group" name="placei" value="<?php
+                                                                                        if ($orderData['placeoi'] == "N") {
+                                                                                            $venue = "NBP Green Heights";
+                                                                                        } elseif ($orderData['placeoi'] == "V") {
+                                                                                            $venue = "Vasundhara Bhavan";
+                                                                                        } elseif ($orderData['placeoi'] == "H") {
+                                                                                            $venue = "11 High";
+                                                                                        }
+                                                                                        echo $venue; ?>" readonly>
+                        </td>
+                        <td><label for="pod">Place of Destination</label>
+                            <input type="text" class="form-group" name="pod" value="<?php echo $orderData['order_dest']; ?>" required readonly>
+                        </td>
+                    </tr>
+                </table>
 
-        // Output data of each row
-        while ($row = $result->fetch_assoc()) {
-            echo "<tr>";
-            echo "<td>" . $row["descrip"] . "</td>";
-            echo "<td>" . $row["nop"] . "</td>";
-            echo "<td>" . $row["deliverynote"] . "</td>";
-            echo "<td>" . $row["remark"] . "</td>";
-            echo "<td>" . $row["moc"] . "</td>";
-            echo "<td>" . $row["vehno"] . "</td>";
-            echo "</tr>";
-        }
+                <h4></h4>
+            </div>
+            <table id="dynamic-table">
+                <tr>
+                    <th>Sr No</th>
+                    <th>Brief description</th>
+                    <th>No of Packages</th>
+                    <th>Deliver Note Or Dispatch convey note no OR Indent no</th>
+                    <th>Remarks</th>
+                </tr>
+                <?php foreach ($orderItems as $index => $item) { ?>
+                    <tr>
+                        <td><input type='hidden' name='serial_number[]'> <?php echo $index + 1; ?></input></td>
+                        <td><input type="text" name="description[]" value="<?php echo $item['descrip']; ?>" required readonly></td>
+                        <td><input type="text" name="num[]" value="<?php echo $item['nop']; ?>" required readonly></td>
+                        <td><input type="text" name="dispatchnotes[]" value="<?php echo $item['deliverynote']; ?>" required readonly></td>
+                        <td><input type="text" name="remarks[]" value="<?php echo $item['remark']; ?>" required readonly></td>
+                    </tr>
 
-        echo "</table>";
-
+                <?php }
+                ?>
+            </table>
+            <br>
+            <div id="returnDateForm" style="display: none;">
+                <label for="returnDate">Return Date:</label>
+                <input type="date" name="returnDate" id="returnDate"value="<?php echo $orderData['returndate']; ?>">
+            </div>
+                     
+        </form>
+<?php 
         // Add form to input "Mode of Collection" and "Vehicle Number"
         echo '<form method="POST" action="">
             <input type="submit" class="btn btn-primary" name="receive" value="receive">
@@ -158,48 +258,8 @@ WHERE o.orderno = " . $orderno;
     } else {
         echo "No fields found in the table.";
     }
-
-
-    if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        if ($designation == "G") {
-            if (isset($_POST['receive'])) {
-                $insert_sql = "UPDATE order_no 
-                    SET  comp_approval = 1
-                    WHERE orderno =" . $orderno;
-                $connection->query($insert_sql);
-                $_SESSION['resuccess'] = true; // Using session variable
-                // Redirect to the next page
-                header("Location: skdash.php");
-                exit();
-            }
-        } else if ($designation =="E") {
-            if (isset($_POST['receive'])) {
-                $insert_sql = "UPDATE order_no 
-                    SET  comp_approval = 3
-                    WHERE orderno =" . $orderno;
-                $connection->query($insert_sql);
-                $_SESSION['resuccess'] = true; // Using session variable
-                // Redirect to the next page
-                header("Location: skdash.php");
-                exit();
-            }
-        }
-        else if ($designation =="S") {
-            if (isset($_POST['receive'])) {
-                $insert_sql = "UPDATE order_no 
-                    SET  comp_approval = 2
-                    WHERE orderno =" . $orderno;
-                $connection->query($insert_sql);
-                $_SESSION['resuccess'] = true; // Using session variable
-                // Redirect to the next page
-                header("Location: skdash.php");
-                exit();
-            }
-        }
-        // Insert the values into the orders table
-
-    }
     ?>
+    </div>
 </body>
 
 </html>

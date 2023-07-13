@@ -32,7 +32,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["logout"])) {
     header("Location: newlogin.php");
     exit();
 }
-$orderno=$_SESSION['orderno'];
+$orderno = $_SESSION['orderno'];
 $conn = $connection;
 // if (isset($_GET['orderno'])) {
 //     $orderno = $_GET['orderno'];
@@ -115,24 +115,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["deny"])) {
     $new_remarks = $_POST["new_remarks"];
     if (empty($new_remarks)) {
         echo '<script>alert("Please Enter Remarks");</script>';
-    }
-    else{
-         // Update the order_no table with security_approval = -1 and remarks
-    $updateQuery = "UPDATE order_no SET  sign_approval=-1,security_approval = 0, guard_approval = 0, coll_approval = 0,sign_approval=0, new_remarks = '$new_remarks' WHERE orderno = $orderno";
-    $updateResult = mysqli_query($connection, $updateQuery);
-
-    if ($updateResult) {
-        // Redirect to the dashboard or a success page
-        $_SESSION['rsuccess'] = true; // Using session variable
-        // Redirect to the next page
-        header("Location: skdash.php");
-        exit();
     } else {
-        // Handle the error, display a message, or redirect to an error page
-        echo"Error: " . mysqli_error($connection);
+        // Update the order_no table with security_approval = -1 and remarks
+        $updateQuery = "UPDATE order_no SET  sign_approval=-1,security_approval = 0, guard_approval = 0, coll_approval = 0,sign_approval=0, new_remarks = '$new_remarks' WHERE orderno = $orderno";
+        $updateResult = mysqli_query($connection, $updateQuery);
+
+        if ($updateResult) {
+            // Redirect to the dashboard or a success page
+            $_SESSION['rsuccess'] = true; // Using session variable
+            // Redirect to the next page
+            header("Location: skdash.php");
+            exit();
+        } else {
+            // Handle the error, display a message, or redirect to an error page
+            echo "Error: " . mysqli_error($connection);
+        }
     }
-    }
-   
 }
 ?>
 
@@ -169,9 +167,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["deny"])) {
         </table>
 
     </div>
-
+    <div class="tableclass">
     <h2 class="wlc">Welcome, <?php echo $_SESSION["username"]; ?>!</h2><br>
-    <h5>Order Number:<?php echo $orderno;?></h5>
+    <h5>Order Number:<?php echo $orderno; ?></h5>
     <?php
     $selectOrderNoQuery = "SELECT * FROM order_no WHERE orderno = '$orderno'";
     $result1 = mysqli_query($conn, $selectOrderNoQuery);
@@ -188,31 +186,44 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["deny"])) {
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST">
             <div class="pos">
                 <label for="return">Returnable</label>
-                <input type="radio" class="form-group" name="return" value="1" <?php echo $orderData['returnable'] == 1 ? 'checked' : ''; ?> readonly required>
+                <input type="radio" class="form-group" name="return" value="1" <?php echo $orderData['returnable'] == 1 ? 'checked' : ''; ?> <?php echo $orderData['returnable'] == 1 ? '' : 'hidden'; ?> readonly required>
+
                 <label for="nreturn">Non Returnable</label>
-                <input type="radio" class="form-group" name="return" value="0" <?php echo $orderData['returnable'] == 0 ? 'checked' : ''; ?> readonly><br>
+                <input type="radio" class="form-group" name="return" value="0" <?php echo $orderData['returnable'] == 0 ? 'checked' : ''; ?> <?php echo $orderData['returnable'] == 0 ? '' : 'hidden'; ?> readonly><br>
                 <table class="postt">
-                    <tr>
-                        <td><label for="issued">Issuing department/Office</label>
-                            <input type="text" class="form-group" name="issued" value="<?php echo $orderData['issue_dep']; ?>" required readonly><br>
-                        </td>
-                        <td><label for="issuet">Issue To</label>
-                            <input type="text" class="form-group" name="issuet" value="<?php echo $orderData['issueto']; ?>" required readonly><br>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <label for="placei">Place of Issue</label>
-                            <select class="form-group" name="placei" required readonly>
-                                <option value="N" <?php if ($orderData['placeoi'] === 'N') echo 'selected'; ?>>NBP GREEN HEIGHTS</option>
-                                <option value="V" <?php if ($orderData['placeoi'] === 'V') echo 'selected'; ?>>VASUNDHARA BHAVAN</option>
-                                <option value="H" <?php if ($orderData['placeoi'] === 'H') echo 'selected'; ?>>11 HIGH</option>
-                            </select>
-                        </td>
-                        <td><label for="pod">Place of Destination</label>
-                            <input type="text" class="form-group" name="pod" value="<?php echo $orderData['order_dest']; ?>" required readonly>
-                        </td>
-                    </tr>
+                <tr>
+                    <td><label for="issued">Issuing department/Office</label>
+                            <input type="text" class="form-group" name="issued" value="<?php
+                                                                                        if ($orderData['issue_dep'] === "I") {
+                                                                                            $department = "Infocom";
+                                                                                        } elseif ($orderData['issue_dep'] === "M") {
+                                                                                            $department = "Management";
+                                                                                        } elseif ($orderData['issue_dep'] === "P") {
+                                                                                            $department = "Production";
+                                                                                        }
+                                                                                        echo $department; ?>" required readonly><br>
+                    </td>
+                    <td><label for="issuet">Issue To</label>
+                        <input type="text" class="form-group" name="issuet" value="<?php echo $orderData['issueto']; ?>" required readonly><br>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                    <label for="placei">Place of Issue</label>
+                            <input type="text" class="form-group" name="placei" value="<?php
+                                                                                        if ($orderData['placeoi'] == "N") {
+                                                                                            $venue = "NBP Green Heights";
+                                                                                        } elseif ($orderData['placeoi'] == "V") {
+                                                                                            $venue = "Vasundhara Bhavan";
+                                                                                        } elseif ($orderData['placeoi'] == "H") {
+                                                                                            $venue = "11 High";
+                                                                                        }
+                                                                                        echo $venue; ?>" readonly>
+                    </td>
+                    <td><label for="pod">Place of Destination</label>
+                        <input type="text" class="form-group" name="pod" value="<?php echo $orderData['order_dest']; ?>" required readonly>
+                    </td>
+                </tr>
                 </table>
 
                 <h4></h4>
@@ -241,33 +252,33 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["deny"])) {
             </table>
             <br>
             <?php
-                $returnDate = date('m-d-Y', strtotime($orderData['returndate']));
-                if ($orderData['returnable']==1){
-                        echo'<div id="returnDateForm">
-                        <label for="returnDate">Return Date:</label>
-                        <input type="date" name="returnDate" id="returnDate"value="<?php echo $returnDate; ?>">
-                    </div>';
-                }
+            if ($orderData['returnable'] == 1) {
+                echo '<div id="returnDateForm">
+                    <label for="returnDate">Return Date:</label>
+                    <input type="date" name="returnDate" id="returnDate" value="' . $orderData['returndate'] . '">
+                </div>';
+            }
             ?>
-                     
+
         </form><?php
             } else {
                 // Handle the case where no rows were found
                 echo "No order data found.";
             }
                 ?>
-                <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
-    <input type="hidden" name="orderno" value="<?php echo $orderno; ?>">
-    <!-- <label for="securityn">Security Name:</label>
+    <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
+        <input type="hidden" name="orderno" value="<?php echo $orderno; ?>">
+        <!-- <label for="securityn">Security Name:</label>
     <input type="text" name="securityn" value="<?php echo $securityn; ?>"> -->
-    <label for="new_remarks">Remarks:</label>
-    <input type="text" name="new_remarks" value="<?php echo isset($new_remarks) ? $new_remarks : ''; ?>">
-    <?php if (isset($error)) { ?>
-      <p class="error"><?php echo $error; ?></p>
-    <?php } ?>
-    <button type="submit" class="btn btn-danger" name="deny">Revert</button>
-<button type="submit" class="btn btn-primary" name="submit">Submit and Approve</button>
-  </form>
+        <label for="new_remarks">Remarks:</label>
+        <input type="text" name="new_remarks" value="<?php echo isset($new_remarks) ? $new_remarks : ''; ?>">
+        <?php if (isset($error)) { ?>
+            <p class="error"><?php echo $error; ?></p>
+        <?php } ?>
+        <button type="submit" class="btn btn-danger" name="deny">Revert</button>
+        <button type="submit" class="btn btn-primary" name="submit">Submit and Approve</button>
+    </form>
+    </div>
     <script type="text/javascript" src="form.js"></script>
 </body>
 
