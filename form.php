@@ -65,7 +65,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } elseif ($issueDesc == "Production") {
         $issueDesc = "P";
     }
-    $placeOfIssue = mysqli_real_escape_string($conn, $_POST["placei"]);
+    $placeOfIssue = $_SESSION['venue'];
     $issueTo = mysqli_real_escape_string($conn, $_POST["issuet"]);
     $placeOfDestination = '';
     $returnDate = strtotime($_POST['returnDate']);
@@ -168,13 +168,7 @@ function getEmployeesByCpf($cpf)
     }
     return $employee;
 }
-if ($_SESSION["department"] == "I") {
-    $department = "Infocom";
-} elseif ($_SESSION["department"] == "M") {
-    $department = "Management";
-} elseif ($_SESSION["department"] == "P") {
-    $department = "Production";
-}
+
 ?>
 
 <html>
@@ -186,11 +180,19 @@ if ($_SESSION["department"] == "I") {
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="css/styles.css">
+    <style>
+        body {
+            background-image: url("assets/bg.png");
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+    </style>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
 </head>
 
 <body>
+    
     <button class="btn btn-secondary" id="gb" onclick="window.location.href = 'skdash.php'">Go Back</button>
 
     <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
@@ -208,10 +210,12 @@ if ($_SESSION["department"] == "I") {
                 </td>
             </tr>
         </table>
-        <h2 class="wlc">Welcome, <?php echo $_SESSION["username"]; ?>!</h2>
+        
     </div>
-
-    <h6><?php echo "Order No " . $orderNo; ?></h6>
+    <div class="tableclass">
+    <h2 class="wlc">Welcome, <?php echo $_SESSION["username"]; ?>!</h2>
+    <h4><?php echo "Order No " . $orderNo; ?></h4>
+    <h6><?php  ?></h6>
 
     <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST">
         <div class="pos">
@@ -223,7 +227,15 @@ if ($_SESSION["department"] == "I") {
                 <tr>
                     <td>
                         <label for="issued">Issuing department/Office</label>
-                        <input type="text" class="form-group" name="issued" value="<?php echo $department; ?>" readonly>
+                        <input type="text" class="form-group" name="issued" value="<?php 
+                        if ($_SESSION["department"] == "I") {
+                            $department = "Infocom";
+                        } elseif ($_SESSION["department"] == "M") {
+                            $department = "Management";
+                        } elseif ($_SESSION["department"] == "P") {
+                            $department = "Production";
+                        }
+                        echo $department; ?>" readonly>
                     </td>
                     <td><label for="issuet">Issue To</label>
                         <input type="text" class="form-group" name="issuet" required><br>
@@ -231,11 +243,17 @@ if ($_SESSION["department"] == "I") {
                 </tr>
                 <tr>
                     <td><label for="placei">Place of Issue</label>
-                        <select class="form-group" name="placei" required>
-                            <option value="N">NBP GREEN HEIGHTS</option>
-                            <option value="V">VASUNDHARA BHAVAN</option>
-                            <option value="H">11 HIGH</option>
-                        </select>
+                        <input type="text" class="form-group" name="placei" value="<?php 
+                        if ($_SESSION["venue"] == "N") {
+                            $venue = "NBP Green Heights";
+                        } elseif ($_SESSION["venue"] =="V") {
+                            $venue = "Vasundhara Bhavan";
+                        } elseif ($_SESSION["venue"] == "H") {
+                            $venue = "11 High";
+                        }
+                        echo $venue; ?>"
+                        readonly>
+                            
                     </td>
                     <td>
                         <label for="pod">Place of Destination</label>
@@ -273,9 +291,10 @@ if ($_SESSION["department"] == "I") {
         <button type="button" onclick="addRow()">Add Row</button>
         <br><br>
         <div id="returnDateForm" style="display: none;">
-            <label for="returnDate">Return Date:</label>
-            <input type="date" name="returnDate" id="returnDate">
-        </div>
+    <label for="returnDate">Return Date:</label>
+    <input type="date" name="returnDate" id="returnDate" min="<?php echo date('Y-m-d', strtotime('+1 day')); ?>">
+</div>
+
         <div class="sugges">
             <div class="result1">
                 <p>Signatory Officer:</p>
@@ -292,8 +311,7 @@ if ($_SESSION["department"] == "I") {
             <ul class="autocomplete-list"></ul>
             <div class="clear"></div>
         </div>
-        <br>
-        <br>
+        </div>
         <input type="submit" name="submit" id="submitButton" value="Submit" disabled>
     </form>
     <script type="text/javascript" src="form.js"></script>

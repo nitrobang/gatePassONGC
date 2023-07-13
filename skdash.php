@@ -96,7 +96,7 @@ if (($designation == "G"  && isset($_GET['orderno']))) {
 }
 
 //  redirect to receive.php for "receive" button
-if (($designation == "G" || $designation == "E" ||$designation == "S") && isset($_POST['receive'])) {
+if (($designation == "G" || $designation == "E" || $designation == "S") && isset($_POST['receive'])) {
     $orderno = $_POST['receive'];
     header("Location: receive.php?orderno=$orderno");
     exit();
@@ -153,6 +153,13 @@ function getEmployeesvenue($cpf)
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="css/styles.css">
+    <style>
+        body {
+            background-image: url("assets/bg.png");
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+    </style>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
 </head>
 
@@ -172,24 +179,26 @@ function getEmployeesvenue($cpf)
         </table>
     </div>
     <h3>Dashboard</h3>
-    <?php echo "Designation " . $designation;
-    if ($designation == "E") : ?>
-        <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
-            <button type="submit" class="btn btn-primary" class="form-group" name="new_order">New Order</button>
-        </form>
-    <?php endif;
-    echo "<br>"; ?>
-    <?php if ($designation == "E" || $designation == "S" || $designation == "G") : ?>
-        <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
-            <button type="submit" class="btn btn-primary" class="form-group" name="reports">Reports</button>
-        </form>
-    <?php endif; ?>
+    <div class="but">
+        <?php
+        if ($designation == "E") : ?>
+            <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
+                <button type="submit" class="btn btn-primary" class="form-group" id="neworder" name="new_order">New Order</button>
+            </form>
+        <?php endif;
+        echo "<br>"; ?>
+        <?php if ($designation == "E" || $designation == "S" || $designation == "G") : ?>
+            <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
+                <button type="submit" class="btn btn-primary" class="form-group" id="reports" name="reports">Reports</button>
+            </form>
+        <?php endif; ?>
+    </div>
     <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
         <?php
 
         // Retrieve data from the "order_no" table
         if ($designation == "E") {
-            $query = "SELECT orderno, order_dest, issue_dep, placeoi, issueto,securityn,guard_name,collector_name, returnable, coll_approval, security_approval, comp_approval, guard_approval, sign_approval,forwarded_to, signatory, created_by FROM order_no WHERE coll_approval = 0 AND forwarded_to = ? OR created_by = ? OR signatory = ? ";
+            $query = "SELECT orderno, order_dest, issue_dep, placeoi, issueto,securityn,guard_name,collector_name, returnable, returndate,coll_approval, security_approval, comp_approval, guard_approval, sign_approval,forwarded_to, signatory, created_by FROM order_no WHERE coll_approval = 0 AND forwarded_to = ? OR created_by = ? OR signatory = ? ";
 
             // Prepare the statement
             $stmt = $conn->prepare($query);
@@ -198,7 +207,7 @@ function getEmployeesvenue($cpf)
             $stmt->bind_param('iii', $cpf_no, $cpf_no, $cpf_no);
         } else if ($designation == "S") {
             $ven = getEmployeesvenue($cpf_no);
-            $query = "SELECT orderno, order_dest, issue_dep, placeoi, issueto, returnable, coll_approval,sign_approval, security_approval, comp_approval, guard_approval, forwarded_to, created_by FROM order_no WHERE placeoi = ? AND (security_approval = 0 AND coll_approval = 1 AND guard_approval = 1 AND sign_approval = 1) OR (comp_approval=1 AND returnable=1)";
+            $query = "SELECT orderno, order_dest, issue_dep, placeoi, issueto, returnable,returndate, coll_approval,sign_approval, security_approval, comp_approval, guard_approval, forwarded_to, created_by FROM order_no WHERE placeoi = ? AND (security_approval = 0 AND coll_approval = 1 AND guard_approval = 1 AND sign_approval = 1) OR (comp_approval=1 AND returnable=1)";
 
             // Prepare the statement
             $stmt = $conn->prepare($query);
@@ -206,7 +215,7 @@ function getEmployeesvenue($cpf)
             // Bind the parameter
             $stmt->bind_param('s', $ven);
         } else {
-            $query = "SELECT orderno, order_dest, issue_dep, placeoi, issueto, returnable, coll_approval,sign_approval, security_approval, comp_approval, guard_approval, forwarded_to, created_by FROM order_no WHERE placeoi = ? AND (coll_approval = 1 AND sign_approval = 1 AND guard_approval = 0) OR (comp_approval=-1 AND returnable=1) ";
+            $query = "SELECT orderno, order_dest, issue_dep, placeoi, issueto, returnable,returndate, coll_approval,sign_approval, security_approval, comp_approval, guard_approval, forwarded_to, created_by FROM order_no WHERE placeoi = ? AND (coll_approval = 1 AND sign_approval = 1 AND guard_approval = 0) OR (comp_approval=-1 AND returnable=1) ";
 
             // Prepare the statement
             $stmt = $conn->prepare($query);
@@ -223,17 +232,18 @@ function getEmployeesvenue($cpf)
         // Check if the query was successful
         if ($result && mysqli_num_rows($result) > 0) {
             // Display the data in a table
+            echo "<div class='tableclass'>";
             echo "<table id='dynamic-table'>";
             echo "<tr><th>Order No</th><th>Created By</th><th>Order Destination</th><th>Issue Department</th><th>Place of Issue</th><th>Issue To</th><th>Returnable</th>";
             echo "<th>Action</th>";
-            if ($designation == "E") echo "<th>Status</th></tr>";
+            if ($designation == "E") echo "<th>Status</th><th>Return Date</th></tr>";
             while ($row = mysqli_fetch_assoc($result)) {
                 echo "<tr>";
                 echo "<td><a href='vieworder.php?orderno=" . $row['orderno'] . "'>" . $row['orderno'] . "</td>";
                 $creatorname = getEmployeesByCpf($row['created_by']);
                 echo "<td>" . $creatorname . "</td>";
                 echo "<td>" . $row['order_dest'] . "</td>";
-                $placeoi = $row['issue_dep']; 
+                $placeoi = $row['issue_dep'];
                 if ($placeoi === 'I') {
                     $displayText = 'Infocom';
                 } elseif ($placeoi === 'M') {
@@ -241,23 +251,30 @@ function getEmployeesvenue($cpf)
                 } elseif ($placeoi === 'P') {
                     $displayText = 'Production';
                 }
-                echo "<td>" . $displayText. "</td>";
+                echo "<td>" . $displayText . "</td>";
                 $placeoi = $row['placeoi']; // Assuming $row['placeoi'] contains the value
                 $displayText = '';
 
                 if ($placeoi === 'N') {
-                    $displayText = 'NBP Green Heights';
+                    $displayTex = 'NBP Green Heights';
                 } elseif ($placeoi === 'V') {
-                    $displayText = 'Vasundhara Bhavan';
+                    $displayTex = 'Vasundhara Bhavan';
                 } elseif ($placeoi === 'H') {
-                    $displayText = '11 HIGH';
+                    $displayTex = '11 HIGH';
                 }
-                echo "<td>" . $displayText . "</td>";
+                echo "<td>" . $displayTex. "</td>";
 
                 echo "<td>" . $row['issueto'] . "</td>";
                 $returnableValue = ($row['returnable'] ? 'Yes' : 'No');
 
                 echo "<td>" . ($returnableValue) . "</td>";
+                // if($returnableValue=='Yes'){
+
+                // }
+                // else{
+
+                // }
+
 
                 if ($designation == "E" && $row['forwarded_to'] == $cpf_no && $row['coll_approval'] == 0 && $row['security_approval'] == 0 && $row['guard_approval'] == 0)
                     echo "<td><a href='skdash.php?orderno=" . $row['orderno'] . "'>Collector Link</a></td>";
@@ -265,16 +282,15 @@ function getEmployeesvenue($cpf)
                 else if ($designation == "E" && $row['signatory'] == $cpf_no && $row['coll_approval'] == 1 && $row['sign_approval'] == 0 && $row['security_approval'] == 0 && $row['guard_approval'] == 0)
                     echo "<td><a href='skdash.php?orderno=" . $row['orderno'] . "&sign=" . $row['signatory'] . "'>Signatory Link</a></td>";
 
-                else if ($designation == "S" && $row['coll_approval'] == 1 && $row['sign_approval'] == 1 && $row['security_approval'] == 0 && $row['guard_approval'] == 1&& $row['comp_approval'] == 0)
+                else if ($designation == "S" && $row['coll_approval'] == 1 && $row['sign_approval'] == 1 && $row['security_approval'] == 0 && $row['guard_approval'] == 1 && $row['comp_approval'] == 0)
                     echo "<td><a href='skdash.php?orderno=" . $row['orderno'] . "'>Security Link</a></td>";
 
-                else if ($designation == "S" && $row['coll_approval'] == 1 && $row['sign_approval'] == 1 && $row['security_approval'] == 1 && $row['guard_approval'] == 1&& $row['comp_approval'] == 1 && $returnableValue == 'Yes'){
+                else if ($designation == "S" && $row['coll_approval'] == 1 && $row['sign_approval'] == 1 && $row['security_approval'] == 1 && $row['guard_approval'] == 1 && $row['comp_approval'] == 1 && $returnableValue == 'Yes') {
                     echo '<td>';
                     echo '<input type="hidden" name="Orderno" value="' . $row['orderno'] . '">';
                     echo '<button type="submit" name="receive" class="btn btn-outline-secondary" value="' . $row['orderno'] . '">Receive</button>';
                     echo '</td>';
-                }
-                else if ($designation == "G" && $row['coll_approval'] == 1 && $row['sign_approval'] == 1 && $row['security_approval'] == 0 && $row['guard_approval'] == 0&& $row['comp_approval'] == 1 && $returnableValue == 'Yes')
+                } else if ($designation == "G" && $row['coll_approval'] == 1 && $row['sign_approval'] == 1 && $row['security_approval'] == 0 && $row['guard_approval'] == 0 && $row['comp_approval'] == 0)
                     echo "<td><a href='skdash.php?orderno=" . $row['orderno'] . "'>Guard Link</a></td>";
 
                 else if ($designation == "G" && $row['coll_approval'] == 1 && $row['security_approval'] == 1 && $row['guard_approval'] == 1 && $row['comp_approval'] == -1 && $returnableValue == 'Yes') {
@@ -375,9 +391,18 @@ function getEmployeesvenue($cpf)
 
                         else if ($row['coll_approval'] == 1 && $row['security_approval'] == 1 && $row['guard_approval'] == 1 && $row['comp_approval'] == 3)
                             echo '<td>Order Completed</td>';
+                        $returnDate = $row['returndate'];
+                        $returnD=str_ireplace('-', '', $returnDate);
+                        $todayDate = date('Ymd');
+                        if ($todayDate <= $returnD) {
+                            echo '<td><span style="color: green;">' . $returnDate . '</span></td>';
+                        } else {
+                            echo '<td><span style="color: red;">' . $returnDate . '</span></td>';
+                        }
                     } elseif ($returnableValue == "No") {
                         if ($row['coll_approval'] == 1 && $row['security_approval'] == 1 && $row['guard_approval'] == 1)
                             echo '<td>Order Completed</td>';
+                        echo "<td>-</td>";
                     }
                 }
 
@@ -385,6 +410,7 @@ function getEmployeesvenue($cpf)
             }
 
             echo "</table>";
+            echo "</div>";
         } else {
             echo "No records found.";
         }

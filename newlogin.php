@@ -127,10 +127,32 @@ function test_input($data)
     <link rel="stylesheet" href="css/styles.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
     <script src="form.js"></script>
+    <style>
+        body {
+            background-image: url("assets/bg.png");
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+        
+        .container1 {
+            position: relative;
+            background-color: #98C1D9;
+            top: 50px;
+            margin: 0 auto;
+            display: flex;
+            border-radius: 20px;
+            padding: 30px;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            width: fit-content;
+            
+        }
+    </style>
 </head>
 
 <body>
-    <div class="container">
+    <div class="container1">
         <div class="lbox">
             <div class="lmod">
                 <img src="assets/images.png" class="logo" alt="ONGC Logo" />

@@ -97,9 +97,28 @@ function test_input($data) {
 <head>
     <title>Sign Up</title>
     <link rel="stylesheet" href="css/styles.css">
+    <style>
+        body {
+            background-image: url("assets/bg.png");
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+        
+        .container1 {
+            position: absolute;
+            top: 50px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            width: fit-content;
+            height: 100vh;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
+    <div class="container1">
         <div class="lbox">
         <h2>Sign Up</h2>
         <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">

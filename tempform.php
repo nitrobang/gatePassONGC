@@ -51,15 +51,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Escape user inputs to prevent SQL injection
         // Escape user inputs to prevent SQL injection
         $returnable = $_POST["return"] == "1" ? 1 : 0;
-        $issueDesc = mysqli_real_escape_string($conn, $_POST["issued"]);
-        if ($issueDesc == "Infocom") {
-            $$issueDesc = "I";
-        } elseif ($issueDesc == "Management") {
-            $$issueDesc = "M";
-        } elseif ($issueDesc == "Production") {
-            $$issueDesc = "P";
-        }
-        $placeOfIssue = mysqli_real_escape_string($conn, $_POST["placei"]);
         $issueTo = mysqli_real_escape_string($conn, $_POST["issuet"]);
         $placeOfDestination = '';
         $returnDate = strtotime($_POST['returnDate']);
@@ -77,21 +68,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $sign_approval = 0;
 
         // Insert data into the 'order_no' table
-        $UpdateOrderNoQuery = "UPDATE order_no SET order_dest = ?, issue_dep = ?, placeoi = ?, issueto = ?, securityn = '', returnable = ?, returndate= ?,coll_approval = ?, sign_approval=?,security_approval = ?, guard_approval = ?, forwarded_to = ?, signatory= ? WHERE orderno = ?";
+        $UpdateOrderNoQuery = "UPDATE order_no SET order_dest = ?, issueto = ?, securityn = '', returnable = ?, returndate= ?,coll_approval = ?, sign_approval=?,security_approval = ?, guard_approval = ?, forwarded_to = ?, signatory= ? WHERE orderno = ?";
 
         // Prepare the statement
         $stmt = $conn->prepare($UpdateOrderNoQuery);
 
         // Bind the parameters
-        $stmt->bind_param('ssssisiiiiiii', $placeOfDestination, $issueDesc, $placeOfIssue, $issueTo, $returnable, $returnDate, $coll_approval, $sign_approval, $security_approval, $guard_approval, $forwardTo,  $signatory, $orderno);
+        $stmt->bind_param('ssisiiiiiii', $placeOfDestination, $issueTo, $returnable, $returnDate, $coll_approval, $sign_approval, $security_approval, $guard_approval, $forwardTo,  $signatory, $orderno);
 
         // Execute the statement
         if ($stmt->execute()) {
 
             //******/ Insert data into the 'orders' table *********
             // $orderno = $_POST['serial_number'];
-                // Retrieve the form data
-                $serialNumbers = $_POST['serial_number'];
+            // Retrieve the form data
+            $serialNumbers = $_POST['serial_number'];
             $description = $_POST['description'];
             $num = $_POST['num'];
             $dispatchnotes = $_POST['dispatchnotes'];
@@ -171,7 +162,7 @@ function getEmployeesByCpf($cpf)
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>New Order</title>
+    <title>Edit Order</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="css/styles.css">
@@ -199,7 +190,7 @@ function getEmployeesByCpf($cpf)
         </table>
 
     </div>
-
+    <div class="tableclass">
     <h2 class="wlc">Welcome, <?php echo $_SESSION["username"]; ?>!</h2><br>
     <?php
     // $orderno = $_GET['orderno']; // Get the 'orderno' parameter from the URL
@@ -220,12 +211,12 @@ function getEmployeesByCpf($cpf)
     ?>
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST">
             <div class="pos">
-                
+
                 <label for="return">Returnable</label>
-                <input type="radio" class="form-group" name="return" value="1" <?php $returnable = $orderData['returnable'];
-                                                                                echo $orderData['returnable'] == 1 ? 'checked' : ''; ?> required>
+                <input type="radio" class="form-group" name="return" value="1" <?php echo $orderData['returnable'] == 1 ? 'checked' : ''; ?> onchange="toggleReturnDateForm(this.value)" required>
+
                 <label for="nreturn">Non Returnable</label>
-                <input type="radio" class="form-group" name="return" value="0" <?php echo $orderData['returnable'] == 0 ? 'checked' : ''; ?>><br>
+                <input type="radio" class="form-group" name="return" value="0" <?php echo $orderData['returnable'] == 0 ? 'checked' : ''; ?> onchange="toggleReturnDateForm(this.value)"><br>
                 <table class="postt">
                     <tr>
                         <td><label for="issued">Issuing department/Office</label>
@@ -246,11 +237,15 @@ function getEmployeesByCpf($cpf)
                     <tr>
                         <td>
                             <label for="placei">Place of Issue</label>
-                            <select class="form-group" name="placei" required>
-                                <option value="N" <?php if ($orderData['placeoi'] === 'N') echo 'selected'; ?>>NBP GREEN HEIGHTS</option>
-                                <option value="V" <?php if ($orderData['placeoi'] === 'V') echo 'selected'; ?>>VASUNDHARA BHAVAN</option>
-                                <option value="H" <?php if ($orderData['placeoi'] === 'H') echo 'selected'; ?>>11 HIGH</option>
-                            </select>
+                            <input type="text" class="form-group" name="placei" value="<?php
+                                                                                        if ($orderData['placeoi'] == "N") {
+                                                                                            $venue = "NBP Green Heights";
+                                                                                        } elseif ($orderData['placeoi'] == "V") {
+                                                                                            $venue = "Vasundhara Bhavan";
+                                                                                        } elseif ($orderData['placeoi'] == "H") {
+                                                                                            $venue = "11 High";
+                                                                                        }
+                                                                                        echo $venue; ?>" readonly>
                         </td>
                         <td><label for="pod">Place of Destination</label>
                             <input type="text" class="form-group" name="pod" value="<?php echo $orderData['order_dest']; ?>" required>
@@ -285,15 +280,19 @@ function getEmployeesByCpf($cpf)
             <br>
             <button type="button" onclick="addRow()">Add Row</button>
             <br><br>
-            <?php
-            // echo $returnable;
-            if ($returnable == 1) {
-                echo '  <div id="returnDateForm" style="display: none;">
-                        <label for="returnDate">Return Date:</label>
-                        <input type="date" name="returnDate" id="returnDate" value="' . $orderData['returndate'] . '">
-                        </div>';
-            }
-            ?>
+            <div id="returnDateForm" style="display: <?php echo $orderData['returnable'] == 1 ? 'block' : 'none'; ?>">
+                <label for="returnDate">Return Date:</label>
+                <input type="date" name="returnDate" id="returnDate" min="<?php echo date('Y-m-d', strtotime('+1 day')); ?>" value="<?php 
+                    if($orderData['returndate']){
+                        echo $orderData['returndate'];
+                    }
+                    else{
+                        echo date('Y-m-d',strtotime('+1 day'));
+                    }
+                     ?>">
+            </div>
+            
+
             <div class="sugges">
                 <div class="result1">
                     <p>Signatory Officer:</p>
@@ -302,7 +301,7 @@ function getEmployeesByCpf($cpf)
                 <ul class="autocomplete-list1"></ul>
                 <div class="clear1"></div>
             </div>
-            
+
 
             <div class="sugg">
                 <div class="result">
@@ -316,7 +315,10 @@ function getEmployeesByCpf($cpf)
             <br>
             <input type="hidden" name="orderno" value="<?php echo $orderno; ?>">
             <input type="submit" name="submit" id="submitButton" value="Submit">
-        </form><?php
+        </form>
+        </div>
+        </div>
+        <?php
             } else {
                 // Handle the case where no rows were found
                 echo "No order data found.";
